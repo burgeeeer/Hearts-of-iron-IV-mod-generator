@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOI4 Mod Creator</title>
+    <!-- JSZip для сборки архива -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #008080;
+            --win-bg: #c0c0c0;
+            --win-border-light: #ffffff;
+            --win-border-dark: #808080;
+            --win-border-darker: #404040;
+            --title-bg-start: #000080;
+            --title-bg-end: #1084d0;
+            --text-color: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: "Tahoma", "Segoe UI", sans-serif;
+            font-size: 11px;
+            margin: 0;
+            padding: 10px;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .window {
+            width: 100%;
+            max-width: 780px;
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.4);
+            padding: 3px;
+        }
+
+        .title-bar {
+            background: linear-gradient(90deg, var(--title-bg-start), var(--title-bg-end));
+            padding: 4px 8px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-bar-text {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content {
+            padding: 10px;
+        }
+
+        /* Начальное меню выбора языка */
+        #langScreen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .lang-btn {
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+            padding: 12px 8px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-btn:active {
+            border-color: var(--win-border-darker) var(--win-border-light) var(--win-border-light) var(--win-border-darker);
+        }
+
+        /* Главное меню генератора */
+        #mainApp {
+            display: none;
+        }
+
+        fieldset {
+            border: 2px solid;
+            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+            padding: 10px;
+            margin-bottom: 12px;
+            background: #c0c0c0;
+        }
+
+        legend {
+            font-weight: bold;
+            padding: 0 4px;
+            color: #000080;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+        }
+
+        input[type="text"], select {
+            border: 2px solid;
+            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+            background: #ffffff;
+            padding: 4px 6px;
+            font-family: inherit;
+            font-size: 11px;
+            width: 100%;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            background: #ffffe1;
+        }
+
+        .flag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 10px;
+        }
+
+        .flag-card {
+            background: #d4d4d4;
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            padding: 8px;
+        }
+
+        .flag-card h4 {
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            color: #000080;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-btn {
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .custom-file-btn:active {
+            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+        }
+
+        .file-name {
+            font-size: 10px;
+            color: #404040;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .preview-box {
+            width: 82px;
+            height: 52px;
+            border: 1px solid #000;
+            background: #808080;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 9px;
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+        }
+
+        .button-bar {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-main {
+            background: var(--win-bg);
+            border: 2px solid;
+            border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+            padding: 6px 18px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-main:active {
+            border-color: var(--win-border-darker) var(--win-border-light) var(--win-border-light) var(--win-border-darker);
+        }
+
+        .progress-box {
+            display: none;
+            margin-top: 10px;
+            background: #ffffff;
+            border: 2px solid;
+            border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #000080;
+        }
+
+        .info-note {
+            background: #ffffe1;
+            border: 1px solid #808080;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .top-lang-select {
+            background: #ffffff;
+            font-size: 10px;
+            padding: 1px 3px;
+            border: 1px solid #808080;
+        }
+    </style>
+</head>
+<body>
+
+<div class="window">
+    <div class="title-bar">
+        <span class="title-bar-text">HOI4 Mod Creator</span>
+        <select id="quickLangSelect" class="top-lang-select" onchange="setLanguage(this.value)" style="display:none;">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <!-- 1. НАЧАЛЬНОЕ МЕНЮ ВЫБОРА ЯЗЫКА -->
+    <div id="langScreen" class="content">
+        <h3 style="margin-top:0; color:#000080;">Select Language / Выберите язык</h3>
+        <p style="font-size:11px; margin-bottom:15px;">Please select your language to continue:</p>
+        
+        <div class="lang-grid">
+            <button class="lang-btn" onclick="selectLanguage('ru')">Русский</button>
+            <button class="lang-btn" onclick="selectLanguage('en')">English</button>
+        </div>
+    </div>
+
+    <!-- 2. ГЛАВНОЕ МЕНЮ ГЕНЕРАТОРА -->
+    <div id="mainApp" class="content">
+        <div class="info-note" id="txt_info"></div>
+
+        <fieldset>
+            <legend id="legend_sec1"></legend>
+            <div class="form-row">
+                <label for="modFolder" id="lbl_modFolder">Имя папки (англ):</label>
+                <input type="text" id="modFolder" value="custom_mod">
+            </div>
+            <div class="form-row">
+                <label for="modName" id="lbl_modName"></label>
+                <input type="text" id="modName" value="Custom Country Mod">
+            </div>
+            <div class="form-row">
+                <label for="tag" id="lbl_tag"></label>
+                <input type="text" id="tag" maxlength="3" value="EST" style="text-transform: uppercase;">
+            </div>
+            <div class="form-row">
+                <label for="puppet" id="lbl_puppet"></label>
+                <input type="text" id="puppet">
+            </div>
+            <div class="form-row">
+                <label for="thumbColor" id="lbl_thumbColor"></label>
+                <input type="color" id="thumbColor" value="#4169e1" style="height:28px; padding:2px; cursor:pointer;">
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend id="legend_sec2"></legend>
+            <div class="flag-grid">
+                
+                <!-- Нейтралитет -->
+                <div class="flag-card">
+                    <h4 id="head_neutrality"></h4>
+                    <div class="form-row" style="grid-template-columns: 1fr;">
+                        <input type="text" id="neutrality">
+                    </div>
+                    <div class="file-input-wrapper">
+                        <label class="custom-file-btn btn_file_label" for="flag_default"></label>
+                        <input type="file" id="flag_default" accept="image/*" onchange="handleFileSelect(this, 'prev_default')">
+                        <span class="file-name file_status" id="name_flag_default"></span>
+                    </div>
+                    <div class="preview-box" id="prev_default">82x52</div>
+                </div>
+
+                <!-- Демократия -->
+                <div class="flag-card">
+                    <h4 id="head_democratic"></h4>
+                    <div class="form-row" style="grid-template-columns: 1fr;">
+                        <input type="text" id="democratic">
+                    </div>
+                    <div class="file-input-wrapper">
+                        <label class="custom-file-btn btn_file_label" for="flag_democratic"></label>
+                        <input type="file" id="flag_democratic" accept="image/*" onchange="handleFileSelect(this, 'prev_democratic')">
+                        <span class="file-name file_status" id="name_flag_democratic"></span>
+                    </div>
+                    <div class="preview-box" id="prev_democratic">82x52</div>
+                </div>
+
+                <!-- Фашизм -->
+                <div class="flag-card">
+                    <h4 id="head_fascism"></h4>
+                    <div class="form-row" style="grid-template-columns: 1fr;">
+                        <input type="text" id="fascism">
+                    </div>
+                    <div class="file-input-wrapper">
+                        <label class="custom-file-btn btn_file_label" for="flag_fascism"></label>
+                        <input type="file" id="flag_fascism" accept="image/*" onchange="handleFileSelect(this, 'prev_fascism')">
+                        <span class="file-name file_status" id="name_flag_fascism"></span>
+                    </div>
+                    <div class="preview-box" id="prev_fascism">82x52</div>
+                </div>
+
+                <!-- Коммунизм -->
+                <div class="flag-card">
+                    <h4 id="head_communism"></h4>
+                    <div class="form-row" style="grid-template-columns: 1fr;">
+                        <input type="text" id="communism">
+                    </div>
+                    <div class="file-input-wrapper">
+                        <label class="custom-file-btn btn_file_label" for="flag_communism"></label>
+                        <input type="file" id="flag_communism" accept="image/*" onchange="handleFileSelect(this, 'prev_communism')">
+                        <span class="file-name file_status" id="name_flag_communism"></span>
+                    </div>
+                    <div class="preview-box" id="prev_communism">82x52</div>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <div class="progress-box" id="progressBox"></div>
+
+        <div class="button-bar">
+            <button class="btn-main" onclick="backToLangMenu()" id="btn_back">< Language</button>
+            <button class="btn-main" onclick="generateAndDownloadMod()" id="btn_generate" style="flex-grow:1;"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentLang = 'ru';
+
+    const translations = {
+        ru: {
+            info: "Заполните названия и загрузите изображения флагов (PNG/JPG). Приложение правильно нарежет их в .TGA, перекроет встроенную локализацию игры, сгенерирует превью мода (thumbnail.png) и соберёт один ZIP-архив с готовой структурой мода (папка мода + файл .mod внутри).",
+            sec1: "1. Основные параметры мода",
+            modFolder: "Папка мода (без пробелов):",
+            modName: "Название мода:",
+            tag: "TAG страны (3 буквы):",
+            puppet: "Название типа марионеток:",
+            thumbColor: "Цвет превью мода (thumbnail):",
+            sec2: "2. Названия и Флаги по идеологиям",
+            neutrality: "Нейтралитет / Основной",
+            democratic: "Демократия",
+            fascism: "Фашизм",
+            communism: "Коммунизм",
+            chooseFile: "Обзор...",
+            noFile: "Нет файла",
+            ph_countryName: "Название страны",
+            ph_modName: "Мой Мод",
+            ph_puppet: "Например: Рейхскомиссариат",
+            generate: "Сгенерировать и скачать мод",
+            progress: "Идет обработка изображений и сборка файлов...",
+            errTag: "Тег страны должен состоять из 3 букв!",
+            alertDone: "Готово! Скачан ZIP-архив.\n\nВнутри архива уже есть готовая структура: папка мода (с gfx, localisation, descriptor.mod) и файл .mod рядом с ней.\nПросто распакуйте содержимое архива в папку 'Documents/Paradox Interactive/Hearts of Iron IV/mod/'."
+        },
+        en: {
+            info: "Fill in names and upload flags. The app correctly encodes .TGA flags, overrides base game locs, generates a mod thumbnail (thumbnail.png), and packages everything into a single ZIP archive with the ready mod structure (mod folder + .mod file inside).",
+            sec1: "1. Basic Mod Settings",
+            modFolder: "Mod Folder (no spaces):",
+            modName: "Mod Name:",
+            tag: "Country TAG (3 letters):",
+            puppet: "Puppet Type Name:",
+            thumbColor: "Mod Thumbnail Background Color:",
+            sec2: "2. Names and Flags by Ideology",
+            neutrality: "Neutrality / Default",
+            democratic: "Democratic",
+            fascism: "Fascism",
+            communism: "Communism",
+            chooseFile: "Browse...",
+            noFile: "No file",
+            ph_countryName: "Country Name",
+            ph_modName: "My Custom Mod",
+            ph_puppet: "e.g. Reichskommissariat",
+            generate: "Generate & Download Mod",
+            progress: "Processing images and building files...",
+            errTag: "Country TAG must consist of exactly 3 letters!",
+            alertDone: "Done! ZIP archive downloaded.\n\nThe archive already has the ready structure inside: the mod folder (with gfx, localisation, descriptor.mod) and the .mod file next to it.\nJust extract the archive contents into your 'Documents/Paradox Interactive/Hearts of Iron IV/mod/' folder."
+        }
+    };
+
+    function selectLanguage(lang) {
+        currentLang = lang;
+        document.getElementById('langScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('quickLangSelect').style.display = 'block';
+        document.getElementById('quickLangSelect').value = lang;
+        applyTranslation();
+    }
+
+    function backToLangMenu() {
+        document.getElementById('langScreen').style.display = 'block';
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('quickLangSelect').style.display = 'none';
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        applyTranslation();
+    }
+
+    function applyTranslation() {
+        const t = translations[currentLang];
+
+        document.getElementById('txt_info').innerHTML = t.info;
+        document.getElementById('legend_sec1').textContent = t.sec1;
+        document.getElementById('lbl_modFolder').textContent = t.modFolder || "Folder Name:";
+        document.getElementById('lbl_modName').textContent = t.modName;
+        document.getElementById('lbl_tag').textContent = t.tag;
+        document.getElementById('lbl_puppet').textContent = t.puppet;
+        document.getElementById('lbl_thumbColor').textContent = t.thumbColor;
+        document.getElementById('legend_sec2').textContent = t.sec2;
+
+        document.getElementById('head_neutrality').textContent = t.neutrality;
+        document.getElementById('head_democratic').textContent = t.democratic;
+        document.getElementById('head_fascism').textContent = t.fascism;
+        document.getElementById('head_communism').textContent = t.communism;
+
+        document.getElementById('neutrality').placeholder = t.ph_countryName;
+        document.getElementById('democratic').placeholder = t.ph_countryName;
+        document.getElementById('fascism').placeholder = t.ph_countryName;
+        document.getElementById('communism').placeholder = t.ph_countryName;
+        document.getElementById('puppet').placeholder = t.ph_puppet;
+
+        document.querySelectorAll('.btn_file_label').forEach(el => el.textContent = t.chooseFile);
+        document.querySelectorAll('.file_status').forEach(el => {
+            if (el.textContent === "" || el.textContent === "Нет файла" || el.textContent === "No file") {
+                el.textContent = t.noFile;
+            }
+        });
+
+        document.getElementById('btn_generate').textContent = t.generate;
+        document.getElementById('progressBox').textContent = t.progress;
+    }
+
+    const loadedImages = {};
+
+    function handleFileSelect(input, previewId) {
+        const file = input.files[0];
+        const nameSpan = document.getElementById('name_' + input.id);
+        const prevBox = document.getElementById(previewId);
+
+        if (file) {
+            nameSpan.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    loadedImages[input.id] = img;
+                    prevBox.style.backgroundImage = `url('${e.target.result}')`;
+                    prevBox.textContent = '';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            nameSpan.textContent = translations[currentLang].noFile;
+            prevBox.style.backgroundImage = 'none';
+            prevBox.textContent = '82x52';
+            delete loadedImages[input.id];
+        }
+    }
+
+    // Правильная конвертация TGA (Bottom-Up) для предотвращения переворота
+    function canvasToTGA(canvas) {
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imgData.data;
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const header = new Uint8Array(18);
+        header[2] = 2; // Uncompressed True-Color
+        header[12] = width & 0xFF;
+        header[13] = (width >> 8) & 0xFF;
+        header[14] = height & 0xFF;
+        header[15] = (height >> 8) & 0xFF;
+        header[16] = 32;
+        header[17] = 0x20;
+
+        const tgaBuffer = new Uint8Array(18 + pixels.length);
+        tgaBuffer.set(header, 0);
+
+        let offset = 18;
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const i = (y * width + x) * 4;
+                tgaBuffer[offset]     = pixels[i + 2]; // B
+                tgaBuffer[offset + 1] = pixels[i + 1]; // G
+                tgaBuffer[offset + 2] = pixels[i];     // R
+                tgaBuffer[offset + 3] = pixels[i + 3]; // A
+                offset += 4;
+            }
+        }
+        return tgaBuffer;
+    }
+
+    function resizeToCanvas(img, width, height) {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        return canvas;
+    }
+
+    function triggerDownload(blob, filename) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+
+    async function generateAndDownloadMod() {
+        const tag = (document.getElementById('tag').value || 'NEW').toUpperCase().trim();
+        const modName = document.getElementById('modName').value || 'Custom Country Mod';
+        const folderName = (document.getElementById('modFolder').value || 'custom_mod').trim().replace(/[^a-z0-9_-]/gi, '_');
+        const t = translations[currentLang];
+
+        if (tag.length !== 3) {
+            alert(t.errTag);
+            return;
+        }
+
+        const progressBox = document.getElementById('progressBox');
+        progressBox.style.display = 'block';
+
+        setTimeout(async () => {
+            try {
+                const zip = new JSZip();
+                // Всё содержимое мода кладём в подпапку с именем folderName —
+                // именно так, как эта папка должна выглядеть внутри игрового каталога "mod/"
+                const modFolder = zip.folder(folderName);
+
+                // Относительный путь path="mod/folderName" решает проблему в Лаунчере
+                const descriptor = `version="1.0"
+tags={
+    "Alternative History"
+    "Translation"
+}
+name="${modName}"
+supported_version="1.14.*"
+picture="thumbnail.png"
+path="mod/${folderName}"`;
+
+                // descriptor.mod хранится внутри папки мода
+                modFolder.file("descriptor.mod", descriptor);
+
+                // .mod файл лежит рядом с папкой мода (в корне архива), как того требует Лаунчер
+                zip.file(`${folderName}.mod`, descriptor);
+
+                // Генерация превью мода (thumbnail.png) - однотонный фон выбранного цвета
+                const thumbColor = document.getElementById('thumbColor').value || '#4169e1';
+                const thumbCanvas = document.createElement('canvas');
+                thumbCanvas.width = 256;
+                thumbCanvas.height = 256;
+                const thumbCtx = thumbCanvas.getContext('2d');
+                thumbCtx.fillStyle = thumbColor;
+                thumbCtx.fillRect(0, 0, 256, 256);
+                const thumbBlob = await new Promise(resolve => thumbCanvas.toBlob(resolve, 'image/png'));
+                modFolder.file("thumbnail.png", thumbBlob);
+
+                const neutrality = document.getElementById('neutrality').value || 'State';
+                const democratic = document.getElementById('democratic').value || 'Republic';
+                const fascism = document.getElementById('fascism').value || 'Empire';
+                const communism = document.getElementById('communism').value || 'People Republic';
+                const puppet = document.getElementById('puppet').value || 'Protectorate';
+
+                // Добавлены записи _non_aligned для обхода багов нейтралитета
+                const locRu = `\ufeffl_russian:
+ ${tag}_neutrality:0 "${neutrality}"
+ ${tag}_neutrality_DEF:0 "${neutrality}"
+ ${tag}_non_aligned:0 "${neutrality}"
+ ${tag}_non_aligned_DEF:0 "${neutrality}"
+ ${tag}_democratic:0 "${democratic}"
+ ${tag}_democratic_DEF:0 "${democratic}"
+ ${tag}_fascism:0 "${fascism}"
+ ${tag}_fascism_DEF:0 "${fascism}"
+ ${tag}_communism:0 "${communism}"
+ ${tag}_communism_DEF:0 "${communism}"
+ ${tag}_puppet:0 "${puppet}"
+ ${tag}_puppet_DEF:0 "${puppet}"
+`;
+
+                const locEn = `\ufeffl_english:
+ ${tag}_neutrality:0 "${neutrality}"
+ ${tag}_neutrality_DEF:0 "${neutrality}"
+ ${tag}_non_aligned:0 "${neutrality}"
+ ${tag}_non_aligned_DEF:0 "${neutrality}"
+ ${tag}_democratic:0 "${democratic}"
+ ${tag}_democratic_DEF:0 "${democratic}"
+ ${tag}_fascism:0 "${fascism}"
+ ${tag}_fascism_DEF:0 "${fascism}"
+ ${tag}_communism:0 "${communism}"
+ ${tag}_communism_DEF:0 "${communism}"
+ ${tag}_puppet:0 "${puppet}"
+ ${tag}_puppet_DEF:0 "${puppet}"
+`;
+
+                // Папка replace перекрывает стандартные Вапсовские/DLC названия.
+                // Примечание: игра ожидает именно каталог "localisation" (брит. написание) — оставлено как в оригинале.
+                modFolder.file(`localisation/russian/replace/countries_${tag.toLowerCase()}_l_russian.yml`, locRu);
+                modFolder.file(`localisation/english/replace/countries_${tag.toLowerCase()}_l_english.yml`, locEn);
+
+                // Флаги с дублированием для нейтралитета
+                const flagConfigs = [
+                    { id: 'flag_default', suffixes: ['', '_neutrality', '_non_aligned'] },
+                    { id: 'flag_democratic', suffixes: ['_democratic'] },
+                    { id: 'flag_fascism', suffixes: ['_fascism'] },
+                    { id: 'flag_communism', suffixes: ['_communism'] }
+                ];
+
+                for (const config of flagConfigs) {
+                    const img = loadedImages[config.id];
+                    if (img) {
+                        for (const suf of config.suffixes) {
+                            const baseName = tag + suf;
+                            modFolder.file(`gfx/flags/${baseName}.tga`, canvasToTGA(resizeToCanvas(img, 82, 52)));
+                            modFolder.file(`gfx/flags/medium/${baseName}.tga`, canvasToTGA(resizeToCanvas(img, 41, 26)));
+                            modFolder.file(`gfx/flags/small/${baseName}.tga`, canvasToTGA(resizeToCanvas(img, 10, 7)));
+                        }
+                    }
+                }
+
+                // Единственный ZIP-архив со всей готовой структурой мода
+                const zipContent = await zip.generateAsync({ type: "blob" });
+                triggerDownload(zipContent, `${folderName}.zip`);
+
+                progressBox.style.display = 'none';
+                alert(t.alertDone);
+            } catch (err) {
+                alert('Error: ' + err.message);
+                progressBox.style.display = 'none';
+            }
+        }, 100);
+    }
+</script>
+
+</body>
+</html>
