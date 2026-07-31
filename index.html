@@ -305,6 +305,26 @@
     </div>
   </div>
 
+  <!-- SECTION 5: COLOR -->
+  <div class="section collapsed" data-section>
+    <div class="head" onclick="toggleSection(this)">
+      <span class="num">05</span><h2 id="sec5Title"></h2>
+      <span class="hint">▾</span>
+    </div>
+    <div class="body">
+      <div class="note" id="sec5Note"></div>
+      <div class="ideology-card">
+        <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--text);margin-bottom:10px;">
+          <input type="checkbox" id="colorEnable" style="width:auto;" onchange="document.getElementById('mainColor').disabled=!this.checked;">
+          <span id="colorEnableLabel"></span>
+        </label>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input type="color" id="mainColor" value="#8b2f2f" disabled style="width:60px;height:40px;padding:2px;background:#111516;border:1px solid var(--line);border-radius:4px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="actions">
     <button class="btn-primary" id="downloadBtn" onclick="generateMod()"></button>
     <span id="status"></span>
@@ -326,12 +346,11 @@ const TRANSLATIONS = {
     modNameLabel: "Название мода",
     modNamePh: "Новое имя SOV",
     sec2Title: "Локализация названия",
-    sec2Note: "Ниже 5 блоков, а не 4 — это не лишняя идеология. «Основное» это служебный запасной вариант названия (движок берёт его, если для текущей идеологии страны нет отдельного значения), а 4 блока под ним — Демократия / Фашизм / Коммунизм / Внеблоковые, все опциональны и используются только если заполнены. Обычно проще всего сделать «Основное» = «Внеблоковые» кнопкой «Скопировать» ниже, ведь большинство стран начинают игру именно с этой идеологии.",
-    ideoDefault: "Основное (обязательно)",
+    sec2Note: "4 блока — по одному на каждую идеологию (Демократия / Фашизм / Коммунизм / Нейтралитет), заполняются только если нужны. «Нейтралитет» обязателен: почти все страны стартуют в игре именно с этой идеологией, и её значения автоматически используются как запасное название, если для правящей идеологии страны нет отдельного варианта.",
     ideoDemocratic: "Демократия",
     ideoFascism: "Фашизм",
     ideoCommunism: "Коммунизм",
-    ideoNeutrality: "Внеблоковые (нейтралитет)",
+    ideoNeutrality: "Нейтралитет",
     fieldName: "Название",
     fieldDef: "Полное название с артиклем",
     fieldAdj: "Прилагательное",
@@ -341,19 +360,20 @@ const TRANSLATIONS = {
     puppetTagLabel: "Тег марионетки",
     addPuppetBtn: "+ Добавить марионетку",
     sec4Title: "Флаг",
-    sec4Note: "Как и с названиями: «Основное» — обязательный запасной флаг (используется, если для текущей идеологии страны нет отдельного). 4 блока ниже — опциональные флаги под конкретную идеологию (например, свой флаг для фашистской версии страны). Правее видно, как флаг будет выглядеть в игре при выбранных размерах.",
+    sec4Note: "4 блока под идеологии, как и с названиями. «Нейтралитет» желательно заполнить — его флаг автоматически используется как запасной для правящих идеологий без отдельного флага. Правее видно, как флаг будет выглядеть в игре при выбранных размерах.",
+    sec5Title: "Цвет страны",
+    sec5Note: "Важно: в HOI4 цвет страны на карте — это одно фиксированное значение, движок НЕ умеет менять его автоматически по идеологии (в отличие от названий и флагов). Ниже можно задать один цвет, который будет применяться всегда, вне зависимости от идеологии. Настоящая смена цвета при смене идеологии потребовала бы отдельного скриптового мода с эффектами и GUI — это выходит за рамки этого генератора.",
+    colorEnableLabel: "Задать свой цвет (иначе останется как в оригинальной игре)",
     flagzoneText: "Нажмите или перетащите PNG / JPG сюда",
     flagLoaded: name => name + " — загружен",
     sizesNote: "Размеры по умолчанию — стандартные для HOI4, их можно изменить. Файлы сохраняются как .tga (32-бит, без сжатия) в gfx/flags/.",
     downloadBtn: "Скачать мод (.zip)",
     errTag: "Укажите корректный тег страны — ровно 3 символа (A-Z, 0-9).",
-    errNames: "Заполните хотя бы «Название» и «Прилагательное» в блоке «Основное».",
+    errNames: "Заполните хотя бы «Название» и «Прилагательное» в блоке «Нейтралитет».",
     building: "Собираю мод...",
     done: fname => "Готово — мод скачан (" + fname + ")",
     errZip: msg => "Ошибка при сборке архива: " + msg,
     errFlagType: "Флаг должен быть PNG или JPG",
-    copyFromNeutrality: "Скопировать из «Нейтралитет»",
-    copiedDone: "Скопировано из блока «Нейтралитет»",
     readme: folder => `Мод сгенерирован HOI4 Mod Generator.
 
 Установка:
@@ -376,12 +396,11 @@ const TRANSLATIONS = {
     modNameLabel: "Mod name",
     modNamePh: "New name for SOV",
     sec2Title: "Name localisation",
-    sec2Note: "There are 5 blocks below, not 4 — that's not an extra ideology. \"Default\" is a fallback name (the engine uses it whenever the country's current ideology has no dedicated value), and the 4 blocks under it — Democratic / Fascist / Communist / Non-aligned — are optional and only used if filled in. The easiest setup is usually \"Default\" = \"Non-aligned\", using the \"Copy\" button below, since most countries start the game with that ideology.",
-    ideoDefault: "Default (required)",
+    sec2Note: "4 blocks — one per ideology (Democratic / Fascist / Communist / Neutral), fill in only what you need. \"Neutral\" is required: almost every country starts the game with that ideology, and its values are automatically used as the fallback name whenever the country's current ideology has no dedicated value.",
     ideoDemocratic: "Democratic",
     ideoFascism: "Fascist",
     ideoCommunism: "Communist",
-    ideoNeutrality: "Non-aligned (neutrality)",
+    ideoNeutrality: "Neutral",
     fieldName: "Name",
     fieldDef: "Full/definite name",
     fieldAdj: "Adjective",
@@ -391,19 +410,20 @@ const TRANSLATIONS = {
     puppetTagLabel: "Puppet tag",
     addPuppetBtn: "+ Add puppet",
     sec4Title: "Flag",
-    sec4Note: "Same idea as the names: \"Default\" is the required fallback flag (used whenever the country's current ideology has no dedicated one). The 4 blocks below are optional flags for a specific ideology (e.g. a separate flag for the fascist version of the country). The preview shows how the flag will look in-game at the chosen sizes.",
+    sec4Note: "Same 4 ideology blocks as the names. It's worth filling in \"Neutral\" — its flag is automatically used as the fallback for ruling ideologies with no dedicated flag. The preview shows how the flag will look in-game at the chosen sizes.",
+    sec5Title: "Country color",
+    sec5Note: "Important: in HOI4 a country's map color is a single fixed value — the engine can't switch it automatically by ideology the way it does for names and flags. Below you can set one color that always applies, regardless of ideology. Actually changing color per ideology would need a separate scripted mod with effects and a GUI — that's beyond what this generator does.",
+    colorEnableLabel: "Set a custom color (otherwise keeps the vanilla one)",
     flagzoneText: "Click or drag a PNG / JPG here",
     flagLoaded: name => name + " — loaded",
     sizesNote: "Default sizes are the standard HOI4 ones — feel free to change them. Files are saved as .tga (32-bit, uncompressed) in gfx/flags/.",
     downloadBtn: "Download mod (.zip)",
     errTag: "Enter a valid country tag — exactly 3 characters (A-Z, 0-9).",
-    errNames: "Fill in at least \"Name\" and \"Adjective\" in the \"Default\" block.",
+    errNames: "Fill in at least \"Name\" and \"Adjective\" in the \"Neutral\" block.",
     building: "Building mod...",
     done: fname => "Done — mod downloaded (" + fname + ")",
     errZip: msg => "Error building archive: " + msg,
     errFlagType: "Flag must be PNG or JPG",
-    copyFromNeutrality: "Copy from \"Non-aligned\"",
-    copiedDone: "Copied from the \"Non-aligned\" block",
     readme: folder => `Mod generated by HOI4 Mod Generator.
 
 Install:
@@ -457,17 +477,15 @@ function renderStaticText(){
   document.getElementById('addPuppetBtn').textContent = T.addPuppetBtn;
   document.getElementById('sec4Title').textContent = T.sec4Title;
   document.getElementById('sec4Note').textContent = T.sec4Note;
+  document.getElementById('sec5Title').textContent = T.sec5Title;
+  document.getElementById('sec5Note').textContent = T.sec5Note;
+  document.getElementById('colorEnableLabel').textContent = T.colorEnableLabel;
   document.getElementById('sizesNote').textContent = T.sizesNote;
   document.getElementById('downloadBtn').textContent = T.downloadBtn;
 }
 
 // ======================= IDEOLOGY DATA =======================
 const IDEOLOGIES = [
-  {key:'', labelKey:'ideoDefault', ph:{
-    name_ru:'Советский Союз', name_en:'Soviet Union',
-    def_ru:'Союз Советских Социалистических Республик', def_en:'Union of Soviet Socialist Republics',
-    adj_ru:'Советский', adj_en:'Soviet'
-  }},
   {key:'democratic', labelKey:'ideoDemocratic', ph:{
     name_ru:'Российская Республика', name_en:'Russian Republic',
     def_ru:'Российская Демократическая Республика', def_en:'Russian Democratic Republic',
@@ -511,23 +529,9 @@ function fieldsHtml(prefix, ph){
 function initIdeologies(){
   const c = document.getElementById('ideologyList');
   c.innerHTML = IDEOLOGIES.map(ideo=>{
-    const prefix = 'ideo_' + (ideo.key || 'default');
-    const isDefault = !ideo.key;
-    const copyBtn = isDefault
-      ? `<button type="button" class="btn-ghost" style="margin-left:auto;font-weight:400;" onclick="copyFromNeutrality()">${T.copyFromNeutrality}</button>`
-      : '';
-    return `<div class="ideology-card"><h3 style="display:flex;align-items:center;">${T[ideo.labelKey]}${copyBtn}</h3>${fieldsHtml(prefix, ideo.ph)}</div>`;
+    const prefix = 'ideo_' + ideo.key;
+    return `<div class="ideology-card"><h3>${T[ideo.labelKey]}</h3>${fieldsHtml(prefix, ideo.ph)}</div>`;
   }).join('');
-}
-
-function copyFromNeutrality(){
-  ['name','def','adj'].forEach(field=>{
-    const key = field + '_' + LANG;
-    const src = document.getElementById('ideo_neutrality_' + key);
-    const dst = document.getElementById('ideo_default_' + key);
-    if (src && dst && src.value.trim()) dst.value = src.value.trim();
-  });
-  setStatus(T.copiedDone, false, true);
 }
 
 let puppetCount = 0;
@@ -550,6 +554,11 @@ function addPuppet(){
       def_ru:'Рейхскомиссариат Остланд', def_en:'Reichskommissariat Ostland',
       adj_ru:'Остландский', adj_en:'Ostland'
     })}
+    <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--dim);margin:10px 0 6px;">
+      <input type="checkbox" id="p${id}_colorEnable" style="width:auto;" onchange="document.getElementById('p${id}_color').disabled=!this.checked;">
+      <span>${T.colorEnableLabel}</span>
+    </label>
+    <input type="color" id="p${id}_color" value="#8b2f2f" disabled style="width:60px;height:36px;padding:2px;background:#111516;border:1px solid var(--line);border-radius:4px;">
   `;
   document.getElementById('puppetList').appendChild(div);
 }
@@ -559,19 +568,15 @@ function toggleSection(headEl){
 }
 
 // ---------- FLAG HANDLING (per ideology) ----------
-let flagData = {}; // key ('default'|'democratic'|'fascism'|'communism'|'neutrality') -> {img, name}
+let flagData = {}; // key ('democratic'|'fascism'|'communism'|'neutrality') -> {img, name}; 'neutrality' also becomes the base TAG.tga fallback
 
 function initFlags(){
   const list = document.getElementById('flagList');
   list.innerHTML = IDEOLOGIES.map(ideo=>{
-    const key = ideo.key || 'default';
-    const isDefault = !ideo.key;
-    const copyBtn = isDefault
-      ? `<button type="button" class="btn-ghost" style="margin-left:auto;font-weight:400;" onclick="copyFlagFromNeutrality()">${T.copyFromNeutrality}</button>`
-      : '';
+    const key = ideo.key;
     return `
       <div class="ideology-card">
-        <h3 style="display:flex;align-items:center;">${T[ideo.labelKey]}${copyBtn}</h3>
+        <h3>${T[ideo.labelKey]}</h3>
         <div class="flagzone" id="flagzone_${key}" style="padding:14px;">
           <input type="file" id="flagInput_${key}" accept=".png,.jpg,.jpeg" style="display:none">
           <div id="flagzoneText_${key}">${T.flagzoneText}</div>
@@ -585,7 +590,7 @@ function initFlags(){
   }).join('');
 
   IDEOLOGIES.forEach(ideo=>{
-    const key = ideo.key || 'default';
+    const key = ideo.key;
     const input = document.getElementById('flagInput_' + key);
     const zone = document.getElementById('flagzone_' + key);
     zone.addEventListener('click', () => input.click());
@@ -620,16 +625,6 @@ function handleFlagFile(key, file){
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
-}
-
-function copyFlagFromNeutrality(){
-  const src = flagData['neutrality'];
-  if (!src) return;
-  flagData['default'] = {img: src.img, name: src.name};
-  document.getElementById('flagzoneText_default').textContent = T.flagLoaded(src.name);
-  document.getElementById('sizesPrev_default').style.display = 'grid';
-  updateFlagPreview('default');
-  setStatus(T.copiedDone, false, true);
 }
 
 ['wLarge','hLarge','wMedium','hMedium','wSmall','hSmall'].forEach(id=>{
@@ -704,9 +699,9 @@ async function generateMod(){
     setStatus(T.errTag, true);
     return;
   }
-  const defName = val('ideo_default_name_' + LANG);
-  const defAdj = val('ideo_default_adj_' + LANG);
-  if (!defName || !defAdj){
+  const neutName = val('ideo_neutrality_name_' + LANG);
+  const neutAdj = val('ideo_neutrality_adj_' + LANG);
+  if (!neutName || !neutAdj){
     setStatus(T.errNames, true);
     return;
   }
@@ -719,10 +714,14 @@ async function generateMod(){
 
   const blocks = [];
   IDEOLOGIES.forEach(ideo=>{
-    const prefix = 'ideo_' + (ideo.key || 'default');
+    const prefix = 'ideo_' + ideo.key;
     const n = val(prefix+'_name_'+LANG), d = val(prefix+'_def_'+LANG), a = val(prefix+'_adj_'+LANG);
     if (n || d || a) blocks.push({suffix: ideo.key, name:n, def:d, adj:a});
   });
+  // "Нейтралитет" also becomes the base fallback name (TAG with no suffix),
+  // since that's the ideology almost every country starts the game with.
+  const neutralBlock = blocks.find(b => b.suffix === 'neutrality');
+  if (neutralBlock) blocks.unshift({suffix:'', name:neutralBlock.name, def:neutralBlock.def, adj:neutralBlock.adj});
 
   document.querySelectorAll('.puppet-block').forEach(block=>{
     const id = block.id.split('_')[1];
@@ -751,29 +750,56 @@ async function generateMod(){
     BOM + buildYml(langKey, blocks)
   );
 
-  const flagKeys = Object.keys(flagData);
-  if (flagKeys.length){
+  const flagEntries = Object.keys(flagData).map(key => ({key, img: flagData[key].img}));
+  if (flagData['neutrality']) flagEntries.unshift({key:'', img: flagData['neutrality'].img});
+  if (flagEntries.length){
     const sizeDefs = [
       {folder:null, w:+val('wLarge'), h:+val('hLarge')},
       {folder:'medium', w:+val('wMedium'), h:+val('hMedium')},
       {folder:'small', w:+val('wSmall'), h:+val('hSmall')},
     ];
     const gfx = root.folder('gfx').folder('flags');
-    flagKeys.forEach(key=>{
-      const img = flagData[key].img;
-      const suffix = key === 'default' ? '' : ('_' + key);
+    flagEntries.forEach(entry=>{
+      const suffix = entry.key ? ('_' + entry.key) : '';
       sizeDefs.forEach(sd=>{
         const c = document.createElement('canvas');
         c.width = sd.w; c.height = sd.h;
         const ctx = c.getContext('2d');
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, sd.w, sd.h);
+        ctx.drawImage(entry.img, 0, 0, sd.w, sd.h);
         const bytes = canvasToTGABytes(c);
         const target = sd.folder ? gfx.folder(sd.folder) : gfx;
         target.file(tag + suffix + '.tga', bytes);
       });
     });
+  }
+
+  function hexToRgb(hex){
+    const h = hex.replace('#','');
+    return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)];
+  }
+
+  const colorEntries = [];
+  if (document.getElementById('colorEnable').checked){
+    colorEntries.push({tag, rgb: hexToRgb(val('mainColor'))});
+  }
+  document.querySelectorAll('.puppet-block').forEach(block=>{
+    const id = block.id.split('_')[1];
+    const ptag = val('p'+id+'_tag').toUpperCase();
+    if (!/^[A-Z0-9]{3}$/.test(ptag)) return;
+    const cb = document.getElementById('p'+id+'_colorEnable');
+    if (cb && cb.checked){
+      colorEntries.push({tag: ptag, rgb: hexToRgb(val('p'+id+'_color'))});
+    }
+  });
+  if (colorEntries.length){
+    let colorsTxt = 'colors = {\n';
+    colorEntries.forEach(ce=>{
+      colorsTxt += `\t${ce.tag} = {\n\t\tcolor = rgb { ${ce.rgb[0]} ${ce.rgb[1]} ${ce.rgb[2]} }\n\t\tcolor_ui = rgb { ${ce.rgb[0]} ${ce.rgb[1]} ${ce.rgb[2]} }\n\t}\n`;
+    });
+    colorsTxt += '}\n';
+    root.folder('common').folder('countries').file(folder + '_colors.txt', colorsTxt);
   }
 
   const descriptorContent =
