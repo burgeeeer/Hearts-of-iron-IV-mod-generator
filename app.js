@@ -6,7 +6,7 @@ const i18n = {
         title: "HoI4 Mod Generator",
         settings: "Basic Settings",
         modName: "Mod Name (English):",
-        tag: "Tag (Normal or Cosmetic, e.g. GER or BALTIC_ASSEMBLY):",
+        tag: "Tag (Normal or Cosmetic, e.g. GER or BAL_ASSEMBLY):",
         fascism: "Fascism",
         democratic: "Democratic",
         communism: "Communism",
@@ -20,10 +20,10 @@ const i18n = {
         puppetDesc: "Example: Overlord EST, Puppet POL, Name 'Estonian Poland'."
     },
     russian: {
-        title: "Генератор стран HoI4",
+        title: "HoI4 Mod Generator",
         settings: "Базовые настройки",
         modName: "Название мода (на англ):",
-        tag: "Тег (Обычный или Cosmetic, напр. GER или BALTIC_ASSEMBLY):",
+        tag: "Тег (Обычный или Cosmetic, напр. GER или BAL_ASSEMBLY):",
         fascism: "Фашизм",
         democratic: "Демократия",
         communism: "Коммунизм",
@@ -208,6 +208,7 @@ function restoreData(data) {
     });
 }
 
+// ОБНОВЛЕНО: Физический переворот пикселей для корректного отображения в игре
 function canvasToTGA(canvas) {
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
@@ -218,19 +219,26 @@ function canvasToTGA(canvas) {
     const view = new DataView(buffer);
     const uint8 = new Uint8Array(buffer);
 
-    view.setUint8(2, 2); 
+    // Заголовок TGA
+    view.setUint8(2, 2); // Uncompressed true-color
     view.setUint16(12, width, true); 
     view.setUint16(14, height, true); 
     view.setUint8(16, 32); 
-    view.setUint8(17, 0x20); 
+    view.setUint8(17, 0x00); // 0x00 - Origin at bottom-left (стандарт движка)
 
     let offset = 18;
-    for (let i = 0; i < imgData.length; i += 4) {
-        uint8[offset++] = imgData[i + 2]; // B
-        uint8[offset++] = imgData[i + 1]; // G
-        uint8[offset++] = imgData[i];     // R
-        uint8[offset++] = imgData[i + 3]; // A
+    
+    // Записываем пиксели построчно снизу вверх
+    for (let y = height - 1; y >= 0; y--) {
+        for (let x = 0; x < width; x++) {
+            let i = (y * width + x) * 4;
+            uint8[offset++] = imgData[i + 2]; // B
+            uint8[offset++] = imgData[i + 1]; // G
+            uint8[offset++] = imgData[i];     // R
+            uint8[offset++] = imgData[i + 3]; // A
+        }
     }
+    
     return buffer;
 }
 
