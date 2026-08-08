@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,31 +9,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
-    <!-- Модальное окно выбора языка -->
     <div id="lang-modal" class="modal">
         <div class="modal-content">
             <h2>Select Language / Выберите язык</h2>
-            <button onclick="setLanguage('en')">English</button>
-            <button onclick="setLanguage('ru')">Русский</button>
+            <button onclick="setLanguage('english')">English</button>
+            <button onclick="setLanguage('russian')">Русский</button>
         </div>
     </div>
 
-    <div class="container" id="main-content" style="display: none;">
-        <h1 id="title-text">HoI4 Country Mod Builder</h1>
+    <div class="container" id="app-content" style="display: none;">
+        <h1 id="titleText">Генератор стран HoI4</h1>
         
         <div class="section">
-            <label id="mod-name-label">Название мода / Mod Name:</label>
-            <input type="text" id="modName" placeholder="Например: Greater Russia Mod" oninput="saveData()">
-            
-            <label id="tag-label">Тег страны (TAG) / Country Tag:</label>
-            <input type="text" id="countryTag" placeholder="Например: RUS" maxlength="3" oninput="saveData()">
+            <h2 id="settingsText">Базовые настройки</h2>
+            <div class="input-group">
+                <label id="modNameLabel">Название мода (на англ):</label>
+                <input type="text" id="modName" placeholder="MyAwesomeMod" oninput="saveData()">
+            </div>
+            <div class="input-group">
+                <label id="tagLabel">Тег (Обычный или Cosmetic, напр. GER или BALTIC_ASSEMBLY):</label>
+                <input type="text" id="countryTag" placeholder="TAG" oninput="saveData()" style="text-transform: uppercase;">
+            </div>
         </div>
 
-        <div id="ideologies-container">
-            <!-- Сюда динамически загружаются формы для идеологий -->
+        <div id="ideologies-container"></div>
+
+        <!-- Новая секция для марионеток -->
+        <div class="section" id="puppet-section">
+            <h2 id="puppetTitle">Названия марионеток (Опционально)</h2>
+            <p style="font-size: 0.9em; color: #aaa;" id="puppetDesc">Например: Сюзерен EST, Марионетка POL, Название "Эстонская Польша".</p>
+            <div class="input-group">
+                <input type="text" id="puppetOverlord" placeholder="Тег сюзерена (EST)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
+                <input type="text" id="puppetTag" placeholder="Тег марионетки (POL)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
+                <input type="text" id="puppetName" placeholder="Название (Эстонская Польша)" oninput="saveData()">
+            </div>
         </div>
 
-        <button id="generate-btn" onclick="generateMod()">Generate Mod / Создать мод</button>
+        <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
     </div>
 
     <script src="app.js"></script>
