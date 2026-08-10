@@ -36,12 +36,16 @@
 
         <!-- Новая секция для марионеток -->
         <div class="section" id="puppet-section">
-            <h2 id="puppetTitle">Названия марионеток (Опционально)</h2>
-            <p style="font-size: 0.9em; color: #aaa;" id="puppetDesc">Например: Сюзерен EST, Марионетка POL, Название "Эстонская Польша".</p>
+            <h2 id="puppetTitle">Название марионеток (ВСЕ 4 ИДЕОЛОГИИ)</h2>
+            <p style="font-size: 0.9em; color: #aaa;" id="puppetDesc">Например: Сюзерен EST, Марионетка POL.</p>
             <div class="input-group">
-                <input type="text" id="puppetOverlord" placeholder="Тег сюзерена (EST)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
-                <input type="text" id="puppetTag" placeholder="Тег марионетки (POL)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
-                <input type="text" id="puppetName" placeholder="Название (Эстонская Польша)" oninput="saveData()">
+                <input type="text" id="puppetOverlord" placeholder="Тег сюзерена (напр. EST)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
+                <input type="text" id="puppetTag" placeholder="Тег марионетки (напр. POL)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 15px;">
+                
+                <input type="text" id="puppetName_fascism" placeholder="Название (Фашизм)" oninput="saveData()" style="margin-bottom: 5px;">
+                <input type="text" id="puppetName_democratic" placeholder="Название (Демократия)" oninput="saveData()" style="margin-bottom: 5px;">
+                <input type="text" id="puppetName_communism" placeholder="Название (Коммунизм)" oninput="saveData()" style="margin-bottom: 5px;">
+                <input type="text" id="puppetName_neutrality" placeholder="Название (Нейтралитет)" oninput="saveData()">
             </div>
         </div>
 

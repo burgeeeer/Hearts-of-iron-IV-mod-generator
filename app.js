@@ -16,8 +16,8 @@ const i18n = {
         adjName: "Adjective:",
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
-        puppetTitle: "Puppet Names (Optional)",
-        puppetDesc: "Example: Overlord EST, Puppet POL, Name 'Estonian Poland'."
+        puppetTitle: "Puppet Names (ALL 4 IDEOLOGIES)",
+        puppetDesc: "Example: Overlord EST, Puppet POL."
     },
     russian: {
         title: "HoI4 Mod Generator",
@@ -33,8 +33,8 @@ const i18n = {
         adjName: "Прилагательное:",
         uploadFlag: "Загрузить флаг (PNG):",
         genBtn: "Сгенерировать мод",
-        puppetTitle: "Названия марионеток (Опционально)",
-        puppetDesc: "Например: Сюзерен EST, Марионетка POL, Название 'Эстонская Польша'."
+        puppetTitle: "Название марионеток (ВСЕ 4 ИДЕОЛОГИИ)",
+        puppetDesc: "Например: Сюзерен EST, Марионетка POL."
     }
 };
 
@@ -149,7 +149,10 @@ function saveData() {
         puppet: {
             overlord: document.getElementById('puppetOverlord').value.toUpperCase(),
             tag: document.getElementById('puppetTag').value.toUpperCase(),
-            name: document.getElementById('puppetName').value
+            fascism: document.getElementById('puppetName_fascism') ? document.getElementById('puppetName_fascism').value : '',
+            democratic: document.getElementById('puppetName_democratic') ? document.getElementById('puppetName_democratic').value : '',
+            communism: document.getElementById('puppetName_communism') ? document.getElementById('puppetName_communism').value : '',
+            neutrality: document.getElementById('puppetName_neutrality') ? document.getElementById('puppetName_neutrality').value : ''
         },
         ideologies: {}
     };
@@ -177,7 +180,10 @@ function restoreData(data) {
     if (data.puppet) {
         document.getElementById('puppetOverlord').value = data.puppet.overlord || '';
         document.getElementById('puppetTag').value = data.puppet.tag || '';
-        document.getElementById('puppetName').value = data.puppet.name || '';
+        if(document.getElementById('puppetName_fascism')) document.getElementById('puppetName_fascism').value = data.puppet.fascism || '';
+        if(document.getElementById('puppetName_democratic')) document.getElementById('puppetName_democratic').value = data.puppet.democratic || '';
+        if(document.getElementById('puppetName_communism')) document.getElementById('puppetName_communism').value = data.puppet.communism || '';
+        if(document.getElementById('puppetName_neutrality')) document.getElementById('puppetName_neutrality').value = data.puppet.neutrality || '';
     }
 
     ideologies.forEach(ideo => {
@@ -208,7 +214,7 @@ function restoreData(data) {
     });
 }
 
-// ОБНОВЛЕНО: Физический переворот пикселей для корректного отображения в игре
+// Физический переворот пикселей для корректного отображения в игре
 function canvasToTGA(canvas) {
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
@@ -276,11 +282,16 @@ async function generateMod() {
     // Локализация марионеток
     const pupOverlord = document.getElementById('puppetOverlord').value.toUpperCase().trim();
     const pupTag = document.getElementById('puppetTag').value.toUpperCase().trim();
-    const pupName = document.getElementById('puppetName').value.trim();
     
-    if (pupOverlord && pupTag && pupName) {
-        locContent += ` autonomy_${pupOverlord}_${pupTag}:0 "${pupName}"\n`;
-        locContent += ` autonomy_${pupOverlord}_${pupTag}_DEF:0 "${pupName}"\n`;
+    if (pupOverlord && pupTag) {
+        ideologies.forEach(ideo => {
+            const pupName = document.getElementById(`puppetName_${ideo}`).value.trim();
+            if (pupName) {
+                // Строки по стандартам локализации Hearts of Iron IV
+                locContent += ` ${pupTag}_${pupOverlord}_${ideo}_subject:0 "${pupName}"\n`;
+                locContent += ` ${pupTag}_${pupOverlord}_${ideo}_subject_DEF:0 "${pupName}"\n`;
+            }
+        });
     }
 
     const locBlob = new Blob(["\uFEFF" + locContent], { type: "text/plain;charset=utf-8" });
@@ -292,3 +303,4 @@ async function generateMod() {
     const content = await zip.generateAsync({ type: "blob" });
     saveAs(content, `${modName}.zip`);
 }
+
