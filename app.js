@@ -40,17 +40,49 @@ const i18n = {
 
 window.onload = () => {
     const savedData = JSON.parse(localStorage.getItem('hoi4modData'));
+    let langToSet = 'english';
+    
+    // Проверяем, есть ли сохраненный язык
     if (savedData && savedData.lang) {
-        setLanguage(savedData.lang);
-        restoreData(savedData);
+        langToSet = savedData.lang;
     } else {
-        document.getElementById('lang-modal').style.display = 'flex';
+        // Если нет, автоматически определяем язык браузера пользователя
+        const browserLang = navigator.language || navigator.userLanguage;
+        // Если язык начинается на "ru", ставим русский, иначе английский
+        langToSet = browserLang.toLowerCase().startsWith('ru') ? 'russian' : 'english';
+    }
+
+    document.getElementById('app-content').style.display = 'block';
+    setLanguage(langToSet);
+    
+    if (savedData) {
+        restoreData(savedData);
     }
 };
 
+function toggleLanguage() {
+    // Сохраняем текущие данные перед перерисовкой форм, чтобы они не стерлись
+    saveData(); 
+    
+    const newLang = currentLang === 'english' ? 'russian' : 'english';
+    setLanguage(newLang);
+    
+    // Восстанавливаем данные обратно в новые формы
+    const savedData = JSON.parse(localStorage.getItem('hoi4modData'));
+    if (savedData) {
+        restoreData(savedData);
+    }
+}
+
 function setLanguage(lang) {
     currentLang = lang;
-    document.getElementById('lang-modal').style.display = 'none';
+    
+    // Обновляем текст на кнопке переключения
+    const toggleBtn = document.getElementById('langToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.innerText = lang === 'english' ? 'RU' : 'EN';
+    }
+    
     document.getElementById('app-content').style.display = 'block';
     
     document.getElementById('titleText').innerText = i18n[lang].title;

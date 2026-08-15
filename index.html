@@ -9,13 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
-    <div id="lang-modal" class="modal">
-        <div class="modal-content">
-            <h2>Select Language / Выберите язык</h2>
-            <button onclick="setLanguage('english')">English</button>
-            <button onclick="setLanguage('russian')">Русский</button>
-        </div>
-    </div>
+    <button id="langToggleBtn" class="lang-switch-btn" onclick="toggleLanguage()">RU</button>
 
     <div class="container" id="app-content" style="display: none;">
         <h1 id="titleText">Генератор стран HoI4</h1>
@@ -34,7 +28,6 @@
 
         <div id="ideologies-container"></div>
 
-        <!-- Новая секция для марионеток -->
         <div class="section" id="puppet-section">
             <h2 id="puppetTitle">Название марионеток (ВСЕ 4 ИДЕОЛОГИИ)</h2>
             <p style="font-size: 0.9em; color: #aaa;" id="puppetDesc">Например: Сюзерен EST, Марионетка POL.</p>
@@ -55,3 +48,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
