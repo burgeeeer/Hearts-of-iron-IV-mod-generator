@@ -46,10 +46,16 @@ window.onload = () => {
     if (savedData && savedData.lang) {
         langToSet = savedData.lang;
     } else {
-        // Если нет, автоматически определяем язык браузера пользователя
-        const browserLang = navigator.language || navigator.userLanguage;
-        // Если язык начинается на "ru", ставим русский, иначе английский
-        langToSet = browserLang.toLowerCase().startsWith('ru') ? 'russian' : 'english';
+        // Сначала проверяем параметр URL (?lang=en / ?lang=ru) для sitemap/SEO
+        const urlLang = new URLSearchParams(window.location.search).get('lang');
+        if (urlLang === 'ru' || urlLang === 'en') {
+            langToSet = urlLang === 'ru' ? 'russian' : 'english';
+        } else {
+            // Если нет, автоматически определяем язык браузера пользователя
+            const browserLang = navigator.language || navigator.userLanguage;
+            // Если язык начинается на "ru", ставим русский, иначе английский
+            langToSet = browserLang.toLowerCase().startsWith('ru') ? 'russian' : 'english';
+        }
     }
 
     document.getElementById('app-content').style.display = 'block';
