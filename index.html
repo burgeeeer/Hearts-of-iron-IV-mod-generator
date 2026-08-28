@@ -22,7 +22,14 @@
             </div>
             <div class="input-group">
                 <label id="tagLabel">Тег (Обычный или Cosmetic, напр. GER или BALTIC_ASSEMBLY):</label>
-                <input type="text" id="countryTag" placeholder="TAG" oninput="saveData()" style="text-transform: uppercase;">
+                <input type="text" id="countryTag" placeholder="TAG" oninput="saveData()">
+            </div>
+            <div class="input-group">
+                <label id="tagTypeLabel">Тип тега:</label>
+                <select id="tagType" onchange="saveData()">
+                    <option value="normal">Обычный тэг</option>
+                    <option value="cosmetic">Косметический тэг</option>
+                </select>
             </div>
         </div>
 

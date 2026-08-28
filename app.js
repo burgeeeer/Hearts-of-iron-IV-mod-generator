@@ -7,6 +7,9 @@ const i18n = {
         settings: "Basic Settings",
         modName: "Mod Name (English):",
         tag: "Tag (Normal or Cosmetic, e.g. GER or BAL_UNIFIED):",
+        tagType: "Tag Type:",
+        tagNormal: "Normal Tag",
+        tagCosmetic: "Cosmetic Tag",
         fascism: "Fascism",
         democratic: "Democratic",
         communism: "Communism",
@@ -24,6 +27,9 @@ const i18n = {
         settings: "Базовые настройки",
         modName: "Название мода (на англ):",
         tag: "Тег (Обычный или Cosmetic, напр. GER или BAL_UNIFIED):",
+        tagType: "Тип тега:",
+        tagNormal: "Обычный тэг",
+        tagCosmetic: "Косметический тэг",
         fascism: "Фашизм",
         democratic: "Демократия",
         communism: "Коммунизм",
@@ -95,6 +101,12 @@ function setLanguage(lang) {
     document.getElementById('settingsText').innerText = i18n[lang].settings;
     document.getElementById('modNameLabel').innerText = i18n[lang].modName;
     document.getElementById('tagLabel').innerText = i18n[lang].tag;
+    document.getElementById('tagTypeLabel').innerText = i18n[lang].tagType;
+    const tagTypeSel = document.getElementById('tagType');
+    if (tagTypeSel) {
+        tagTypeSel.querySelector('option[value="normal"]').innerText = i18n[lang].tagNormal;
+        tagTypeSel.querySelector('option[value="cosmetic"]').innerText = i18n[lang].tagCosmetic;
+    }
     document.getElementById('generateBtn').innerText = i18n[lang].genBtn;
     document.getElementById('puppetTitle').innerText = i18n[lang].puppetTitle;
     document.getElementById('puppetDesc').innerText = i18n[lang].puppetDesc;
@@ -184,6 +196,7 @@ function saveData() {
         lang: currentLang,
         modName: document.getElementById('modName').value,
         tag: document.getElementById('countryTag').value.toUpperCase(),
+        tagType: document.getElementById('tagType') ? document.getElementById('tagType').value : 'normal',
         puppet: {
             overlord: document.getElementById('puppetOverlord').value.toUpperCase(),
             tag: document.getElementById('puppetTag').value.toUpperCase(),
@@ -214,6 +227,9 @@ function saveData() {
 function restoreData(data) {
     document.getElementById('modName').value = data.modName || '';
     document.getElementById('countryTag').value = data.tag || '';
+    if (document.getElementById('tagType')) {
+        document.getElementById('tagType').value = data.tagType || 'normal';
+    }
     
     if (data.puppet) {
         document.getElementById('puppetOverlord').value = data.puppet.overlord || '';
@@ -333,7 +349,9 @@ async function generateMod() {
     }
 
     const locBlob = new Blob(["\uFEFF" + locContent], { type: "text/plain;charset=utf-8" });
-    locFolder.file(`countries_l_${currentLang}.yml`, locBlob);
+    const tagType = document.getElementById('tagType') ? document.getElementById('tagType').value : 'normal';
+    const locFileName = tagType === 'cosmetic' ? `countries_cosmetic_l_${currentLang}.yml` : `countries_l_${currentLang}.yml`;
+    locFolder.file(locFileName, locBlob);
 
     const modFileContent = `version="1.0"\ntags={\n\t"Alternative History"\n\t"Graphics"\n}\nname="${modName}"\nsupported_version="*"\npath="mod/${modName}"`;
     zip.file(`${modName}.mod`, modFileContent);
