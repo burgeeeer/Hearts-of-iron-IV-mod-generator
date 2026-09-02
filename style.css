@@ -20,7 +20,10 @@ body {
     margin: 0 auto;
 }
 
-h1, h2 { color: var(--accent); margin-top: 0; }
+h1, h2 {
+    color: var(--accent);
+    margin-top: 0;
+}
 
 .section {
     background: var(--panel-bg);
@@ -32,38 +35,106 @@ h1, h2 { color: var(--accent); margin-top: 0; }
     width: 100%;
 }
 
-.input-group { margin-bottom: 15px; display: flex; flex-direction: column; }
-label { margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+.section-desc {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-top: -6px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
 
-input[type="text"] {
-    padding: 10px; background: #18181d; border: 1px solid var(--border);
-    color: white; border-radius: 4px; width: 100%; box-sizing: border-box;
+.section-note {
+    font-size: 0.85em;
+    color: #999;
+    margin: 12px 0 0;
+    line-height: 1.45;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 10px;
+    background: #18181d;
+    border: 1px solid var(--border);
+    color: white;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    margin: 0;
 }
 
 select {
-    padding: 10px; background: #18181d; border: 1px solid var(--border);
-    color: white; border-radius: 4px; width: 100%; box-sizing: border-box;
-    font-family: inherit; font-size: 14px; cursor: pointer;
-    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    padding: 10px;
+    background: #18181d;
+    border: 1px solid var(--border);
+    color: white;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
-select:focus {
-    outline: none; border-color: var(--accent);
+select:focus,
+input:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
 select option {
-    background: #18181d; color: white;
+    background: #18181d;
+    color: white;
 }
 
 button {
-    background-color: var(--accent); color: #000; border: none;
-    padding: 12px 24px; font-size: 16px; font-weight: bold;
-    cursor: pointer; border-radius: 4px; transition: background 0.2s;
+    background-color: var(--accent);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, transform 0.1s;
 }
 
-button:hover { background-color: #f0a500; }
+button:hover {
+    background-color: #f0a500;
+}
 
-#generateBtn { width: 100%; font-size: 18px; margin-bottom: 40px; }
+button:active {
+    transform: translateY(1px);
+}
+
+#generateBtn {
+    width: 100%;
+    font-size: 18px;
+    margin-bottom: 40px;
+}
 
 .ideology-block {
     display: grid;
@@ -105,10 +176,67 @@ canvas {
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAOklEQVQYV2NkYGAwYcSPQPqfAQvAlOARxKUBVw5SgS4JV4IhiU0RWRZDAp8isiyGBD5FZFkMCXyKyDIARbM/8X2cK58AAAAASUVORK5CYII=');
 }
 
-@media (max-width: 768px) {
-    .ideology-block {
-        grid-template-columns: 1fr; 
-    }
+.dynamic-card {
+    background: #202027;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 12px;
+}
+
+.dynamic-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.dynamic-card-header strong {
+    color: #ddd;
+    font-size: 15px;
+}
+
+.dynamic-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.dynamic-grid.two-col {
+    grid-template-columns: 1fr 1fr;
+}
+
+.dynamic-grid.three-col {
+    grid-template-columns: 0.7fr 1fr 1.6fr;
+}
+
+.add-btn {
+    width: 100%;
+    margin-top: 2px;
+    background: #3a3a48;
+    color: var(--text-color);
+    border: 1px solid var(--border);
+}
+
+.add-btn:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.secondary-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.danger-btn {
+    background: #4a2525;
+    color: #f0cfcf;
+    border: 1px solid #6a3a3a;
+}
+
+.danger-btn:hover {
+    background: #8b3a3a;
+    color: white;
 }
 
 /* Кнопка смены языка */
@@ -134,10 +262,19 @@ canvas {
 }
 
 @media (max-width: 768px) {
+    .ideology-block,
+    .dynamic-grid.two-col,
+    .dynamic-grid.three-col {
+        grid-template-columns: 1fr;
+    }
+
+    .dynamic-card-header {
+        align-items: flex-start;
+    }
+
     .lang-switch-btn {
         top: 10px;
         right: 10px;
         padding: 6px 12px;
     }
 }
-

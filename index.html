@@ -13,7 +13,7 @@
 
     <div class="container" id="app-content" style="display: none;">
         <h1 id="titleText">Генератор стран HoI4</h1>
-        
+
         <div class="section">
             <h2 id="settingsText">Базовые настройки</h2>
             <div class="input-group">
@@ -35,18 +35,33 @@
 
         <div id="ideologies-container"></div>
 
+        <div class="section" id="state-name-section">
+            <h2 id="stateTitle">Названия регионов по контролирующей стране</h2>
+            <p class="section-desc" id="stateDesc">Переименовывай регион, когда им управляет конкретная страна.</p>
+
+            <div id="state-name-rules-container"></div>
+
+            <button type="button" class="add-btn" id="stateAddBtn" onclick="addStateNameRule()">＋ Добавить название региона</button>
+            <p class="section-note" id="stateDefaultNote">Исходное название восстанавливается при переходе под контроль другой страны.</p>
+        </div>
+
+
+        <div class="section" id="city-name-section">
+            <h2 id="cityTitle">Названия городов по контролирующей стране</h2>
+            <p class="section-desc" id="cityDesc">Переименовывай город / победную точку, когда его провинцией управляет конкретная страна.</p>
+
+            <div id="city-name-rules-container"></div>
+
+            <button type="button" class="add-btn" id="cityAddBtn" onclick="addCityNameRule()">＋ Добавить название города</button>
+        </div>
+
         <div class="section" id="puppet-section">
-            <h2 id="puppetTitle">Название марионеток (ВСЕ 4 ИДЕОЛОГИИ)</h2>
-            <p style="font-size: 0.9em; color: #aaa;" id="puppetDesc">Например: Сюзерен EST, Марионетка POL.</p>
-            <div class="input-group">
-                <input type="text" id="puppetOverlord" placeholder="Тег сюзерена (напр. EST)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 5px;">
-                <input type="text" id="puppetTag" placeholder="Тег марионетки (напр. POL)" maxlength="3" oninput="saveData()" style="text-transform: uppercase; margin-bottom: 15px;">
-                
-                <input type="text" id="puppetName_fascism" placeholder="Название (Фашизм)" oninput="saveData()" style="margin-bottom: 5px;">
-                <input type="text" id="puppetName_democratic" placeholder="Название (Демократия)" oninput="saveData()" style="margin-bottom: 5px;">
-                <input type="text" id="puppetName_communism" placeholder="Название (Коммунизм)" oninput="saveData()" style="margin-bottom: 5px;">
-                <input type="text" id="puppetName_neutrality" placeholder="Название (Нейтралитет)" oninput="saveData()">
-            </div>
+            <h2 id="puppetTitle">Названия марионеток</h2>
+            <p class="section-desc" id="puppetDesc">Добавляй сколько угодно правил для разных марионеток.</p>
+
+            <div id="puppet-rules-container"></div>
+
+            <button type="button" class="add-btn" id="puppetAddBtn" onclick="addPuppetRule()">＋ Добавить марионетку</button>
         </div>
 
         <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
@@ -55,4 +70,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
