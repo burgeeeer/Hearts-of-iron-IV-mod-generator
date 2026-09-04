@@ -35,6 +35,71 @@ h1, h2 {
     width: 100%;
 }
 
+.section.collapsible .section-body {
+    overflow: hidden;
+    max-height: 8000px;
+    transition: max-height 0.3s ease;
+}
+
+.section.collapsible.collapsed .section-body {
+    max-height: 0;
+}
+
+.section.collapsible .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.section.collapsible .section-head h2 {
+    margin: 0;
+}
+
+.section.collapsible .section-head::after {
+    content: '\25BC';
+    font-size: 12px;
+    color: #888;
+    transition: transform 0.3s ease;
+}
+
+.section.collapsible.collapsed .section-head::after {
+    transform: rotate(-90deg);
+}
+
+.country-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+}
+
+.country-header::after {
+    content: '\25BC';
+    font-size: 12px;
+    color: #888;
+    transition: transform 0.3s ease;
+}
+
+.collapsed .country-header::after {
+    transform: rotate(-90deg);
+}
+
+.country-card.collapsed > *:not(.country-header) {
+    display: none;
+}
+
+.country-header strong {
+    color: #ddd;
+    font-size: 15px;
+}
+
 .section-desc {
     font-size: 0.9em;
     color: #aaa;
@@ -213,6 +278,7 @@ canvas {
 .add-btn {
     width: 100%;
     margin-top: 2px;
+    margin-bottom: 10px;
     background: #3a3a48;
     color: var(--text-color);
     border: 1px solid var(--border);
@@ -239,6 +305,71 @@ canvas {
     color: white;
 }
 
+
+.puppet-ideo-head {
+    margin: 14px 0 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.puppet-ideology-section {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #202027;
+}
+
+.puppet-ideology-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+    background: #292934;
+}
+
+.puppet-ideology-header strong {
+    color: var(--accent);
+    font-size: 15px;
+}
+
+.puppet-ideology-arrow {
+    color: #888;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.puppet-ideology-section.collapsed .puppet-ideology-arrow {
+    transform: rotate(-90deg);
+}
+
+.puppet-ideology-body {
+    padding: 14px;
+    max-height: 5000px;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+}
+
+.puppet-ideology-section.collapsed .puppet-ideology-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.puppet-autonomy-title {
+    margin: 14px 0 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    color: #aaa;
+    font-size: 13px;
+    font-weight: bold;
+}
+
 /* Кнопка смены языка */
 .lang-switch-btn {
     position: absolute;
@@ -261,8 +392,44 @@ canvas {
     color: #000;
 }
 
+.country-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.ideology-block h3 {
+    margin: 0 0 10px;
+    color: var(--accent);
+    font-size: 15px;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 16px 0 24px;
+    font-size: 11px;
+    color: #666;
+}
+
+.site-footer a {
+    color: #666;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: #aaa;
+    text-decoration: underline;
+}
+
+.fsep {
+    margin: 0 6px;
+    opacity: .4;
+}
+
 @media (max-width: 768px) {
     .ideology-block,
+    .country-meta,
     .dynamic-grid.two-col,
     .dynamic-grid.three-col {
         grid-template-columns: 1fr;
