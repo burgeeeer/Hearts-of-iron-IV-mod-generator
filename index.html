@@ -74,8 +74,266 @@
 
     <script src="app.js"></script>
     <script src="site-extra.js"></script>
-    <script src="generator-fixes.js"></script>
-    <script src="puppet-flags-fix.js"></script>
-    <script src="puppet-overlord-input-fix.js"></script>
+    <script>
+    (function () {
+        var COMMON_LEVELS = ['integrated_puppet', 'puppet', 'colony', 'dominion'];
+        var SPECIAL_LEVELS = {
+            GER: ['satellite', 'reichsprotectorate', 'reichskommissariat'],
+            JAP: ['wtt_imperial_subject', 'wtt_imperial_protectorate', 'wtt_imperial_associate']
+        };
+        var LABELS = {
+            english: {
+                common: 'Common autonomy levels', specialGer: 'Germany-specific levels', specialJap: 'Japan-specific levels', hint: 'Country-specific autonomy levels',
+                satellite: 'Name (Satellite):', reichsprotectorate: 'Name (Reichsprotectorate):', reichskommissariat: 'Name (Reichskommissariat):',
+                wtt_imperial_subject: 'Name (Imperial Subject):', wtt_imperial_protectorate: 'Name (Imperial Protectorate):', wtt_imperial_associate: 'Name (Imperial Associate):'
+            },
+            russian: {
+                common: 'Общие уровни автономии', specialGer: 'Уникальные уровни Германии', specialJap: 'Уникальные уровни Японии', hint: 'Уникальные уровни автономии страны',
+                satellite: 'Название (Сателлит):', reichsprotectorate: 'Название (Рейхспротекторат):', reichskommissariat: 'Название (Рейхскомиссариат):',
+                wtt_imperial_subject: 'Название (Имперский субъект):', wtt_imperial_protectorate: 'Название (Имперский протекторат):', wtt_imperial_associate: 'Название (Имперский ассоциированный):'
+            }
+        };
+
+        function ensureSpecialStorage() {
+            for (var p = 0; p < puppetRules.length; p++) {
+                var r = puppetRules[p];
+                if (!r || !r.ideologies) continue;
+                for (var i = 0; i < ideologies.length; i++) {
+                    var id = ideologies[i];
+                    if (!r.ideologies[id]) r.ideologies[id] = { name: '', img: null, autonomy: {}, specialAutonomy: {} };
+                    if (!r.ideologies[id].autonomy) r.ideologies[id].autonomy = {};
+                    if (!r.ideologies[id].specialAutonomy) r.ideologies[id].specialAutonomy = {};
+                }
+            }
+        }
+
+        function levelsFor(overlord) {
+            var key = String(overlord || '').toUpperCase().trim();
+            return COMMON_LEVELS.concat(SPECIAL_LEVELS[key] || []);
+        }
+
+        function updateOverlordOnly(idx, value) {
+            ensureSpecialStorage();
+            puppetRules[idx].overlord = String(value || '').toUpperCase();
+            saveData();
+        }
+
+        function addSpecialGroup(body, idx, ideo, data, levels, title) {
+            if (!levels.length) return;
+            var lang = LABELS[currentLang] || LABELS.english;
+            var wrap = document.createElement('div');
+            var h = document.createElement('div');
+            h.className = 'puppet-autonomy-title special-autonomy-title';
+            h.textContent = title;
+            wrap.appendChild(h);
+
+            var grid = document.createElement('div');
+            grid.className = 'dynamic-grid two-col';
+            for (var i = 0; i < levels.length; i++) {
+                (function (level) {
+                    var grp = document.createElement('div');
+                    grp.className = 'input-group';
+                    var lab = document.createElement('label');
+                    lab.textContent = lang[level] || level;
+                    var inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.value = data.specialAutonomy[level] || '';
+                    inp.oninput = function () {
+                        puppetRules[idx].ideologies[ideo].specialAutonomy[level] = this.value;
+                        saveData();
+                    };
+                    grp.appendChild(lab);
+                    grp.appendChild(inp);
+                    grid.appendChild(grp);
+                })(levels[i]);
+            }
+            wrap.appendChild(grid);
+            body.appendChild(wrap);
+        }
+
+        function renderCombinedPuppets() {
+            var box = document.getElementById('puppet-rules-container');
+            if (!box) return;
+            ensureSpecialStorage();
+            box.innerHTML = '';
+            var t = i18n[currentLang];
+
+            for (var idx = 0; idx < puppetRules.length; idx++) {
+                (function (pi) {
+                    var r = puppetRules[pi];
+                    var card = document.createElement('div');
+                    card.className = 'dynamic-card';
+
+                    var hdr = document.createElement('div');
+                    hdr.className = 'dynamic-card-header';
+                    var st = document.createElement('strong');
+                    st.textContent = currentLang === 'english' ? 'Puppet rule #' + (pi + 1) : 'Правило марионетки №' + (pi + 1);
+                    hdr.appendChild(st);
+                    if (puppetRules.length > 1) {
+                        var rb = document.createElement('button');
+                        rb.type = 'button'; rb.className = 'secondary-btn danger-btn'; rb.textContent = t.remove;
+                        rb.onclick = function () { removePuppetRule(pi); };
+                        hdr.appendChild(rb);
+                    }
+                    card.appendChild(hdr);
+
+                    var meta = document.createElement('div');
+                    meta.className = 'dynamic-grid three-col';
+
+                    var og = document.createElement('div');
+                    og.className = 'input-group';
+                    var ol = document.createElement('label'); ol.textContent = t.puppetOverlord; og.appendChild(ol);
+                    var oi = document.createElement('input'); oi.type = 'text'; oi.value = r.overlord || '';
+                    oi.oninput = function () { updateOverlordOnly(pi, this.value); };
+                    oi.onchange = function () { renderCombinedPuppets(); };
+                    og.appendChild(oi); meta.appendChild(og);
+
+                    var tg = document.createElement('div');
+                    tg.className = 'input-group';
+                    var tl = document.createElement('label'); tl.textContent = t.puppetTag; tg.appendChild(tl);
+                    var ti = document.createElement('input'); ti.type = 'text'; ti.value = r.tag || '';
+                    ti.oninput = function () { puppetRules[pi].tag = this.value.toUpperCase(); saveData(); };
+                    tg.appendChild(ti); meta.appendChild(tg);
+
+                    var mg = document.createElement('div'); mg.className = 'input-group';
+                    var ml = document.createElement('label'); ml.textContent = t.puppetMode; mg.appendChild(ml);
+                    var ms = document.createElement('select');
+                    var os = document.createElement('option'); os.value = 'short'; os.textContent = t.puppetModeShort;
+                    var oe = document.createElement('option'); oe.value = 'expanded'; oe.textContent = t.puppetModeExpanded;
+                    os.selected = !r.mode || r.mode === 'short'; oe.selected = r.mode === 'expanded'; ms.appendChild(os); ms.appendChild(oe);
+                    ms.onchange = function () { puppetRules[pi].mode = this.value; saveData(); renderCombinedPuppets(); };
+                    mg.appendChild(ms); meta.appendChild(mg);
+                    card.appendChild(meta);
+
+                    if (!r.mode || r.mode === 'short') {
+                        for (var si = 0; si < ideologies.length; si++) {
+                            (function (ideo) {
+                                var d = r.ideologies[ideo] || { name:'', img:null, autonomy:{}, specialAutonomy:{} };
+                                var head = document.createElement('div'); head.className = 'puppet-ideo-head'; head.textContent = t[ideo]; card.appendChild(head);
+                                var grp = document.createElement('div'); grp.className = 'input-group';
+                                var lab = document.createElement('label'); lab.textContent = t.puppetShortName; grp.appendChild(lab);
+                                var inp = document.createElement('input'); inp.type = 'text'; inp.value = d.name || '';
+                                inp.oninput = function () { puppetRules[pi].ideologies[ideo].name = this.value; puppetRules[pi].shortName = this.value; saveData(); };
+                                grp.appendChild(inp); card.appendChild(grp);
+                                addPuppetIdeologyFlag(card, pi, ideo, r, t);
+                            })(ideologies[si]);
+                        }
+                    } else {
+                        var specials = SPECIAL_LEVELS[String(r.overlord || '').toUpperCase().trim()] || [];
+                        for (var ii = 0; ii < ideologies.length; ii++) {
+                            (function (ideo) {
+                                var d = r.ideologies[ideo] || { name:'', img:null, autonomy:{}, specialAutonomy:{} };
+                                if (!d.autonomy) d.autonomy = {}; if (!d.specialAutonomy) d.specialAutonomy = {};
+                                var sec = document.createElement('div'); sec.className = 'puppet-ideology-section';
+                                var head = document.createElement('div'); head.className = 'puppet-ideology-header';
+                                var title = document.createElement('strong'); title.textContent = t[ideo];
+                                var arrow = document.createElement('span'); arrow.className='puppet-ideology-arrow'; arrow.textContent='▼';
+                                head.appendChild(title); head.appendChild(arrow);
+                                var body = document.createElement('div'); body.className='puppet-ideology-body';
+                                head.onclick = function(){ sec.classList.toggle('collapsed'); };
+                                var ng = document.createElement('div'); ng.className='input-group';
+                                var nl = document.createElement('label'); nl.textContent=t.puppetNameForIdeology; ng.appendChild(nl);
+                                var ni = document.createElement('input'); ni.type='text'; ni.value=d.name || '';
+                                ni.oninput=function(){ puppetRules[pi].ideologies[ideo].name=this.value; saveData(); }; ng.appendChild(ni); body.appendChild(ng);
+                                addPuppetIdeologyFlag(body, pi, ideo, r, t);
+                                var ah = document.createElement('div'); ah.className='puppet-autonomy-title'; ah.textContent=(LABELS[currentLang]||LABELS.english).common; body.appendChild(ah);
+                                var grid = document.createElement('div'); grid.className='dynamic-grid two-col';
+                                for (var ai=0; ai<COMMON_LEVELS.length; ai++) {
+                                    (function(level){
+                                        var g=document.createElement('div'); g.className='input-group';
+                                        var l=document.createElement('label'); var key='autonomy'+level.charAt(0).toUpperCase()+level.slice(1); l.textContent=t[key]||level; g.appendChild(l);
+                                        var x=document.createElement('input'); x.type='text'; x.value=d.autonomy[level]||'';
+                                        x.oninput=function(){ puppetRules[pi].ideologies[ideo].autonomy[level]=this.value; saveData(); }; g.appendChild(x); grid.appendChild(g);
+                                    })(COMMON_LEVELS[ai]);
+                                }
+                                body.appendChild(grid);
+                                if (specials.length) {
+                                    var titleText = specials[0] === 'satellite' ? (LABELS[currentLang]||LABELS.english).specialGer : (LABELS[currentLang]||LABELS.english).specialJap;
+                                    addSpecialGroup(body, pi, ideo, d, specials, titleText);
+                                }
+                                sec.appendChild(head); sec.appendChild(body); card.appendChild(sec);
+                            })(ideologies[ii]);
+                        }
+                    }
+                    box.appendChild(card);
+                })(idx);
+            }
+        }
+
+        window.renderPuppetRules = renderCombinedPuppets;
+
+        // The previous implementation rebuilt the form while typing the overlord tag.
+        // Keep the input alive until the user finishes typing; onchange only refreshes the special fields.
+
+        var baseGenerate = window.generateMod;
+        window.generateMod = async function () {
+            // app.js already writes the canonical subject flag names:
+            // PUPPET_OVERLORD_IDEOLOGY.tga. We add the non-ideology fallback too,
+            // because HOI4 accepts both specific and fallback flag variants.
+            var captured = null, capturedName = '';
+            var oldSaveAs = window.saveAs;
+            window.saveAs = function(blob, name){ captured = blob; capturedName = name || 'CustomMod.zip'; };
+            try { await baseGenerate(); } finally { window.saveAs = oldSaveAs; }
+            if (!captured) return;
+
+            try {
+                var zip = await JSZip.loadAsync(captured);
+                var rootName = (document.getElementById('modName').value.trim() || 'CustomMod');
+                var root = zip.folder(rootName);
+                var flags = root.folder('gfx/flags');
+                var medium = root.folder('gfx/flags/medium');
+                var small = root.folder('gfx/flags/small');
+
+                for (var pi = 0; pi < puppetRules.length; pi++) {
+                    var p = puppetRules[pi];
+                    var puppet = String(p.tag || '').toUpperCase().trim();
+                    var overlord = String(p.overlord || '').toUpperCase().trim();
+                    if (!puppet || !overlord) continue;
+                    for (var ii = 0; ii < ideologies.length; ii++) {
+                        var ideo = ideologies[ii];
+                        var cn = document.getElementById('p' + pi + '_' + ideo + '_cn');
+                        var cm = document.getElementById('p' + pi + '_' + ideo + '_cm');
+                        var cs = document.getElementById('p' + pi + '_' + ideo + '_cs');
+                        if (!cn || !cn.getAttribute('data-img')) continue;
+                        var canonical = puppet + '_' + overlord + '_' + ideo + '.tga';
+                        var canonicalMedium = cm ? canvasToTGA(cm) : null;
+                        var canonicalSmall = cs ? canvasToTGA(cs) : null;
+                        flags.file(canonical, canvasToTGA(cn));
+                        if (cm) medium.file(canonical, canonicalMedium);
+                        if (cs) small.file(canonical, canonicalSmall);
+
+                        // Fallback specific-overlord flag without ideology.
+                        var fallback = puppet + '_' + overlord + '.tga';
+                        flags.file(fallback, canvasToTGA(cn));
+                        if (cm) medium.file(fallback, canonicalMedium);
+                        if (cs) small.file(fallback, canonicalSmall);
+                    }
+                }
+
+                // Keep state/city localisation in the language selected by the user.
+                if ((typeof stateNameRules !== 'undefined' && stateNameRules.length) || (typeof cityNameRules !== 'undefined' && cityNameRules.length)) {
+                    var lang = currentLang === 'russian' ? 'russian' : 'english';
+                    var sl = ['l_' + lang + ':'];
+                    var vl = ['l_' + lang + ':'];
+                    for (var s=0; s<stateNameRules.length; s++) {
+                        var sr=stateNameRules[s]; var sid=String(sr.stateId||'').trim(); var st=String(sr.controllerTag||'').toUpperCase().trim(); var sn=String(sr.name||'').trim();
+                        if (/^\d+$/.test(sid)&&st&&sn) addLocLine(sl, st+'_STATE_'+sid, sn);
+                    }
+                    for (var v=0; v<cityNameRules.length; v++) {
+                        var vr=cityNameRules[v]; var vs=String(vr.stateId||'').trim(); var vp=String(vr.provinceId||'').trim(); var vt=String(vr.controllerTag||'').toUpperCase().trim(); var vn=String(vr.name||'').trim();
+                        if (/^\d+$/.test(vs)&&/^\d+$/.test(vp)&&vt&&vn) addLocLine(vl, vt+'_VICTORY_POINTS_'+vp, vn);
+                    }
+                    if (sl.length>1) root.folder('localisation/replace/'+lang).file('states_names_l_'+lang+'.yml', new Blob(['\uFEFF'+sl.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}));
+                    if (vl.length>1) root.folder('localisation/replace/'+lang).file('victory_points_l_'+lang+'.yml', new Blob(['\uFEFF'+vl.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}));
+                }
+
+                var result = await zip.generateAsync({type:'blob'});
+                oldSaveAs(result, capturedName);
+            } catch (e) {
+                oldSaveAs(captured, capturedName);
+            }
+        };
+    })();
+    </script>
 </body>
 </html>
