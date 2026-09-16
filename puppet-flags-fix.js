@@ -1,4 +1,4 @@
-/* Puppet cosmetic-tag and flag compatibility fix. */
+/* Puppet cosmetic-tag, flag, and city-name compatibility fix. */
 (function () {
     var COMMON_LEVELS = ['integrated_puppet', 'puppet', 'colony', 'dominion'];
     var SPECIAL_LEVELS = {
@@ -9,6 +9,10 @@
     function levelsFor(overlord) {
         var key = String(overlord || '').toUpperCase().trim();
         return COMMON_LEVELS.concat(SPECIAL_LEVELS[key] || []);
+    }
+
+    function addLoc(lines, key, value) {
+        lines.push(' ' + key + ':0 "' + String(value).replace(/"/g, '\\"') + '"');
     }
 
     function allFlagNames(tag, overlord, ideology) {
@@ -40,10 +44,6 @@
 
             var levels = levelsFor(overlord);
 
-            // Apply the generic overlord cosmetic tag immediately when the
-            // country becomes a puppet. This is what actually makes the
-            // TAG_OVERLORD flag/name active; merely creating the .tga file
-            // does not activate a cosmetic tag.
             lines.push('    on_puppet = {');
             lines.push('        effect = {');
             lines.push('            if = {');
@@ -53,9 +53,6 @@
             lines.push('        }');
             lines.push('    }');
 
-            // Re-select the generated autonomy cosmetic tag whenever the
-            // subject changes autonomy. The game exposes ROOT=subject and
-            // FROM=overlord for this on_action.
             lines.push('    on_subject_autonomy_level_change = {');
             lines.push('        effect = {');
             lines.push('            if = {');
@@ -70,7 +67,6 @@
             lines.push('        }');
             lines.push('    }');
 
-            // Remove our cosmetic tag when the subject is freed.
             lines.push('    on_subject_free = {');
             lines.push('        effect = {');
             lines.push('            if = {');
@@ -83,6 +79,32 @@
 
         lines.push('}');
         return lines.join('\n');
+    }
+
+    function addCityLocalization(root) {
+        if (!cityNameRules || !cityNameRules.length) return;
+
+        var lang = currentLang === 'russian' ? 'russian' : 'english';
+        var lines = ['l_' + lang + ':'];
+        var valid = false;
+
+        for (var i = 0; i < cityNameRules.length; i++) {
+            var r = cityNameRules[i];
+            var stateId = String(r.stateId || '').trim();
+            var provinceId = String(r.provinceId || '').trim();
+            var tag = String(r.controllerTag || '').toUpperCase().trim();
+            var name = String(r.name || '').trim();
+            if (!/^\\d+$/.test(stateId) || !/^\\d+$/.test(provinceId) || !tag || !name) continue;
+            addLoc(lines, tag + '_VICTORY_POINTS_' + provinceId, name);
+            valid = true;
+        }
+
+        if (valid) {
+            root.folder('localisation/replace/' + lang).file(
+                'victory_points_generated_l_' + lang + '.yml',
+                new Blob(['\\uFEFF' + lines.join('\\n') + '\\n'], { type: 'text/plain;charset=utf-8' })
+            );
+        }
     }
 
     var baseGenerate = window.generateMod;
@@ -141,19 +163,19 @@
                 }
             }
 
-            // Make the generated cosmetic tags active. This is required for
-            // custom puppet flags; localization/flag files alone do not apply
-            // a cosmetic tag to a subject.
             var onActions = buildCosmeticOnActions();
             if (onActions) {
                 root.folder('common/on_actions').file('puppet_cosmetic_tags.txt', onActions + '\n');
             }
 
+            // The original generator always wrote city localization to Russian.
+            // Add the selected language too, so English mode actually resolves
+            // TAG_VICTORY_POINTS_<province> in the generated on_action.
+            addCityLocalization(root);
+
             var result = await zip.generateAsync({ type: 'blob' });
             originalSaveAs(result, capturedName);
         } catch (e) {
-            // Do not prevent normal generation if the optional compatibility
-            // pass fails.
             originalSaveAs(captured, capturedName);
         }
     };
