@@ -305,7 +305,6 @@ canvas {
     color: white;
 }
 
-
 .puppet-ideo-head {
     margin: 14px 0 8px;
     padding-top: 10px;
@@ -370,7 +369,6 @@ canvas {
     font-weight: bold;
 }
 
-/* Кнопка смены языка */
 .lang-switch-btn {
     position: absolute;
     top: 15px;
@@ -425,6 +423,60 @@ canvas {
 .fsep {
     margin: 0 6px;
     opacity: .4;
+}
+
+.country-color-group {
+    min-width: 0;
+}
+
+.country-color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.country-color-input {
+    width: 56px;
+    height: 38px;
+    padding: 2px;
+    background: #18181d;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.country-color-value {
+    color: #aaa;
+    font-size: 13px;
+    font-family: Consolas, 'Courier New', monospace;
+}
+
+#ownerStatsPanel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    min-width: 150px;
+    padding: 12px 14px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.35);
+    color: var(--text-color);
+    text-align: center;
+    z-index: 2000;
+}
+
+#ownerStatsPanel strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--accent);
+    font-size: 12px;
+}
+
+#ownerStatsCount {
+    font-size: 24px;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {
