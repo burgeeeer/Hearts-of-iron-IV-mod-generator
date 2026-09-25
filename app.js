@@ -7,7 +7,7 @@ var cityNameRules = [];
 
 var autonomyLevels = [
     'reichskommissariat', 'reichsprotectorate', 'satellite', 'puppet', 
-    'dominion', 'colony', 'integrated_puppet', 'subjugated', 
+    'dominion', 'colony', 'integrated_puppet', 'tpc_minimal', 'subjugated', 
     'supervised_state', 'protectorate'
 ];
 
@@ -30,8 +30,8 @@ var i18n = {
         adjName: "Adjective:",
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
-        puppetTitle: "Puppet Names",
-        puppetDesc: "Add puppet naming rules. Select mode: Short (1 name for all) or Expanded (detailed names).",
+        puppetTitle: "Puppet Names & Flags",
+        puppetDesc: "Add puppet naming rules and custom flags. Select mode: Short (1 name for all) or Expanded (detailed names).",
         puppetOverlord: "Overlord tag:",
         puppetTag: "Puppet tag:",
         puppetMode: "Naming Mode:",
@@ -50,6 +50,7 @@ var i18n = {
         autonomyDominion: "Name (Dominion):",
         autonomyColony: "Name (Colony):",
         autonomyIntegrated_puppet: "Name (Integrated Puppet):",
+        autonomyTpc_minimal: "Name (Minimal Autonomy - TPC):",
         autonomySubjugated: "Name (Subjugated):",
         autonomySupervised_state: "Name (Supervised State):",
         autonomyProtectorate: "Name (Protectorate):",
@@ -91,8 +92,8 @@ var i18n = {
         adjName: "\u041f\u0440\u0438\u043b\u0430\u0433\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0435:",
         uploadFlag: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0444\u043b\u0430\u0433 (PNG):",
         genBtn: "\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043c\u043e\u0434",
-        puppetTitle: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u044f \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a",
-        puppetDesc: "\u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0439 \u043f\u0440\u0430\u0432\u0438\u043b\u0430 \u0434\u043b\u044f \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a. \u0412\u044b\u0431\u0435\u0440\u0438 \u0440\u0435\u0436\u0438\u043c: \u0423\u043a\u043e\u0440\u043e\u0447\u0435\u043d\u043d\u044b\u0439 \u0438\u043b\u0438 \u0420\u0430\u0437\u0432\u0451\u0440\u043d\u0443\u0442\u044b\u0439.",
+        puppetTitle: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u044f \u0438 \u0444\u043b\u0430\u0433\u0438 \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a",
+        puppetDesc: "\u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0439 \u043f\u0440\u0430\u0432\u0438\u043b\u0430 \u0438 \u0444\u043b\u0430\u0433\u0438 \u0434\u043b\u044f \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a. \u0412\u044b\u0431\u0435\u0440\u0438 \u0440\u0435\u0436\u0438\u043c: \u0423\u043a\u043e\u0440\u043e\u0447\u0435\u043d\u043d\u044b\u0439 \u0438\u043b\u0438 \u0420\u0430\u0437\u0432\u0451\u0440\u043d\u0443\u0442\u044b\u0439.",
         puppetOverlord: "\u0422\u0435\u0433 \u0441\u044e\u0437\u0435\u0440\u0435\u043d\u0430:",
         puppetTag: "\u0422\u0435\u0433 \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043a\u0438:",
         puppetMode: "\u0420\u0435\u0436\u0438\u043c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0439:",
@@ -111,6 +112,7 @@ var i18n = {
         autonomyDominion: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u0414\u043e\u043c\u0438\u043d\u0438\u043e\u043d):",
         autonomyColony: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u041a\u043e\u043b\u043e\u043d\u0438\u044f):",
         autonomyIntegrated_puppet: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u0418\u043d\u0442\u0435\u0433\u0440. \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043a\u0430):",
+        autonomyTpc_minimal: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u041c\u0438\u043d\u0438\u043c\u0430\u043b\u044c\u043d\u0430\u044f \u0430\u0432\u0442\u043e\u043d\u043e\u043c\u0438\u044f - TPC):",
         autonomySubjugated: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u041f\u043e\u0434\u0447\u0438\u043d\u0435\u043d\u043d\u043e\u0435 \u0433\u043e\u0441-\u0432\u043e):",
         autonomySupervised_state: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u041f\u043e\u0434\u043d\u0430\u0434\u0437\u043e\u0440\u043d\u043e\u0435 \u0433\u043e\u0441-\u0432\u043e):",
         autonomyProtectorate: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 (\u041f\u0440\u043e\u0442\u0435\u043a\u0442\u043e\u0440\u0430\u0442):",
@@ -154,7 +156,6 @@ function mkEmptyPuppet() {
     }
     return p;
 }
-
 
 function mkEmptyState() {
     return { stateId: '', controllerTag: '', name: '' };
@@ -248,8 +249,6 @@ function loadSaved(d) {
                 };
                 for (var ak = 0; ak < autonomyLevels.length; ak++) {
                     var al = autonomyLevels[ak];
-                    // New format: autonomy is stored inside the ideology.
-                    // Backward compatibility: read the old shared autonomy values when present.
                     np.ideologies[pid].autonomy[al] = (oldIdeo.autonomy && oldIdeo.autonomy[al])
                         ? oldIdeo.autonomy[al]
                         : ((pr.autonomy && pr.autonomy[al]) ? pr.autonomy[al] : '');
@@ -498,7 +497,7 @@ function renderPuppetRules() {
             var hdr = document.createElement('div');
             hdr.className = 'dynamic-card-header';
             var st = document.createElement('strong');
-            st.textContent = currentLang === 'english' ? 'Puppet rule #' + (idx + 1) : 'Правило марионетки №' + (idx + 1);
+            st.textContent = currentLang === 'english' ? 'Puppet rule #' + (idx + 1) : '\u041f\u0440\u0430\u0432\u0438\u043b\u043e \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043a\u0438 \u2116' + (idx + 1);
             hdr.appendChild(st);
             if (puppetRules.length > 1) {
                 var rb = document.createElement('button');
@@ -551,7 +550,6 @@ function renderPuppetRules() {
 
                         card.appendChild(mkGrp(t.puppetShortName, (r.ideologies[ideo] || {}).name || '', function(v) {
                             puppetRules[idx].ideologies[ideo].name = v;
-                            // Keep the legacy shortName synchronized for saved data compatibility.
                             puppetRules[idx].shortName = v;
                             saveData();
                         }));
@@ -593,7 +591,7 @@ function renderPuppetRules() {
 
                         var autoHead = document.createElement('div');
                         autoHead.className = 'puppet-autonomy-title';
-                        autoHead.textContent = currentLang === 'english' ? 'Names by autonomy level:' : 'Названия по уровню автономии:';
+                        autoHead.textContent = currentLang === 'english' ? 'Names by autonomy level:' : '\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u044f \u043f\u043e \u0443\u0440\u043e\u0432\u043d\u044e \u0430\u0432\u0442\u043e\u043d\u043e\u043c\u0438\u0438:';
                         body.appendChild(autoHead);
 
                         var autoGrid = document.createElement('div');
@@ -934,6 +932,108 @@ function canvasToTGA(canvas) {
     return buf;
 }
 
+function buildPuppetOnActions(pRules) {
+    var validRules = [];
+    var seen = {};
+    for (var i = 0; i < pRules.length; i++) {
+        var r = pRules[i];
+        var ov = String(r.overlord || '').toUpperCase().trim();
+        var tg = String(r.tag || '').toUpperCase().trim();
+        if (!ov || !tg) continue;
+        var key = tg + '_' + ov;
+        if (!seen[key]) {
+            seen[key] = true;
+            validRules.push({ tag: tg, overlord: ov, cosTag: key });
+        }
+    }
+
+    if (!validRules.length) return '';
+
+    var lines = [
+        'on_actions = {',
+        '    # Automatic cosmetic tag application when puppeted',
+        '    on_puppet = {',
+        '        effect = {'
+    ];
+
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    original_tag = ' + vr.tag);
+        lines.push('                    FROM = { original_tag = ' + vr.overlord + ' }');
+        lines.push('                }');
+        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('            }');
+    }
+
+    lines.push('        }');
+    lines.push('    }');
+    lines.push('    on_release_as_puppet = {');
+    lines.push('        effect = {');
+
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    original_tag = ' + vr.tag);
+        lines.push('                    FROM = { original_tag = ' + vr.overlord + ' }');
+        lines.push('                }');
+        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('            }');
+    }
+
+    lines.push('        }');
+    lines.push('    }');
+    lines.push('    on_startup = {');
+    lines.push('        effect = {');
+
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    ' + vr.tag + ' = { is_subject_of = ' + vr.overlord + ' }');
+        lines.push('                }');
+        lines.push('                ' + vr.tag + ' = { set_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('            }');
+    }
+
+    lines.push('        }');
+    lines.push('    }');
+    lines.push('    # Daily check for custom decision/console puppeting and independence drop',
+        '    on_daily = {',
+        '        effect = {'
+    );
+
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        lines.push('            # ' + vr.tag + ' as puppet of ' + vr.overlord);
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    ' + vr.tag + ' = {');
+        lines.push('                        is_subject_of = ' + vr.overlord);
+        lines.push('                        NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                ' + vr.tag + ' = { set_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('            }');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    ' + vr.tag + ' = {');
+        lines.push('                        has_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                        NOT = { is_subject_of = ' + vr.overlord + ' }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                ' + vr.tag + ' = { drop_cosmetic_tag = yes }');
+        lines.push('            }');
+    }
+
+    lines.push('        }');
+    lines.push('    }');
+    lines.push('}');
+    return lines.join('\n');
+}
+
 function buildOnActions(sRules, cRules) {
     var sg = {};
     var cg = {};
@@ -1091,6 +1191,10 @@ async function generateMod() {
                 for (var ak2 = 0; ak2 < autonomyLevels.length; ak2++) {
                     var al2 = autonomyLevels[ak2];
                     var aNm = String((pIdeoData.autonomy && pIdeoData.autonomy[al2]) || '').trim();
+                    // Fallback to integrated_puppet if tpc_minimal is left blank
+                    if (!aNm && al2 === 'tpc_minimal') {
+                        aNm = String((pIdeoData.autonomy && pIdeoData.autonomy['integrated_puppet']) || '').trim();
+                    }
                     if (aNm) {
                         addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + al2, aNm);
                         addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + al2 + '_DEF', aNm);
@@ -1110,6 +1214,14 @@ async function generateMod() {
                 fNorm.file(pFn, canvasToTGA(pCn));
                 if (pCm) fMed.file(pFn, canvasToTGA(pCm));
                 if (pCs) fSmall.file(pFn, canvasToTGA(pCs));
+
+                // Write base flag fallback so country always has a flag regardless of ideology
+                var pBaseFn = pTg + '_' + pOv + '.tga';
+                if (!fNorm.file(pBaseFn)) {
+                    fNorm.file(pBaseFn, canvasToTGA(pCn));
+                    if (pCm) fMed.file(pBaseFn, canvasToTGA(pCm));
+                    if (pCs) fSmall.file(pBaseFn, canvasToTGA(pCs));
+                }
             }
         }
     }
@@ -1122,6 +1234,12 @@ async function generateMod() {
     if (hasCosmetic) {
         locFolder.file('countries_cosmetic_l_' + currentLang + '.yml',
             new Blob(['\uFEFF' + cosmeticLoc.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+    }
+
+    // Генерация on_actions для марионеток (чтобы работали косметические флаги и имена!)
+    var puppetOnAct = buildPuppetOnActions(puppetRules);
+    if (puppetOnAct) {
+        modFolder.folder('common/on_actions').file('custom_puppets.txt', puppetOnAct + '\n');
     }
 
     var vStateRules = stateNameRules.filter(function(r) {
