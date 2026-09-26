@@ -4,7 +4,6 @@
 
 **Hearts of Iron IV Mod Generator** — удобный инструмент для быстрого и визуального создания модификаций для **Hearts of Iron IV**. Инструмент позволяет без ручного написания кода Paradox Clausewitz настроить новые названия стран, загрузить флаги, создать динамические имена марионеток по уровням автономии, а также настроить переименование регионов и городов в зависимости от страны-контролера.
 
-Доступен как **онлайн прямо в браузере**, так и в виде **автономной десктопной программы (`.exe`)**.
 
 ---
 
@@ -13,7 +12,6 @@
 - 🌍 **Онлайн-версия генератора**: [https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/](https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/)
 - 🛠️ **Мод в мастерской Steam**: [Steam Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3780620332)
 - 💻 **Исходный код репозитория**: [GitHub Repository](https://github.com/burgeeeer/Hearts-of-iron-IV-mod-generator)
-- ⚡ **Десктопная программа**: `HoI4_Mod_Generator.exe` (в корне проекта, работает офлайн)
 
 ---
 
