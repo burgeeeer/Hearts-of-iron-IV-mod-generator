@@ -31,9 +31,12 @@ var i18n = {
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
         puppetTitle: "Puppet Names & Flags",
-        puppetDesc: "Add puppet naming rules and custom flags. Select mode: Short (1 name for all) or Expanded (detailed names).",
-        puppetOverlord: "Overlord tag:",
+        puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
+        puppetOverlord: "Overlord tag (regular or cosmetic):",
+        puppetOverlordPlaceholder: "GER or EUR_UNIFIED",
         puppetTag: "Puppet tag:",
+        puppetTagPlaceholder: "e.g. EGY",
+        tagCosmeticPlaceholder: "e.g. EUR_UNIFIED",
         puppetMode: "Naming Mode:",
         puppetModeShort: "Short (One name for all)",
         puppetModeExpanded: "Expanded (Individual variants)",
@@ -93,9 +96,12 @@ var i18n = {
         uploadFlag: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0444\u043b\u0430\u0433 (PNG):",
         genBtn: "\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043c\u043e\u0434",
         puppetTitle: "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u044f \u0438 \u0444\u043b\u0430\u0433\u0438 \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a",
-        puppetDesc: "\u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0439 \u043f\u0440\u0430\u0432\u0438\u043b\u0430 \u0438 \u0444\u043b\u0430\u0433\u0438 \u0434\u043b\u044f \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a. \u0412\u044b\u0431\u0435\u0440\u0438 \u0440\u0435\u0436\u0438\u043c: \u0423\u043a\u043e\u0440\u043e\u0447\u0435\u043d\u043d\u044b\u0439 \u0438\u043b\u0438 \u0420\u0430\u0437\u0432\u0451\u0440\u043d\u0443\u0442\u044b\u0439.",
-        puppetOverlord: "\u0422\u0435\u0433 \u0441\u044e\u0437\u0435\u0440\u0435\u043d\u0430:",
+        puppetDesc: "\u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0439 \u043f\u0440\u0430\u0432\u0438\u043b\u0430 \u0438 \u0444\u043b\u0430\u0433\u0438 \u0434\u043b\u044f \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043e\u043a. \u0421\u044e\u0437\u0435\u0440\u0435\u043d\u043e\u043c \u043c\u043e\u0436\u0435\u0442 \u0431\u044b\u0442\u044c \u043a\u0430\u043a \u043e\u0431\u044b\u0447\u043d\u0430\u044f \u0441\u0442\u0440\u0430\u043d\u0430 (GER, SOV), \u0442\u0430\u043a \u0438 \u043a\u043e\u0441\u043c\u0435\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0442\u0435\u0433 (EUR_UNIFIED, EUR).",
+        puppetOverlord: "\u0422\u0435\u0433 \u0441\u044e\u0437\u0435\u0440\u0435\u043d\u0430 (\u043e\u0431\u044b\u0447\u043d\u044b\u0439 \u0438\u043b\u0438 \u043a\u043e\u0441\u043c\u0435\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439):",
+        puppetOverlordPlaceholder: "GER \u0438\u043b\u0438 EUR_UNIFIED",
         puppetTag: "\u0422\u0435\u0433 \u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442\u043a\u0438:",
+        puppetTagPlaceholder: "\u043d\u0430\u043f\u0440. EGY",
+        tagCosmeticPlaceholder: "\u043d\u0430\u043f\u0440. EUR_UNIFIED",
         puppetMode: "\u0420\u0435\u0436\u0438\u043c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0439:",
         puppetModeShort: "\u0423\u043a\u043e\u0440\u043e\u0447\u0435\u043d\u043d\u044b\u0439 (\u043e\u0434\u043d\u043e \u0434\u043b\u044f \u0432\u0441\u0435\u0445)",
         puppetModeExpanded: "\u0420\u0430\u0437\u0432\u0451\u0440\u043d\u0443\u0442\u044b\u0439 (\u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e \u0441\u043b\u0443\u0447\u0430\u044f)",
@@ -343,9 +349,9 @@ function renderCountries() {
             '<div class="country-header" onclick="toggleSection(this)"><strong>' + i18n[currentLang].countryLabel + ' #' + (idx + 1) + '</strong>' + rmBtn + '</div>' +
             '<div class="country-meta">' +
             '<div class="input-group"><label>' + i18n[currentLang].tag + '</label>' +
-            '<input type="text" id="c' + idx + '_tag" value="' + esc(co.tag) + '" placeholder="TAG" oninput="onInput()"></div>' +
+            '<input type="text" id="c' + idx + '_tag" value="' + esc(co.tag) + '" placeholder="' + (co.tagType === 'cosmetic' ? (i18n[currentLang].tagCosmeticPlaceholder || 'EUR_UNIFIED') : 'TAG') + '" oninput="onInput()"></div>' +
             '<div class="input-group"><label>' + i18n[currentLang].tagType + '</label>' +
-            '<select id="c' + idx + '_tagType" onchange="onInput()">' +
+            '<select id="c' + idx + '_tagType" onchange="onTagTypeChange(' + idx + ')">' +
             '<option value="normal"' + (co.tagType === 'normal' ? ' selected' : '') + '>' + i18n[currentLang].tagNormal + '</option>' +
             '<option value="cosmetic"' + (co.tagType === 'cosmetic' ? ' selected' : '') + '>' + i18n[currentLang].tagCosmetic + '</option>' +
             '</select></div></div>' + ideoHtml;
@@ -399,6 +405,18 @@ function paintFlag(prefix, url) {
 
 function onInput() {
     pullCountriesFromDOM();
+    saveData();
+}
+
+function onTagTypeChange(idx) {
+    pullCountriesFromDOM();
+    var tagEl = document.getElementById('c' + idx + '_tag');
+    var ttEl = document.getElementById('c' + idx + '_tagType');
+    if (tagEl && ttEl) {
+        tagEl.placeholder = ttEl.value === 'cosmetic'
+            ? (i18n[currentLang].tagCosmeticPlaceholder || 'EUR_UNIFIED')
+            : 'TAG';
+    }
     saveData();
 }
 
@@ -511,8 +529,8 @@ function renderPuppetRules() {
 
             var metaGrid = document.createElement('div');
             metaGrid.className = 'dynamic-grid three-col';
-            metaGrid.appendChild(mkGrp(t.puppetOverlord, r.overlord, function(v) { puppetRules[idx].overlord = v.toUpperCase(); saveData(); }));
-            metaGrid.appendChild(mkGrp(t.puppetTag, r.tag, function(v) { puppetRules[idx].tag = v.toUpperCase(); saveData(); }));
+            metaGrid.appendChild(mkGrp(t.puppetOverlord, r.overlord, function(v) { puppetRules[idx].overlord = v.toUpperCase(); saveData(); }, t.puppetOverlordPlaceholder || 'GER / EUR_UNIFIED'));
+            metaGrid.appendChild(mkGrp(t.puppetTag, r.tag, function(v) { puppetRules[idx].tag = v.toUpperCase(); saveData(); }, t.puppetTagPlaceholder || 'EGY'));
 
             var modeGrp = document.createElement('div');
             modeGrp.className = 'input-group';
@@ -659,7 +677,7 @@ function addPuppetIdeologyFlag(parent, puppetIndex, ideo, rule, t) {
     }
 }
 
-function mkGrp(label, val, cb) {
+function mkGrp(label, val, cb, placeholder) {
     var g = document.createElement('div');
     g.className = 'input-group';
     var lb = document.createElement('label');
@@ -668,6 +686,7 @@ function mkGrp(label, val, cb) {
     var inp = document.createElement('input');
     inp.type = 'text';
     inp.value = val || '';
+    if (placeholder) inp.placeholder = placeholder;
     inp.oninput = function() { cb(this.value); };
     g.appendChild(inp);
     return g;
@@ -949,21 +968,49 @@ function buildPuppetOnActions(pRules) {
 
     if (!validRules.length) return '';
 
+    function getOverlordCond(ov) {
+        var tags = [ov];
+        if (ov === 'EUR' && tags.indexOf('EUR_UNIFIED') === -1) tags.push('EUR_UNIFIED');
+        if (ov === 'EUR_UNIFIED' && tags.indexOf('EUR') === -1) tags.push('EUR');
+
+        var conds = [];
+        for (var t = 0; t < tags.length; t++) {
+            conds.push('tag = ' + tags[t]);
+            conds.push('original_tag = ' + tags[t]);
+            conds.push('has_cosmetic_tag = ' + tags[t]);
+        }
+        return conds;
+    }
+
     var lines = [
         'on_actions = {',
-        '    # Automatic cosmetic tag application when puppeted',
+        '    # Automatic cosmetic tag application when puppeted (supports normal and cosmetic overlords)',
         '    on_puppet = {',
         '        effect = {'
     ];
 
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
         lines.push('            if = {');
         lines.push('                limit = {');
-        lines.push('                    original_tag = ' + vr.tag);
-        lines.push('                    FROM = { original_tag = ' + vr.overlord + ' }');
+        lines.push('                    ROOT = {');
+        lines.push('                        OR = {');
+        lines.push('                            tag = ' + vr.tag);
+        lines.push('                            original_tag = ' + vr.tag);
+        lines.push('                            has_cosmetic_tag = ' + vr.tag);
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                    FROM = {');
+        lines.push('                        OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                            ' + ovConds[c]);
+        }
+        lines.push('                        }');
+        lines.push('                    }');
         lines.push('                }');
-        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                ROOT = { set_cosmetic_tag = ' + vr.cosTag + ' }');
         lines.push('            }');
     }
 
@@ -974,12 +1021,26 @@ function buildPuppetOnActions(pRules) {
 
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
         lines.push('            if = {');
         lines.push('                limit = {');
-        lines.push('                    original_tag = ' + vr.tag);
-        lines.push('                    FROM = { original_tag = ' + vr.overlord + ' }');
+        lines.push('                    ROOT = {');
+        lines.push('                        OR = {');
+        lines.push('                            tag = ' + vr.tag);
+        lines.push('                            original_tag = ' + vr.tag);
+        lines.push('                            has_cosmetic_tag = ' + vr.tag);
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                    FROM = {');
+        lines.push('                        OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                            ' + ovConds[c]);
+        }
+        lines.push('                        }');
+        lines.push('                    }');
         lines.push('                }');
-        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                ROOT = { set_cosmetic_tag = ' + vr.cosTag + ' }');
         lines.push('            }');
     }
 
@@ -990,9 +1051,20 @@ function buildPuppetOnActions(pRules) {
 
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
         lines.push('            if = {');
         lines.push('                limit = {');
-        lines.push('                    ' + vr.tag + ' = { is_subject_of = ' + vr.overlord + ' }');
+        lines.push('                    ' + vr.tag + ' = {');
+        lines.push('                        is_subject = yes');
+        lines.push('                        OVERLORD = {');
+        lines.push('                            OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                ' + ovConds[c]);
+        }
+        lines.push('                            }');
+        lines.push('                        }');
+        lines.push('                    }');
         lines.push('                }');
         lines.push('                ' + vr.tag + ' = { set_cosmetic_tag = ' + vr.cosTag + ' }');
         lines.push('            }');
@@ -1000,18 +1072,69 @@ function buildPuppetOnActions(pRules) {
 
     lines.push('        }');
     lines.push('    }');
-    lines.push('    # Daily check for custom decision/console puppeting and independence drop',
-        '    on_daily = {',
-        '        effect = {'
-    );
 
+    // Country-specific daily check for immediate response
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
+        lines.push('    on_daily_' + vr.tag + ' = {');
+        lines.push('        effect = {');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    is_subject = yes');
+        lines.push('                    OVERLORD = {');
+        lines.push('                        OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                            ' + ovConds[c]);
+        }
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                    NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('                }');
+        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('            }');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    has_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                    OR = {');
+        lines.push('                        is_subject = no');
+        lines.push('                        NOT = {');
+        lines.push('                            OVERLORD = {');
+        lines.push('                                OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                    ' + ovConds[c]);
+        }
+        lines.push('                                }');
+        lines.push('                            }');
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                drop_cosmetic_tag = yes');
+        lines.push('            }');
+        lines.push('        }');
+        lines.push('    }');
+    }
+
+    // Weekly global fallback
+    lines.push('    on_weekly = {');
+    lines.push('        effect = {');
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
         lines.push('            # ' + vr.tag + ' as puppet of ' + vr.overlord);
         lines.push('            if = {');
         lines.push('                limit = {');
         lines.push('                    ' + vr.tag + ' = {');
-        lines.push('                        is_subject_of = ' + vr.overlord);
+        lines.push('                        is_subject = yes');
+        lines.push('                        OVERLORD = {');
+        lines.push('                            OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                ' + ovConds[c]);
+        }
+        lines.push('                            }');
+        lines.push('                        }');
         lines.push('                        NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
         lines.push('                    }');
         lines.push('                }');
@@ -1021,13 +1144,23 @@ function buildPuppetOnActions(pRules) {
         lines.push('                limit = {');
         lines.push('                    ' + vr.tag + ' = {');
         lines.push('                        has_cosmetic_tag = ' + vr.cosTag);
-        lines.push('                        NOT = { is_subject_of = ' + vr.overlord + ' }');
+        lines.push('                        OR = {');
+        lines.push('                            is_subject = no');
+        lines.push('                            NOT = {');
+        lines.push('                                OVERLORD = {');
+        lines.push('                                    OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                        ' + ovConds[c]);
+        }
+        lines.push('                                    }');
+        lines.push('                                }');
+        lines.push('                            }');
+        lines.push('                        }');
         lines.push('                    }');
         lines.push('                }');
         lines.push('                ' + vr.tag + ' = { drop_cosmetic_tag = yes }');
         lines.push('            }');
     }
-
     lines.push('        }');
     lines.push('    }');
     lines.push('}');
@@ -1075,8 +1208,17 @@ function buildOnActions(sRules, cRules) {
         lines.push('                limit = { FROM.FROM = { state = ' + sid2 + ' } }');
         lines.push('                FROM.FROM = { reset_state_name = yes }');
         for (var ri = 0; ri < sg[sid2].length; ri++) {
+            var cTag = sg[sid2][ri].tag;
             lines.push('                if = {');
-            lines.push('                    limit = { tag = ' + sg[sid2][ri].tag + ' }');
+            lines.push('                    limit = {');
+            lines.push('                        OR = {');
+            lines.push('                            tag = ' + cTag);
+            lines.push('                            original_tag = ' + cTag);
+            lines.push('                            has_cosmetic_tag = ' + cTag);
+            if (cTag === 'EUR') lines.push('                            has_cosmetic_tag = EUR_UNIFIED');
+            if (cTag === 'EUR_UNIFIED') lines.push('                            has_cosmetic_tag = EUR');
+            lines.push('                        }');
+            lines.push('                    }');
             lines.push('                    FROM.FROM = { set_state_name = ' + sg[sid2][ri].loc + ' }');
             lines.push('                }');
         }
@@ -1093,8 +1235,17 @@ function buildOnActions(sRules, cRules) {
             lines.push('                FROM.FROM = { reset_province_name = ' + cg[cid][k].pid + ' }');
         }
         for (var m = 0; m < cg[cid].length; m++) {
+            var cpTag = cg[cid][m].tag;
             lines.push('                if = {');
-            lines.push('                    limit = { tag = ' + cg[cid][m].tag + ' }');
+            lines.push('                    limit = {');
+            lines.push('                        OR = {');
+            lines.push('                            tag = ' + cpTag);
+            lines.push('                            original_tag = ' + cpTag);
+            lines.push('                            has_cosmetic_tag = ' + cpTag);
+            if (cpTag === 'EUR') lines.push('                            has_cosmetic_tag = EUR_UNIFIED');
+            if (cpTag === 'EUR_UNIFIED') lines.push('                            has_cosmetic_tag = EUR');
+            lines.push('                        }');
+            lines.push('                    }');
             lines.push('                    FROM.FROM = { set_province_name = { id = ' + cg[cid][m].pid + ' name = ' + cg[cid][m].loc + ' } }');
             lines.push('                }');
         }
@@ -1107,6 +1258,11 @@ function buildOnActions(sRules, cRules) {
     return lines.join('\n');
 }
 
+function addLoc(arrRu, arrEn, key, val) {
+    addLocLine(arrRu, key, val);
+    addLocLine(arrEn, key, val);
+}
+
 async function generateMod() {
     var zip = new JSZip();
     var modName = document.getElementById('modName').value.trim() || 'CustomMod';
@@ -1116,46 +1272,82 @@ async function generateMod() {
     var fMed = modFolder.folder('gfx/flags/medium');
     var fSmall = modFolder.folder('gfx/flags/small');
 
-    var locFolder = modFolder.folder('localisation/replace/' + currentLang);
-    var ruFolder = modFolder.folder('localisation/replace/russian');
+    // In HoI4, files in localisation/replace must be located DIRECTLY inside localisation/replace without language subdirectories
+    var replaceFolder = modFolder.folder('localisation/replace');
 
-    var normalLoc = ['l_' + currentLang + ':'];
-    var cosmeticLoc = ['l_' + currentLang + ':'];
+    var normalLocRu = ['l_russian:'];
+    var normalLocEn = ['l_english:'];
+    var cosmeticLocRu = ['l_russian:'];
+    var cosmeticLocEn = ['l_english:'];
     var hasNormal = false;
     var hasCosmetic = false;
 
-    // 1. Обычные и косметические страны
+    // 1. Normal and Cosmetic countries
     for (var ci = 0; ci < countries.length; ci++) {
         var tag = countries[ci].tag;
         if (!tag) continue;
 
         var isCosmetic = (countries[ci].tagType === 'cosmetic');
-        var targetArr = isCosmetic ? cosmeticLoc : normalLoc;
-        
+        var targetRu = isCosmetic ? cosmeticLocRu : normalLocRu;
+        var targetEn = isCosmetic ? cosmeticLocEn : normalLocEn;
+
         if (isCosmetic) hasCosmetic = true;
         else hasNormal = true;
+
+        var tagVariants = [tag];
+        if (isCosmetic) {
+            if (tag === 'EUR' && tagVariants.indexOf('EUR_UNIFIED') === -1) tagVariants.push('EUR_UNIFIED');
+            if (tag === 'EUR_UNIFIED' && tagVariants.indexOf('EUR') === -1) tagVariants.push('EUR');
+        }
+
+        var firstBase = '', firstDef = '', firstAdj = '';
 
         for (var ii = 0; ii < ideologies.length; ii++) {
             var ideo = ideologies[ii];
             var d = countries[ci].ideologies[ideo] || {};
 
-            if (d.base) addLocLine(targetArr, tag + '_' + ideo, d.base);
-            if (d.def) addLocLine(targetArr, tag + '_' + ideo + '_DEF', d.def);
-            if (d.adj) addLocLine(targetArr, tag + '_' + ideo + '_ADJ', d.adj);
+            if (d.base && !firstBase) firstBase = d.base;
+            if (d.def && !firstDef) firstDef = d.def;
+            if (d.adj && !firstAdj) firstAdj = d.adj;
+
+            for (var tv = 0; tv < tagVariants.length; tv++) {
+                var cTag = tagVariants[tv];
+                if (d.base) addLoc(targetRu, targetEn, cTag + '_' + ideo, d.base);
+                if (d.def) addLoc(targetRu, targetEn, cTag + '_' + ideo + '_DEF', d.def);
+                if (d.adj) addLoc(targetRu, targetEn, cTag + '_' + ideo + '_ADJ', d.adj);
+            }
 
             var cvn = document.getElementById('c' + ci + '_' + ideo + '_cn');
             var cvm = document.getElementById('c' + ci + '_' + ideo + '_cm');
             var cvs = document.getElementById('c' + ci + '_' + ideo + '_cs');
             if (cvn && cvn.getAttribute('data-img')) {
-                var fn = tag + '_' + ideo + '.tga';
-                fNorm.file(fn, canvasToTGA(cvn));
-                if (cvm) fMed.file(fn, canvasToTGA(cvm));
-                if (cvs) fSmall.file(fn, canvasToTGA(cvs));
+                for (var tv2 = 0; tv2 < tagVariants.length; tv2++) {
+                    var cTag2 = tagVariants[tv2];
+                    var fn = cTag2 + '_' + ideo + '.tga';
+                    fNorm.file(fn, canvasToTGA(cvn));
+                    if (cvm) fMed.file(fn, canvasToTGA(cvm));
+                    if (cvs) fSmall.file(fn, canvasToTGA(cvs));
+
+                    var baseFn = cTag2 + '.tga';
+                    if (!fNorm.file(baseFn)) {
+                        fNorm.file(baseFn, canvasToTGA(cvn));
+                        if (cvm) fMed.file(baseFn, canvasToTGA(cvm));
+                        if (cvs) fSmall.file(baseFn, canvasToTGA(cvs));
+                    }
+                }
             }
+        }
+
+        // Add base fallback keys (TAG, TAG_DEF, TAG_ADJ) so non-ideology lookups also work
+        for (var tv3 = 0; tv3 < tagVariants.length; tv3++) {
+            var cTag3 = tagVariants[tv3];
+            if (firstBase) addLoc(targetRu, targetEn, cTag3, firstBase);
+            if (firstDef || firstBase) addLoc(targetRu, targetEn, cTag3 + '_DEF', firstDef || firstBase);
+            if (firstAdj) addLoc(targetRu, targetEn, cTag3 + '_ADJ', firstAdj);
         }
     }
 
-    // 2. Марионетки (Всегда идут в косметический файл)
+    // 2. Puppets (Stored in cosmetic localisation files)
     for (var pi = 0; pi < puppetRules.length; pi++) {
         var pr = puppetRules[pi];
         var pOv = String(pr.overlord || '').toUpperCase().trim();
@@ -1165,78 +1357,116 @@ async function generateMod() {
         hasCosmetic = true;
         var pMode = pr.mode || 'short';
 
+        var ovVariants = [pOv];
+        if (pOv === 'EUR' && ovVariants.indexOf('EUR_UNIFIED') === -1) ovVariants.push('EUR_UNIFIED');
+        if (pOv === 'EUR_UNIFIED' && ovVariants.indexOf('EUR') === -1) ovVariants.push('EUR');
+
+        var puppetDefaultName = '';
+
         for (var pj = 0; pj < ideologies.length; pj++) {
             var pIdeo = ideologies[pj];
             var pIdeoData = pr.ideologies[pIdeo] || {};
 
             if (pMode === 'short') {
-                // One name for this ideology, used for every autonomy variant.
                 var shortIdeoName = String(pIdeoData.name || pr.shortName || '').trim();
                 if (shortIdeoName) {
-                    addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo, shortIdeoName);
-                    addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_DEF', shortIdeoName);
-                    for (var ak = 0; ak < autonomyLevels.length; ak++) {
-                        var alShort = autonomyLevels[ak];
-                        addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + alShort, shortIdeoName);
-                        addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + alShort + '_DEF', shortIdeoName);
+                    if (!puppetDefaultName) puppetDefaultName = shortIdeoName;
+                    for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                        var oTag = ovVariants[ovi];
+                        addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo, shortIdeoName);
+                        addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_DEF', shortIdeoName);
+                        for (var ak = 0; ak < autonomyLevels.length; ak++) {
+                            var alShort = autonomyLevels[ak];
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + alShort, shortIdeoName);
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + alShort + '_DEF', shortIdeoName);
+                            // Also without ideology (native HoI4 autonomy fallback)
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + alShort, shortIdeoName);
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + alShort + '_DEF', shortIdeoName);
+                        }
                     }
                 }
             } else {
                 var pNm = String(pIdeoData.name || '').trim();
                 if (pNm) {
-                    addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo, pNm);
-                    addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_DEF', pNm);
+                    if (!puppetDefaultName) puppetDefaultName = pNm;
+                    for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                        var oTag = ovVariants[ovi];
+                        addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo, pNm);
+                        addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_DEF', pNm);
+                    }
                 }
 
                 for (var ak2 = 0; ak2 < autonomyLevels.length; ak2++) {
                     var al2 = autonomyLevels[ak2];
                     var aNm = String((pIdeoData.autonomy && pIdeoData.autonomy[al2]) || '').trim();
-                    // Fallback to integrated_puppet if tpc_minimal is left blank
                     if (!aNm && al2 === 'tpc_minimal') {
                         aNm = String((pIdeoData.autonomy && pIdeoData.autonomy['integrated_puppet']) || '').trim();
                     }
                     if (aNm) {
-                        addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + al2, aNm);
-                        addLocLine(cosmeticLoc, pTg + '_' + pOv + '_' + pIdeo + '_autonomy_' + al2 + '_DEF', aNm);
+                        if (!puppetDefaultName) puppetDefaultName = aNm;
+                        for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                            var oTag = ovVariants[ovi];
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + al2, aNm);
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + al2 + '_DEF', aNm);
+                            // Also without ideology (native HoI4 autonomy fallback)
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + al2, aNm);
+                            addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + al2 + '_DEF', aNm);
+                        }
                     }
                 }
             }
         }
 
-        // Флаги (работают одинаково для обоих режимов)
+        // Add base fallback keys for the puppet
+        if (puppetDefaultName) {
+            for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                var oTag = ovVariants[ovi];
+                addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag, puppetDefaultName);
+                addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_DEF', puppetDefaultName);
+            }
+        }
+
+        // Flags for puppets
         for (var pj2 = 0; pj2 < ideologies.length; pj2++) {
             var pIdeo2 = ideologies[pj2];
             var pCn = document.getElementById('p' + pi + '_' + pIdeo2 + '_cn');
             var pCm = document.getElementById('p' + pi + '_' + pIdeo2 + '_cm');
             var pCs = document.getElementById('p' + pi + '_' + pIdeo2 + '_cs');
             if (pCn && pCn.getAttribute('data-img')) {
-                var pFn = pTg + '_' + pOv + '_' + pIdeo2 + '.tga';
-                fNorm.file(pFn, canvasToTGA(pCn));
-                if (pCm) fMed.file(pFn, canvasToTGA(pCm));
-                if (pCs) fSmall.file(pFn, canvasToTGA(pCs));
+                for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                    var oTag = ovVariants[ovi];
+                    var pFn = pTg + '_' + oTag + '_' + pIdeo2 + '.tga';
+                    fNorm.file(pFn, canvasToTGA(pCn));
+                    if (pCm) fMed.file(pFn, canvasToTGA(pCm));
+                    if (pCs) fSmall.file(pFn, canvasToTGA(pCs));
 
-                // Write base flag fallback so country always has a flag regardless of ideology
-                var pBaseFn = pTg + '_' + pOv + '.tga';
-                if (!fNorm.file(pBaseFn)) {
-                    fNorm.file(pBaseFn, canvasToTGA(pCn));
-                    if (pCm) fMed.file(pBaseFn, canvasToTGA(pCm));
-                    if (pCs) fSmall.file(pBaseFn, canvasToTGA(pCs));
+                    // Write base flag fallback so country always has a flag regardless of ideology
+                    var pBaseFn = pTg + '_' + oTag + '.tga';
+                    if (!fNorm.file(pBaseFn)) {
+                        fNorm.file(pBaseFn, canvasToTGA(pCn));
+                        if (pCm) fMed.file(pBaseFn, canvasToTGA(pCm));
+                        if (pCs) fSmall.file(pBaseFn, canvasToTGA(pCs));
+                    }
                 }
             }
         }
     }
 
-    // Сохранение файлов локализации
+    // Save localisation files directly into localisation/replace/ with both languages
     if (hasNormal) {
-        locFolder.file('countries_l_' + currentLang + '.yml',
-            new Blob(['\uFEFF' + normalLoc.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_l_russian.yml',
+            new Blob(['\uFEFF' + normalLocRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_l_english.yml',
+            new Blob(['\uFEFF' + normalLocEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
     }
     if (hasCosmetic) {
-        locFolder.file('countries_cosmetic_l_' + currentLang + '.yml',
-            new Blob(['\uFEFF' + cosmeticLoc.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_cosmetic_l_russian.yml',
+            new Blob(['\uFEFF' + cosmeticLocRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_cosmetic_l_english.yml',
+            new Blob(['\uFEFF' + cosmeticLocEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
     }
 
-    // Генерация on_actions для марионеток (чтобы работали косметические флаги и имена!)
+    // Generate on_actions for puppets
     var puppetOnAct = buildPuppetOnActions(puppetRules);
     if (puppetOnAct) {
         modFolder.folder('common/on_actions').file('custom_puppets.txt', puppetOnAct + '\n');
@@ -1250,8 +1480,10 @@ async function generateMod() {
     });
 
     if (vStateRules.length || vCityRules.length) {
-        var sLocLines = ['l_russian:'];
-        var vpLocLines = ['l_russian:'];
+        var sLocLinesRu = ['l_russian:'];
+        var sLocLinesEn = ['l_english:'];
+        var vpLocLinesRu = ['l_russian:'];
+        var vpLocLinesEn = ['l_english:'];
 
         for (var si = 0; si < stateNameRules.length; si++) {
             var sr = stateNameRules[si];
@@ -1259,7 +1491,7 @@ async function generateMod() {
             var sCt = String(sr.controllerTag).toUpperCase().trim();
             var sNm = String(sr.name).trim();
             if (!/^\d+$/.test(sSid) || !sCt || !sNm) continue;
-            addLocLine(sLocLines, sCt + '_STATE_' + sSid, sNm);
+            addLoc(sLocLinesRu, sLocLinesEn, sCt + '_STATE_' + sSid, sNm);
         }
 
         for (var vi = 0; vi < cityNameRules.length; vi++) {
@@ -1268,11 +1500,13 @@ async function generateMod() {
             var vCt = String(vr.controllerTag).toUpperCase().trim();
             var vNm = String(vr.name).trim();
             if (!/^\d+$/.test(String(vr.stateId).trim()) || !/^\d+$/.test(vPid) || !vCt || !vNm) continue;
-            addLocLine(vpLocLines, vCt + '_VICTORY_POINTS_' + vPid, vNm);
+            addLoc(vpLocLinesRu, vpLocLinesEn, vCt + '_VICTORY_POINTS_' + vPid, vNm);
         }
 
-        ruFolder.file('states_names_l_russian.yml', new Blob(['\uFEFF' + sLocLines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        ruFolder.file('victory_points_l_russian.yml', new Blob(['\uFEFF' + vpLocLines.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('states_names_l_russian.yml', new Blob(['\uFEFF' + sLocLinesRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('states_names_l_english.yml', new Blob(['\uFEFF' + sLocLinesEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('victory_points_l_russian.yml', new Blob(['\uFEFF' + vpLocLinesRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('victory_points_l_english.yml', new Blob(['\uFEFF' + vpLocLinesEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
 
         var onAct = buildOnActions(stateNameRules, cityNameRules);
         if (onAct) {
