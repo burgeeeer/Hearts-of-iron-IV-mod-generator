@@ -13,7 +13,7 @@ Available both **online in your browser** and as a **standalone desktop executab
 - 🌍 **Online Generator**: [https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/](https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/)
 - 🛠️ **Steam Workshop Mod**: [Steam Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3780620332)
 - 💻 **Source Code Repository**: [GitHub Repository](https://github.com/burgeeeer/Hearts-of-iron-IV-mod-generator)
-- ⚡ **Desktop Application**: `HoI4_Mod_Generator.exe` (located in the project root, works 100% offline)
+
 
 ---
 
