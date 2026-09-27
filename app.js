@@ -865,7 +865,7 @@ function saveData() {
                 base: co.ideologies[ideo].base || '',
                 def: co.ideologies[ideo].def || '',
                 adj: co.ideologies[ideo].adj || '',
-                img: cv ? (cv.getAttribute('data-img') || null) : null
+                img: (cv && cv.getAttribute('data-img')) || co.ideologies[ideo].img || null
             };
         }
         out.countries.push(cd);
@@ -886,7 +886,7 @@ function saveData() {
             var pCn = document.getElementById('p' + p + '_' + pid + '_cn');
             pOut.ideologies[pid] = {
                 name: pd.name || '',
-                img: pCn ? (pCn.getAttribute('data-img') || null) : (pd.img || null),
+                img: (pCn && pCn.getAttribute('data-img')) || pd.img || null,
                 autonomy: {}
             };
             for (var ai = 0; ai < autonomyLevels.length; ai++) {
