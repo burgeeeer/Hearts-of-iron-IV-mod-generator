@@ -37,7 +37,7 @@ h1, h2 {
 
 .section.collapsible .section-body {
     overflow: hidden;
-    max-height: 8000px;
+    max-height: 100000px;
     transition: max-height 0.3s ease;
 }
 
