@@ -2938,7 +2938,7 @@ async function generateMod() {
         '\t"Graphics"\n' +
         '}\n' +
         'name="' + modName + '"\n' +
-        'supported_version="1.*"\n' +
+        'supported_version="1.19.*"\n' +
         'path="mod/' + modName + '"\n';
 
     zip.file(modName + '.mod', rootDescriptor);
