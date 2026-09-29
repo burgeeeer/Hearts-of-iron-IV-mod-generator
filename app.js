@@ -2931,24 +2931,16 @@ async function generateMod() {
         }
     }
 
-    var folderDescriptor =
+    var rootDescriptor =
         'version="1.0"\n' +
         'tags={\n' +
         '\t"Alternative History"\n' +
         '\t"Graphics"\n' +
         '}\n' +
         'name="' + modName + '"\n' +
-        'supported_version="1.*"';
+        'supported_version="1.*"\n' +
+        'path="mod/' + modName + '"\n';
 
-    if (modCoverData) {
-        var coverBlob = dataURLToBlob(modCoverData);
-        modFolder.file('thumbnail.png', coverBlob);
-        zip.file('thumbnail.png', coverBlob);
-        folderDescriptor += '\npicture="thumbnail.png"';
-    }
-
-    modFolder.file('descriptor.mod', folderDescriptor + '\n');
-    var rootDescriptor = folderDescriptor + '\npath="mod/' + modName + '"\n';
     zip.file(modName + '.mod', rootDescriptor);
 
     // Embed project.json into both zip root and mod folder so any mod generated here can be reloaded and edited anytime!
@@ -2959,7 +2951,6 @@ async function generateMod() {
         savedAt: new Date().toISOString(),
         lang: currentLang,
         modName: modName,
-        cover: modCoverData || null,
         countries: countries,
         puppetRules: puppetRules,
         stateNameRules: stateNameRules,
