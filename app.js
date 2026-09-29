@@ -403,7 +403,7 @@ function loadSaved(d) {
                 var pid = ideologies[pj];
                 var oldIdeo = pr.ideologies && pr.ideologies[pid] ? pr.ideologies[pid] : {};
                 np.ideologies[pid] = {
-                    name: oldIdeo.name || (pr.mode === 'short' ? (pr.shortName || '') : ''),
+                    name: oldIdeo.name || pr.shortName || '',
                     img: oldIdeo.img || null,
                     autonomy: {}
                 };
@@ -828,7 +828,7 @@ function renderPuppetRules() {
                         ideoTitle.textContent = t[ideo];
                         card.appendChild(ideoTitle);
 
-                        card.appendChild(mkGrp(t.puppetShortName, (r.ideologies[ideo] || {}).name || '', function(v) {
+                        card.appendChild(mkGrp(t.puppetShortName, (r.ideologies[ideo] && r.ideologies[ideo].name) || r.shortName || '', function(v) {
                             puppetRules[idx].ideologies[ideo].name = v;
                             puppetRules[idx].shortName = v;
                             saveData();
@@ -863,7 +863,7 @@ function renderPuppetRules() {
                             sec.classList.toggle('collapsed');
                         };
 
-                        body.appendChild(mkGrp(t.puppetNameForIdeology, data.name || '', function(v) {
+                        body.appendChild(mkGrp(t.puppetNameForIdeology, data.name || r.shortName || '', function(v) {
                             puppetRules[idx].ideologies[ideo].name = v;
                             saveData();
                         }));
@@ -880,7 +880,7 @@ function renderPuppetRules() {
                             (function(al) {
                                 var alKey = 'autonomy' + al.charAt(0).toUpperCase() + al.slice(1);
                                 var alLabel = t[alKey] || al;
-                                autoGrid.appendChild(mkGrp(alLabel, data.autonomy[al] || '', function(v) {
+                                autoGrid.appendChild(mkGrp(alLabel, data.autonomy[al] || data.name || r.shortName || '', function(v) {
                                     puppetRules[idx].ideologies[ideo].autonomy[al] = v;
                                     saveData();
                                 }));
@@ -1148,7 +1148,7 @@ function saveData() {
             var pd = pr.ideologies[pid] || {};
             var pCn = document.getElementById('p' + p + '_' + pid + '_cn');
             pOut.ideologies[pid] = {
-                name: pd.name || '',
+                name: pd.name || pr.shortName || '',
                 img: (pCn && pCn.getAttribute('data-img')) || pd.img || null,
                 autonomy: {}
             };
@@ -1957,6 +1957,25 @@ async function importModZip(zip) {
         return countryMap[tag];
     }
 
+    // Parse custom_state_names.txt to associate provinceId with stateId
+    var stateProvinceMap = {};
+    var stateFiles = zip.file(/custom_state_names\.txt$/i);
+    if (stateFiles.length) {
+        var sText = await stateFiles[0].async('text');
+        var ifBlocks = sText.split(/if\s*=\s*\{/);
+        for (var bi = 0; bi < ifBlocks.length; bi++) {
+            var b = ifBlocks[bi];
+            var sm = b.match(/state\s*=\s*(\d+)/);
+            if (sm) {
+                var sId = sm[1];
+                var pm1 = b.match(/reset_province_name\s*=\s*(\d+)/);
+                var pm2 = b.match(/set_province_name\s*=\s*\{\s*id\s*=\s*(\d+)/);
+                var pId = (pm1 && pm1[1]) || (pm2 && pm2[1]);
+                if (pId) stateProvinceMap[pId] = sId;
+            }
+        }
+    }
+
     // Step 2.2: Parse localisation files
     var locFiles = zip.file(/localisation\/.*\.ya?ml$/i);
     for (var li = 0; li < locFiles.length; li++) {
@@ -1993,7 +2012,7 @@ async function importModZip(zip) {
                     recovered.cityNameRules.push({
                         controllerTag: vm[1].toUpperCase(),
                         provinceId: vm[2],
-                        stateId: '',
+                        stateId: stateProvinceMap[vm[2]] || '',
                         name: val
                     });
                 }
@@ -2015,6 +2034,19 @@ async function importModZip(zip) {
                                     if (key.indexOf('_autonomy_' + aLvl) !== -1) {
                                         if (!pr.ideologies[pIdeo].autonomy) pr.ideologies[pIdeo].autonomy = {};
                                         pr.ideologies[pIdeo].autonomy[aLvl] = val;
+                                    }
+                                }
+                            }
+                        }
+                        // Also check autonomy without ideology (native HoI4 fallback)
+                        for (var ai2 = 0; ai2 < autonomyLevels.length; ai2++) {
+                            var aLvl2 = autonomyLevels[ai2];
+                            if (key.indexOf('_autonomy_' + aLvl2) !== -1) {
+                                for (var pi2 = 0; pi2 < ideologies.length; pi2++) {
+                                    var pIdeo2 = ideologies[pi2];
+                                    if (!pr.ideologies[pIdeo2].autonomy) pr.ideologies[pIdeo2].autonomy = {};
+                                    if (!pr.ideologies[pIdeo2].autonomy[aLvl2]) {
+                                        pr.ideologies[pIdeo2].autonomy[aLvl2] = val;
                                     }
                                 }
                             }
@@ -2652,6 +2684,7 @@ function addLoc(arrRu, arrEn, key, val) {
 }
 
 async function generateMod() {
+    pullCountriesFromDOM();
     var zip = new JSZip();
     var modName = document.getElementById('modName').value.trim() || 'CustomMod';
     var modFolder = zip.folder(modName);
@@ -2774,7 +2807,7 @@ async function generateMod() {
                     }
                 }
             } else {
-                var pNm = String(pIdeoData.name || '').trim();
+                var pNm = String(pIdeoData.name || pr.shortName || '').trim();
                 if (pNm) {
                     if (!puppetDefaultName) puppetDefaultName = pNm;
                     for (var ovi = 0; ovi < ovVariants.length; ovi++) {
@@ -2786,9 +2819,9 @@ async function generateMod() {
 
                 for (var ak2 = 0; ak2 < autonomyLevels.length; ak2++) {
                     var al2 = autonomyLevels[ak2];
-                    var aNm = String((pIdeoData.autonomy && pIdeoData.autonomy[al2]) || '').trim();
+                    var aNm = String((pIdeoData.autonomy && pIdeoData.autonomy[al2]) || pNm || pr.shortName || '').trim();
                     if (!aNm && al2 === 'tpc_minimal') {
-                        aNm = String((pIdeoData.autonomy && pIdeoData.autonomy['integrated_puppet']) || '').trim();
+                        aNm = String((pIdeoData.autonomy && pIdeoData.autonomy['integrated_puppet']) || pNm || pr.shortName || '').trim();
                     }
                     if (aNm) {
                         if (!puppetDefaultName) puppetDefaultName = aNm;
@@ -2842,16 +2875,12 @@ async function generateMod() {
 
     // Save localisation files directly into localisation/replace/ with both languages
     if (hasNormal) {
-        replaceFolder.file('countries_l_russian.yml',
-            new Blob(['\uFEFF' + normalLocRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        replaceFolder.file('countries_l_english.yml',
-            new Blob(['\uFEFF' + normalLocEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_l_russian.yml', '\uFEFF' + normalLocRu.join('\n') + '\n');
+        replaceFolder.file('countries_l_english.yml', '\uFEFF' + normalLocEn.join('\n') + '\n');
     }
     if (hasCosmetic) {
-        replaceFolder.file('countries_cosmetic_l_russian.yml',
-            new Blob(['\uFEFF' + cosmeticLocRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        replaceFolder.file('countries_cosmetic_l_english.yml',
-            new Blob(['\uFEFF' + cosmeticLocEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('countries_cosmetic_l_russian.yml', '\uFEFF' + cosmeticLocRu.join('\n') + '\n');
+        replaceFolder.file('countries_cosmetic_l_english.yml', '\uFEFF' + cosmeticLocEn.join('\n') + '\n');
     }
 
     // Generate on_actions for puppets
@@ -2864,7 +2893,7 @@ async function generateMod() {
         return /^\d+$/.test(String(r.stateId).trim()) && String(r.controllerTag).trim() && String(r.name).trim();
     });
     var vCityRules = cityNameRules.filter(function(r) {
-        return /^\d+$/.test(String(r.stateId).trim()) && /^\d+$/.test(String(r.provinceId).trim()) && String(r.controllerTag).trim() && String(r.name).trim();
+        return /^\d+$/.test(String(r.provinceId).trim()) && String(r.controllerTag).trim() && String(r.name).trim();
     });
 
     if (vStateRules.length || vCityRules.length) {
@@ -2887,14 +2916,14 @@ async function generateMod() {
             var vPid = String(vr.provinceId).trim();
             var vCt = String(vr.controllerTag).toUpperCase().trim();
             var vNm = String(vr.name).trim();
-            if (!/^\d+$/.test(String(vr.stateId).trim()) || !/^\d+$/.test(vPid) || !vCt || !vNm) continue;
+            if (!/^\d+$/.test(vPid) || !vCt || !vNm) continue;
             addLoc(vpLocLinesRu, vpLocLinesEn, vCt + '_VICTORY_POINTS_' + vPid, vNm);
         }
 
-        replaceFolder.file('states_names_l_russian.yml', new Blob(['\uFEFF' + sLocLinesRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        replaceFolder.file('states_names_l_english.yml', new Blob(['\uFEFF' + sLocLinesEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        replaceFolder.file('victory_points_l_russian.yml', new Blob(['\uFEFF' + vpLocLinesRu.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
-        replaceFolder.file('victory_points_l_english.yml', new Blob(['\uFEFF' + vpLocLinesEn.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' }));
+        replaceFolder.file('states_names_l_russian.yml', '\uFEFF' + sLocLinesRu.join('\n') + '\n');
+        replaceFolder.file('states_names_l_english.yml', '\uFEFF' + sLocLinesEn.join('\n') + '\n');
+        replaceFolder.file('victory_points_l_russian.yml', '\uFEFF' + vpLocLinesRu.join('\n') + '\n');
+        replaceFolder.file('victory_points_l_english.yml', '\uFEFF' + vpLocLinesEn.join('\n') + '\n');
 
         var onAct = buildOnActions(stateNameRules, cityNameRules);
         if (onAct) {
@@ -2902,25 +2931,25 @@ async function generateMod() {
         }
     }
 
-    var descriptor =
+    var folderDescriptor =
         'version="1.0"\n' +
         'tags={\n' +
         '\t"Alternative History"\n' +
         '\t"Graphics"\n' +
         '}\n' +
         'name="' + modName + '"\n' +
-        'supported_version="*"\n' +
-        'path="mod/' + modName + '"';
+        'supported_version="1.*"';
 
     if (modCoverData) {
         var coverBlob = dataURLToBlob(modCoverData);
         modFolder.file('thumbnail.png', coverBlob);
         zip.file('thumbnail.png', coverBlob);
-        descriptor += '\npicture="thumbnail.png"';
+        folderDescriptor += '\npicture="thumbnail.png"';
     }
 
-    modFolder.file('descriptor.mod', descriptor);
-    zip.file(modName + '.mod', descriptor);
+    modFolder.file('descriptor.mod', folderDescriptor + '\n');
+    var rootDescriptor = folderDescriptor + '\npath="mod/' + modName + '"\n';
+    zip.file(modName + '.mod', rootDescriptor);
 
     // Embed project.json into both zip root and mod folder so any mod generated here can be reloaded and edited anytime!
     pullCountriesFromDOM();
