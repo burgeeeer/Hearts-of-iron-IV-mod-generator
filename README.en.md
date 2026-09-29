@@ -74,11 +74,9 @@ Available both **online in your browser** and as a **standalone desktop executab
 - **In-Browser Project Library**: Save multiple projects inside browser storage for instant switching, one-click loading, and cleanup.
 - **Continuous Auto-save**: Active editor state is safely retained in `localStorage`.
 
-### 7. 🎨 Mod Cover & Thumbnail Creator
-- Built-in visual designer for 512×512 px Steam Workshop and Paradox Launcher covers.
-- Pre-made color themes (HoI4 Steel, Soviet Crimson, Military Khaki, Imperial Gold, Naval Blue, Sepia Map) or custom background upload with blur and dimming controls.
-- Country flag badge integration (Shield with golden border, circular emblem, or banner).
-- Customizable typography, subtitles, fonts, HoI4 vintage frame border, vignette, and tactical grid overlay.
+### 7. 🎨 Mod Cover (512×512 px) & Visual Designer
+- **Direct Cover Upload**: Upload any custom image (PNG, JPG, WebP) directly from your computer. The app automatically fits and centers it to the official 512×512 px format required by Steam Workshop and HoI4 Launcher.
+- **Built-in Visual Designer**: Design a cover from scratch with presets (HoI4 Steel, Soviet Crimson, Military Khaki, Imperial Gold, Naval Blue, Sepia Map), vignette, frame, and emblem placement.
 - Automatically included in generated `.zip` as `thumbnail.png` with `picture="thumbnail.png"` descriptor instruction.
 - Standalone PNG download button.
 

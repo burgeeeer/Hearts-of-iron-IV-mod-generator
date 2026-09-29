@@ -29,16 +29,16 @@
             </div>
             <div class="project-toolbar-actions">
                 <button type="button" class="secondary-btn" onclick="saveProjectToFile()" id="btnSaveProjFile" title="Скачать файл проекта (.json)">
-                    💾 <span id="btnSaveProjFileText">Сохранить проект</span>
+                    <span id="btnSaveProjFileText">Сохранить проект</span>
                 </button>
                 <button type="button" class="secondary-btn" onclick="triggerLoadProjectFile()" id="btnLoadProjFile" title="Загрузить проект (.json) или архив мода (.zip)">
-                    📂 <span id="btnLoadProjFileText">Загрузить проект / мод</span>
+                    <span id="btnLoadProjFileText">Загрузить проект</span>
                 </button>
                 <button type="button" class="secondary-btn" onclick="openProjectsModal()" id="btnMyProjects" title="Библиотека проектов">
-                    📁 <span id="btnMyProjectsText">Мои проекты</span>
+                    <span id="btnMyProjectsText">Мои проекты</span>
                 </button>
                 <button type="button" class="secondary-btn danger-btn" onclick="createNewProject()" id="btnNewProj" title="Новый проект">
-                    ✨ <span id="btnNewProjText">Новый</span>
+                    <span id="btnNewProjText">Новый проект</span>
                 </button>
             </div>
             <input type="file" id="projectFileInput" accept=".json,.zip" style="display:none" onchange="handleProjectFileUpload(event)">
@@ -54,23 +54,26 @@
                 <div class="mod-cover-column">
                     <label id="modCoverLabel" class="field-label">Обложка мода</label>
                     <div class="mod-cover-card" id="modCoverCard">
-                        <div class="mod-cover-preview" id="modCoverPreviewBox" onclick="openCoverModal()" title="Нажмите, чтобы открыть конструктор обложки">
+                        <div class="mod-cover-preview" id="modCoverPreviewBox" onclick="triggerDirectCoverUpload()" title="Нажмите, чтобы загрузить свою обложку">
                             <img id="modCoverImg" src="" alt="Cover" style="display:none;">
                             <div class="mod-cover-placeholder" id="modCoverPlaceholder">
-                                <span class="cover-icon">🎨</span>
                                 <span class="cover-text" id="noCoverLabel">Нет обложки</span>
                             </div>
                         </div>
                         <div class="mod-cover-actions">
-                            <button type="button" class="secondary-btn" onclick="openCoverModal()" id="btnMakeCover" style="width: 100%;">
-                                🎨 <span id="btnMakeCoverText">Сделать обложку</span>
+                            <button type="button" class="secondary-btn" onclick="triggerDirectCoverUpload()" id="btnUploadCover">
+                                <span id="btnUploadCoverText">Загрузить свою обложку</span>
+                            </button>
+                            <button type="button" class="secondary-btn" onclick="openCoverModal()" id="btnMakeCover">
+                                <span id="btnMakeCoverText">Создать в редакторе</span>
                             </button>
                             <div class="mod-cover-sub-actions" id="coverSubActions" style="display:none;">
-                                <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="btnDownloadCover">⬇️ Скачать</button>
-                                <button type="button" class="secondary-btn danger-btn" onclick="removeCoverImage()" id="btnRemoveCover">🗑️</button>
+                                <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="btnDownloadCover">Скачать</button>
+                                <button type="button" class="secondary-btn danger-btn" onclick="removeCoverImage()" id="btnRemoveCover">Удалить</button>
                             </div>
                         </div>
                     </div>
+                    <input type="file" id="directCoverFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none" onchange="handleDirectCoverUpload(event)">
                 </div>
             </div>
         </div>
@@ -111,10 +114,7 @@
             </div>
         </div>
 
-        <div class="gen-buttons-row">
-            <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
-            <button type="button" id="footerCoverBtn" class="secondary-gen-btn" onclick="openCoverModal()">🎨 Сделать обложку</button>
-        </div>
+        <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
     </div>
 
     <!-- Модальное окно конструктора обложки -->
@@ -123,7 +123,7 @@
         <div class="modal-window cover-modal-window">
             <div class="modal-header">
                 <div>
-                    <h2 id="coverModalTitle">🎨 Конструктор обложки для мода</h2>
+                    <h2 id="coverModalTitle">Конструктор обложки для мода</h2>
                     <p class="modal-subtitle" id="coverModalDesc">Создай обложку для мастерской Steam и лаунчера HoI4 (512×512 px)</p>
                 </div>
                 <button type="button" class="modal-close-btn" onclick="closeCoverModal()">&times;</button>
@@ -134,8 +134,8 @@
                         <canvas id="coverCanvas" width="512" height="512"></canvas>
                     </div>
                     <div class="cover-preview-buttons">
-                        <button type="button" onclick="applyCoverToMod()" id="coverApplyBtn">💾 Применить к моду</button>
-                        <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="coverDownloadBtn">⬇️ Скачать PNG</button>
+                        <button type="button" onclick="applyCoverToMod()" id="coverApplyBtn">Применить к моду</button>
+                        <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="coverDownloadBtn">Скачать PNG</button>
                     </div>
                 </div>
                 <div class="cover-controls-pane">
@@ -297,7 +297,7 @@
         <div class="modal-window projects-modal-window">
             <div class="modal-header">
                 <div>
-                    <h2 id="projectsModalTitle">📁 Сохранённые проекты</h2>
+                    <h2 id="projectsModalTitle">Сохранённые проекты</h2>
                     <p class="modal-subtitle" id="projectsModalDesc">Локальная библиотека проектов в браузере</p>
                 </div>
                 <button type="button" class="modal-close-btn" onclick="closeProjectsModal()">&times;</button>
@@ -305,7 +305,7 @@
             <div class="projects-modal-body">
                 <div class="projects-top-bar">
                     <button type="button" class="add-btn" onclick="saveCurrentToLibrary()" id="saveCurrentToLibBtn" style="margin: 0;">
-                        💾 <span id="saveCurrentToLibBtnText">Сохранить текущий проект в библиотеку</span>
+                        <span id="saveCurrentToLibBtnText">Сохранить текущий проект в библиотеку</span>
                     </button>
                 </div>
                 <div id="projectsListContainer" class="projects-list">

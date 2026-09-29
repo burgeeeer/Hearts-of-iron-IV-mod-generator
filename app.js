@@ -96,9 +96,9 @@ var i18n = {
         projStatusDraft: "Project:",
         projUnnamed: "Unnamed Mod",
         saveProjectBtn: "Save Project",
-        loadProjectBtn: "Load Project / Mod",
+        loadProjectBtn: "Load Project",
         myProjectsBtn: "My Projects",
-        newProjectBtn: "New",
+        newProjectBtn: "New Project",
         confirmNewProject: "Start a new project? All unsaved changes in the editor will be reset.",
         projectSavedSuccess: "Project saved to file!",
         projectLoadedSuccess: "Project loaded successfully!",
@@ -107,16 +107,17 @@ var i18n = {
         invalidFile: "Please select a .json project or .zip mod archive.",
 
         // Cover Card & Creator
-        modCoverLabel: "Mod Cover / Thumbnail",
-        noCoverLabel: "No cover added",
-        makeCoverBtn: "Make Cover",
-        editCoverBtn: "Edit Cover",
+        modCoverLabel: "Mod Cover",
+        noCoverLabel: "No cover",
+        uploadCoverBtn: "Upload Cover",
+        makeCoverBtn: "Create in Editor",
+        editCoverBtn: "Edit in Editor",
         downloadCoverBtn: "Download",
         removeCoverBtn: "Remove",
-        coverModalTitle: "🎨 Mod Cover Creator",
+        coverModalTitle: "Mod Cover Creator",
         coverModalDesc: "Design a cover / Steam Workshop & Launcher thumbnail for your mod (512×512 px)",
-        coverApplyBtn: "💾 Apply to Mod",
-        coverDownloadBtn: "⬇️ Download PNG",
+        coverApplyBtn: "Apply to Mod",
+        coverDownloadBtn: "Download PNG",
         coverTabTitleHead: "Title & Text",
         coverTitleInputLabel: "Title on Cover:",
         coverSubtitleInputLabel: "Subtitle / Tagline:",
@@ -147,7 +148,7 @@ var i18n = {
         noFlagsForCover: "No flags uploaded yet (upload in country section)",
 
         // Projects Library
-        projectsModalTitle: "📁 Saved Projects Library",
+        projectsModalTitle: "Saved Projects",
         projectsModalDesc: "Your local projects stored in the browser",
         saveCurrentToLibBtnText: "Save current project to library",
         noProjectsInLib: "No saved projects yet. Click 'Save current project to library' or export to file!",
@@ -230,9 +231,9 @@ var i18n = {
         projStatusDraft: "Проект:",
         projUnnamed: "Без названия",
         saveProjectBtn: "Сохранить проект",
-        loadProjectBtn: "Загрузить проект / мод",
+        loadProjectBtn: "Загрузить проект",
         myProjectsBtn: "Мои проекты",
-        newProjectBtn: "Новый",
+        newProjectBtn: "Новый проект",
         confirmNewProject: "Начать новый проект? Все несохраненные данные будут сброшены.",
         projectSavedSuccess: "Проект сохранён в файл!",
         projectLoadedSuccess: "Проект успешно загружен!",
@@ -243,14 +244,15 @@ var i18n = {
         // Обложка
         modCoverLabel: "Обложка мода",
         noCoverLabel: "Нет обложки",
-        makeCoverBtn: "Сделать обложку",
-        editCoverBtn: "Редактировать обложку",
+        uploadCoverBtn: "Загрузить свою обложку",
+        makeCoverBtn: "Создать в редакторе",
+        editCoverBtn: "Редактировать в редакторе",
         downloadCoverBtn: "Скачать",
         removeCoverBtn: "Удалить",
-        coverModalTitle: "🎨 Конструктор обложки для мода",
+        coverModalTitle: "Конструктор обложки для мода",
         coverModalDesc: "Создай обложку для мастерской Steam и лаунчера HoI4 (512×512 px)",
-        coverApplyBtn: "💾 Применить к моду",
-        coverDownloadBtn: "⬇️ Скачать PNG",
+        coverApplyBtn: "Применить к моду",
+        coverDownloadBtn: "Скачать PNG",
         coverTabTitleHead: "Название и текст",
         coverTitleInputLabel: "Название на обложке:",
         coverSubtitleInputLabel: "Подзаголовок:",
@@ -281,7 +283,7 @@ var i18n = {
         noFlagsForCover: "Нет загруженных флагов (загрузите во вкладке страны)",
 
         // Библиотека проектов
-        projectsModalTitle: "📁 Сохранённые проекты",
+        projectsModalTitle: "Сохранённые проекты",
         projectsModalDesc: "Локальная библиотека проектов в браузере",
         saveCurrentToLibBtnText: "Сохранить текущий проект в библиотеку",
         noProjectsInLib: "В библиотеке пока нет сохраненных проектов. Сохраните текущий или загрузите из файла!",
@@ -452,17 +454,17 @@ function applyLang(lang) {
     var ncLabel = document.getElementById('noCoverLabel');
     if (ncLabel) ncLabel.innerText = t.noCoverLabel;
 
+    var buc = document.getElementById('btnUploadCoverText');
+    if (buc) buc.innerText = t.uploadCoverBtn;
+
     var bmc = document.getElementById('btnMakeCoverText');
     if (bmc) bmc.innerText = modCoverData ? t.editCoverBtn : t.makeCoverBtn;
 
     var bdc = document.getElementById('btnDownloadCover');
-    if (bdc) bdc.innerText = '⬇️ ' + t.downloadCoverBtn;
+    if (bdc) bdc.innerText = t.downloadCoverBtn;
 
     var brc = document.getElementById('btnRemoveCover');
-    if (brc) brc.title = t.removeCoverBtn;
-
-    var bfc = document.getElementById('footerCoverBtn');
-    if (bfc) bfc.innerText = t.footerCoverBtn;
+    if (brc) brc.innerText = t.removeCoverBtn;
 
     // Project toolbar
     var spBtn = document.getElementById('btnSaveProjFileText');
@@ -1676,8 +1678,50 @@ function downloadCoverImage() {
     }
 }
 
+function triggerDirectCoverUpload() {
+    var inp = document.getElementById('directCoverFileInput');
+    if (inp) inp.click();
+}
+
+function handleDirectCoverUpload(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            var ctx = canvas.getContext('2d');
+
+            // Draw image cropped and centered to fill 512x512 (official HoI4 / Steam Workshop thumbnail format)
+            var scale = Math.max(512 / img.width, 512 / img.height);
+            var w = img.width * scale;
+            var h = img.height * scale;
+            var x = (512 - w) / 2;
+            var y = (512 - h) / 2;
+
+            ctx.drawImage(img, x, y, w, h);
+
+            modCoverData = canvas.toDataURL('image/png');
+            renderCoverPreview();
+            saveData();
+            showToast(currentLang === 'russian'
+                ? 'Обложка мода загружена (авто-размер 512×512 px)!'
+                : 'Mod cover uploaded (auto-scaled to 512×512 px)!');
+        };
+        img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
 function removeCoverImage() {
     modCoverData = null;
+    var inp = document.getElementById('directCoverFileInput');
+    if (inp) inp.value = '';
     renderCoverPreview();
     saveData();
     showToast(i18n[currentLang] ? i18n[currentLang].coverRemovedToast : 'Cover removed.');
@@ -1846,6 +1890,60 @@ async function importModZip(zip) {
         recovered.cover = 'data:image/png;base64,' + b64;
     }
 
+    // Step 2.1: Parse custom_puppets.txt first so we know all puppet rules & cosmetic tags
+    var puppetRuleMap = {};
+    var puppetFiles = zip.file(/custom_puppets\.txt$/i);
+    if (puppetFiles.length) {
+        var pText = await puppetFiles[0].async('text');
+        var pRegex = /limit\s*=\s*\{\s*ROOT\s*=\s*\{\s*OR\s*=\s*\{(?:\s*tag\s*=\s*([A-Za-z0-9_]+))[^}]*\}\s*\}\s*FROM\s*=\s*\{\s*OR\s*=\s*\{(?:\s*tag\s*=\s*([A-Za-z0-9_]+))[^}]*\}\s*\}\s*\}\s*ROOT\s*=\s*\{\s*set_cosmetic_tag\s*=\s*([A-Za-z0-9_]+)\s*\}/gs;
+        var pMatch;
+        while ((pMatch = pRegex.exec(pText)) !== null) {
+            var pTag = pMatch[1].toUpperCase();
+            var oTag = pMatch[2].toUpperCase();
+            if (oTag === 'EUR') oTag = 'EUR_UNIFIED';
+            var cosTag = pMatch[3].toUpperCase();
+            var pRule = recovered.puppetRules.find(function(r) {
+                return r.tag === pTag && r.overlord === oTag;
+            });
+            if (!pRule) {
+                pRule = mkEmptyPuppet();
+                pRule.tag = pTag;
+                pRule.overlord = oTag;
+                recovered.puppetRules.push(pRule);
+            }
+            puppetRuleMap[cosTag] = pRule;
+            puppetRuleMap[pTag + '_' + oTag] = pRule;
+            if (oTag === 'EUR_UNIFIED') puppetRuleMap[pTag + '_EUR'] = pRule;
+            if (oTag === 'EUR') puppetRuleMap[pTag + '_EUR_UNIFIED'] = pRule;
+        }
+
+        var pSimpleMatches = pText.matchAll(/set_cosmetic_tag\s*=\s*([A-Za-z0-9_]+)/g);
+        for (var pm of pSimpleMatches) {
+            var sCosTag = pm[1].toUpperCase();
+            if (!puppetRuleMap[sCosTag]) {
+                var sParts = sCosTag.split('_');
+                if (sParts.length >= 2) {
+                    var spTag = sParts[0];
+                    var soTag = sParts.slice(1).join('_');
+                    if (soTag === 'EUR') soTag = 'EUR_UNIFIED';
+                    var spRule = recovered.puppetRules.find(function(r) {
+                        return r.tag === spTag && r.overlord === soTag;
+                    });
+                    if (!spRule) {
+                        spRule = mkEmptyPuppet();
+                        spRule.tag = spTag;
+                        spRule.overlord = soTag;
+                        recovered.puppetRules.push(spRule);
+                    }
+                    puppetRuleMap[sCosTag] = spRule;
+                    puppetRuleMap[spTag + '_' + soTag] = spRule;
+                    if (soTag === 'EUR_UNIFIED') puppetRuleMap[spTag + '_EUR'] = spRule;
+                    if (soTag === 'EUR') puppetRuleMap[spTag + '_EUR_UNIFIED'] = spRule;
+                }
+            }
+        }
+    }
+
     var countryMap = {};
     function ensureCountry(tag, tagType) {
         tag = tag.toUpperCase();
@@ -1859,6 +1957,7 @@ async function importModZip(zip) {
         return countryMap[tag];
     }
 
+    // Step 2.2: Parse localisation files
     var locFiles = zip.file(/localisation\/.*\.ya?ml$/i);
     for (var li = 0; li < locFiles.length; li++) {
         var lf = locFiles[li];
@@ -1899,57 +1998,119 @@ async function importModZip(zip) {
                     });
                 }
             } else {
-                for (var ideoIdx = 0; ideoIdx < ideologies.length; ideoIdx++) {
-                    var ideoName = ideologies[ideoIdx];
-                    var re = new RegExp('^([A-Za-z0-9_]+)_' + ideoName + '(_DEF|_ADJ)?$');
-                    var cm = key.match(re);
-                    if (cm) {
-                        var cTag = cm[1];
-                        var suffix = cm[2];
-                        var co = ensureCountry(cTag, isCosmeticFile ? 'cosmetic' : 'normal');
-                        if (suffix === '_DEF') co.ideologies[ideoName].def = val;
-                        else if (suffix === '_ADJ') co.ideologies[ideoName].adj = val;
-                        else co.ideologies[ideoName].base = val;
+                // Check if key belongs to a puppet rule
+                var matchedPuppet = false;
+                for (var cosPrefix in puppetRuleMap) {
+                    if (key === cosPrefix || key.startsWith(cosPrefix + '_')) {
+                        matchedPuppet = true;
+                        var pr = puppetRuleMap[cosPrefix];
+                        if (!pr.shortName && val) pr.shortName = val;
+
+                        for (var pi = 0; pi < ideologies.length; pi++) {
+                            var pIdeo = ideologies[pi];
+                            if (key.indexOf('_' + pIdeo) !== -1) {
+                                if (!pr.ideologies[pIdeo].name) pr.ideologies[pIdeo].name = val;
+                                for (var ai = 0; ai < autonomyLevels.length; ai++) {
+                                    var aLvl = autonomyLevels[ai];
+                                    if (key.indexOf('_autonomy_' + aLvl) !== -1) {
+                                        if (!pr.ideologies[pIdeo].autonomy) pr.ideologies[pIdeo].autonomy = {};
+                                        pr.ideologies[pIdeo].autonomy[aLvl] = val;
+                                    }
+                                }
+                            }
+                        }
                         break;
+                    }
+                }
+
+                // If not a puppet rule, check if it's a regular/cosmetic country
+                if (!matchedPuppet) {
+                    for (var ideoIdx = 0; ideoIdx < ideologies.length; ideoIdx++) {
+                        var ideoName = ideologies[ideoIdx];
+                        var re = new RegExp('^([A-Za-z0-9_]+)_' + ideoName + '(_DEF|_ADJ)?$');
+                        var cm = key.match(re);
+                        if (cm) {
+                            var cTag = cm[1];
+                            var suffix = cm[2];
+                            var co = ensureCountry(cTag, isCosmeticFile ? 'cosmetic' : 'normal');
+                            if (suffix === '_DEF') co.ideologies[ideoName].def = val;
+                            else if (suffix === '_ADJ') co.ideologies[ideoName].adj = val;
+                            else co.ideologies[ideoName].base = val;
+                            break;
+                        }
                     }
                 }
             }
         }
     }
 
+    // Determine mode ('short' vs 'expanded') for each puppet rule:
+    // If all autonomy values equal the base ideology name, keep 'short' mode so the UI stays simple and compact.
+    // Only switch to 'expanded' if there are genuinely different names for individual autonomy levels.
+    for (var pri = 0; pri < recovered.puppetRules.length; pri++) {
+        var pRule = recovered.puppetRules[pri];
+        var isExpanded = false;
+        for (var pj = 0; pj < ideologies.length; pj++) {
+            var pid = ideologies[pj];
+            var pData = pRule.ideologies[pid];
+            if (!pData) continue;
+            var baseName = (pData.name || pRule.shortName || '').trim();
+            if (pData.autonomy) {
+                for (var ak = 0; ak < autonomyLevels.length; ak++) {
+                    var al = autonomyLevels[ak];
+                    var aVal = (pData.autonomy[al] || '').trim();
+                    if (aVal && baseName && aVal !== baseName) {
+                        isExpanded = true;
+                        break;
+                    }
+                }
+            }
+            if (isExpanded) break;
+        }
+        pRule.mode = isExpanded ? 'expanded' : 'short';
+    }
+
+    // Step 2.3: Parse flag files
     var flagFiles = zip.file(/gfx\/flags\/[^/]+\.tga$/i);
     for (var fi = 0; fi < flagFiles.length; fi++) {
         var ff = flagFiles[fi];
         var ffBase = ff.name.replace(/^.*[\\\/]/, '').replace(/\.tga$/i, '');
-        for (var fi2 = 0; fi2 < ideologies.length; fi2++) {
-            var idName = ideologies[fi2];
-            if (ffBase.endsWith('_' + idName)) {
-                var fTag = ffBase.slice(0, ffBase.length - idName.length - 1).toUpperCase();
-                var buf = await ff.async('arraybuffer');
-                var cv = tgaToCanvas(buf);
-                var fUrl = cv.toDataURL('image/png');
-                var coObj = ensureCountry(fTag, 'normal');
-                coObj.ideologies[idName].img = fUrl;
+        var buf = await ff.async('arraybuffer');
+        var cv = tgaToCanvas(buf);
+        var fUrl = cv.toDataURL('image/png');
+
+        var matchedPuppetFlag = false;
+        for (var cosPrefixF in puppetRuleMap) {
+            if (ffBase === cosPrefixF || ffBase.startsWith(cosPrefixF + '_')) {
+                matchedPuppetFlag = true;
+                var prF = puppetRuleMap[cosPrefixF];
+                var foundIdeo = false;
+                for (var piF = 0; piF < ideologies.length; piF++) {
+                    var pIdF = ideologies[piF];
+                    if (ffBase.endsWith('_' + pIdF)) {
+                        prF.ideologies[pIdF].img = fUrl;
+                        foundIdeo = true;
+                        break;
+                    }
+                }
+                if (!foundIdeo) {
+                    for (var piF2 = 0; piF2 < ideologies.length; piF2++) {
+                        var pIdF2 = ideologies[piF2];
+                        if (!prF.ideologies[pIdF2].img) prF.ideologies[pIdF2].img = fUrl;
+                    }
+                }
                 break;
             }
         }
-    }
 
-    var puppetFiles = zip.file(/custom_puppets\.txt$/i);
-    if (puppetFiles.length) {
-        var pText = await puppetFiles[0].async('text');
-        var pMatches = pText.matchAll(/set_cosmetic_tag\s*=\s*([A-Za-z0-9_]+)/g);
-        var seenPup = {};
-        for (var pm of pMatches) {
-            var cosTag = pm[1];
-            if (!seenPup[cosTag]) {
-                seenPup[cosTag] = true;
-                var parts = cosTag.split('_');
-                if (parts.length >= 2) {
-                    var pRule = mkEmptyPuppet();
-                    pRule.tag = parts[0];
-                    pRule.overlord = parts.slice(1).join('_');
-                    recovered.puppetRules.push(pRule);
+        if (!matchedPuppetFlag) {
+            for (var fi2 = 0; fi2 < ideologies.length; fi2++) {
+                var idName = ideologies[fi2];
+                if (ffBase.endsWith('_' + idName)) {
+                    var fTag = ffBase.slice(0, ffBase.length - idName.length - 1).toUpperCase();
+                    var coObj = ensureCountry(fTag, 'normal');
+                    coObj.ideologies[idName].img = fUrl;
+                    break;
                 }
             }
         }
@@ -1958,6 +2119,8 @@ async function importModZip(zip) {
     var cKeys = Object.keys(countryMap);
     if (cKeys.length > 0) {
         recovered.countries = cKeys.map(function(k) { return countryMap[k]; });
+    } else {
+        recovered.countries = [mkEmptyCountry()];
     }
 
     loadSaved(recovered);

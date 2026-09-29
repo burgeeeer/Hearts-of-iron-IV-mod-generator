@@ -530,7 +530,7 @@ canvas {
 .project-toolbar {
     background: var(--panel-bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 14px 18px;
     margin-bottom: 20px;
     display: flex;
@@ -641,6 +641,12 @@ canvas {
     min-width: 0;
 }
 
+.mod-cover-actions .secondary-btn {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
 .mod-cover-sub-actions {
     display: flex;
     gap: 6px;
@@ -648,25 +654,8 @@ canvas {
 
 .mod-cover-sub-actions .secondary-btn {
     flex: 1;
-    padding: 6px 8px;
-    font-size: 12px;
-}
-
-.gen-buttons-row {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 40px;
-}
-
-.gen-buttons-row #generateBtn {
-    flex: 2;
-    margin-bottom: 0;
-}
-
-.gen-buttons-row .secondary-btn {
-    flex: 1;
-    font-size: 16px;
-    padding: 12px 20px;
+    padding: 8px;
+    font-size: 13px;
 }
 
 /* ==========================================================
