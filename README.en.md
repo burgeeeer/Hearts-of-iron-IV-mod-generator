@@ -68,11 +68,21 @@ Available both **online in your browser** and as a **standalone desktop executab
 - *Example:* Province `6376` occupied by `GER` automatically renames to `Danzig`.
 - Generates `victory_points_l_russian.yml` with proper triggers.
 
-### 6. 💾 Local Auto-save Draft
-- All input data (countries, puppets, flags, renames) is stored continuously in `localStorage`.
-- No progress lost if the window or application is accidentally closed.
+### 6. 💾 Save & Load Projects (.json and .zip)
+- **Project Export**: Save full mod configurations (countries, flags, puppets, renames, cover image) into portable `*_project.json` files.
+- **Load Any Created Mod**: Import either `.json` project files or **any generated `.zip` mod archive**! The app will parse descriptors, recover localization, decode flags from TGA back to images, and load mod cover art.
+- **In-Browser Project Library**: Save multiple projects inside browser storage for instant switching, one-click loading, and cleanup.
+- **Continuous Auto-save**: Active editor state is safely retained in `localStorage`.
 
-### 7. 🌐 Dual-language Interface
+### 7. 🎨 Mod Cover & Thumbnail Creator
+- Built-in visual designer for 512×512 px Steam Workshop and Paradox Launcher covers.
+- Pre-made color themes (HoI4 Steel, Soviet Crimson, Military Khaki, Imperial Gold, Naval Blue, Sepia Map) or custom background upload with blur and dimming controls.
+- Country flag badge integration (Shield with golden border, circular emblem, or banner).
+- Customizable typography, subtitles, fonts, HoI4 vintage frame border, vignette, and tactical grid overlay.
+- Automatically included in generated `.zip` as `thumbnail.png` with `picture="thumbnail.png"` descriptor instruction.
+- Standalone PNG download button.
+
+### 8. 🌐 Dual-language Interface
 - Complete UI translation with quick **RU / EN** toggle button in the top-right corner.
 
 ---

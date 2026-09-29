@@ -290,19 +290,31 @@ canvas {
 }
 
 .secondary-btn {
-    padding: 7px 12px;
+    padding: 8px 14px;
     font-size: 13px;
+    font-weight: bold;
+    background: #3a3a48;
+    color: var(--text-color);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.secondary-btn:hover {
+    background: var(--accent);
+    color: #000;
 }
 
 .danger-btn {
-    background: #4a2525;
-    color: #f0cfcf;
-    border: 1px solid #6a3a3a;
+    background: #4a2525 !important;
+    color: #f0cfcf !important;
+    border: 1px solid #6a3a3a !important;
 }
 
 .danger-btn:hover {
-    background: #8b3a3a;
-    color: white;
+    background: #8b3a3a !important;
+    color: white !important;
 }
 
 .puppet-ideo-head {
@@ -496,4 +508,503 @@ canvas {
         right: 10px;
         padding: 6px 12px;
     }
+
+    .mod-header-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cover-modal-body {
+        grid-template-columns: 1fr;
+    }
+
+    .cover-canvas-wrapper {
+        width: 260px;
+        height: 260px;
+    }
+}
+
+/* ==========================================================
+   Project Management & Toolbar Styles
+   ========================================================== */
+
+.project-toolbar {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.project-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.project-toolbar-label {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.project-title-display {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.project-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================
+   Mod Header & Cover Section Styles
+   ========================================================== */
+
+.mod-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 20px;
+    align-items: start;
+}
+
+.mod-cover-card {
+    background: #18181d;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.mod-cover-preview {
+    width: 90px;
+    height: 90px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: #101014;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+}
+
+.mod-cover-preview:hover {
+    border-color: var(--accent);
+}
+
+.mod-cover-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mod-cover-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #777;
+    font-size: 11px;
+    gap: 4px;
+    user-select: none;
+}
+
+.mod-cover-placeholder .cover-icon {
+    font-size: 26px;
+}
+
+.mod-cover-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.mod-cover-sub-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.mod-cover-sub-actions .secondary-btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+.gen-buttons-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 40px;
+}
+
+.gen-buttons-row #generateBtn {
+    flex: 2;
+    margin-bottom: 0;
+}
+
+.gen-buttons-row .secondary-btn {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px 20px;
+}
+
+/* ==========================================================
+   Modals Common
+   ========================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(4px);
+}
+
+.modal-window {
+    position: relative;
+    background: var(--panel-bg);
+    border: 1px solid #555;
+    border-radius: 8px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.75);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.cover-modal-window {
+    width: 940px;
+    max-width: 96vw;
+}
+
+.projects-modal-window {
+    width: 700px;
+    max-width: 96vw;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #21212b;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--accent);
+}
+
+.modal-subtitle {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #999;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.modal-close-btn:hover {
+    color: white;
+}
+
+/* ==========================================================
+   Cover Creator Modal Specifics
+   ========================================================== */
+
+.cover-modal-body {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.cover-preview-pane {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.cover-canvas-wrapper {
+    width: 320px;
+    height: 320px;
+    max-width: 100%;
+    border: 2px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    background: #0d0d11;
+}
+
+.cover-canvas-wrapper canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.cover-preview-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.cover-preview-buttons button {
+    width: 100%;
+}
+
+.cover-controls-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    max-height: 72vh;
+    padding-right: 6px;
+}
+
+.cover-group {
+    background: #1f1f27;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+}
+
+.cover-group h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--accent);
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
+}
+
+.cover-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: normal;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.preset-theme-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.theme-pill {
+    background: #3a3a48;
+    color: var(--text-color);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.theme-pill:hover,
+.theme-pill.active {
+    background: var(--accent);
+    color: #000;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 38px;
+    border: 1px solid var(--border);
+    background: #18181d;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+/* ==========================================================
+   Projects Library Modal Specifics
+   ========================================================== */
+
+.projects-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.projects-top-bar {
+    margin-bottom: 16px;
+}
+
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.project-card {
+    background: #1f1f27;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.project-card-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.project-card-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background: #121217;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    overflow: hidden;
+}
+
+.project-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-card-meta h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.project-card-meta span {
+    font-size: 12px;
+    color: #888;
+}
+
+.project-card-btns {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.project-empty-msg {
+    text-align: center;
+    padding: 30px 10px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* ==========================================================
+   Toast Notification Styles
+   ========================================================== */
+
+.toast-box {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #282834;
+    border: 1px solid var(--accent);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.65);
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.25s ease;
+    z-index: 9999;
+}
+
+.toast-box.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }

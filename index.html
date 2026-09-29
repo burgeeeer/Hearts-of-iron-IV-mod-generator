@@ -21,9 +21,58 @@
     <div class="container" id="app-content" style="display: none;">
         <h1 id="titleText">Генератор стран HoI4</h1>
 
-        <div class="section">
-            <label id="modNameLabel" class="field-label">Название мода (на англ)</label>
-            <input type="text" id="modName" placeholder="MyAwesomeMod" oninput="saveData()">
+        <!-- Панель управления проектами -->
+        <div class="project-toolbar">
+            <div class="project-toolbar-left">
+                <span class="project-toolbar-label" id="projectStatusIndicator">Проект:</span>
+                <strong class="project-title-display" id="projectActiveName">MyAwesomeMod</strong>
+            </div>
+            <div class="project-toolbar-actions">
+                <button type="button" class="secondary-btn" onclick="saveProjectToFile()" id="btnSaveProjFile" title="Скачать файл проекта (.json)">
+                    💾 <span id="btnSaveProjFileText">Сохранить проект</span>
+                </button>
+                <button type="button" class="secondary-btn" onclick="triggerLoadProjectFile()" id="btnLoadProjFile" title="Загрузить проект (.json) или архив мода (.zip)">
+                    📂 <span id="btnLoadProjFileText">Загрузить проект / мод</span>
+                </button>
+                <button type="button" class="secondary-btn" onclick="openProjectsModal()" id="btnMyProjects" title="Библиотека проектов">
+                    📁 <span id="btnMyProjectsText">Мои проекты</span>
+                </button>
+                <button type="button" class="secondary-btn danger-btn" onclick="createNewProject()" id="btnNewProj" title="Новый проект">
+                    ✨ <span id="btnNewProjText">Новый</span>
+                </button>
+            </div>
+            <input type="file" id="projectFileInput" accept=".json,.zip" style="display:none" onchange="handleProjectFileUpload(event)">
+        </div>
+
+        <div class="section mod-header-section">
+            <div class="mod-header-grid">
+                <div class="mod-name-column">
+                    <label id="modNameLabel" class="field-label">Название мода (на англ)</label>
+                    <input type="text" id="modName" placeholder="MyAwesomeMod" oninput="onModNameChange()">
+                    <p class="section-desc" id="modNameDesc" style="margin-top: 8px; margin-bottom: 0;">Используется для папки мода, дескриптора и файлов проекта.</p>
+                </div>
+                <div class="mod-cover-column">
+                    <label id="modCoverLabel" class="field-label">Обложка мода</label>
+                    <div class="mod-cover-card" id="modCoverCard">
+                        <div class="mod-cover-preview" id="modCoverPreviewBox" onclick="openCoverModal()" title="Нажмите, чтобы открыть конструктор обложки">
+                            <img id="modCoverImg" src="" alt="Cover" style="display:none;">
+                            <div class="mod-cover-placeholder" id="modCoverPlaceholder">
+                                <span class="cover-icon">🎨</span>
+                                <span class="cover-text" id="noCoverLabel">Нет обложки</span>
+                            </div>
+                        </div>
+                        <div class="mod-cover-actions">
+                            <button type="button" class="secondary-btn" onclick="openCoverModal()" id="btnMakeCover" style="width: 100%;">
+                                🎨 <span id="btnMakeCoverText">Сделать обложку</span>
+                            </button>
+                            <div class="mod-cover-sub-actions" id="coverSubActions" style="display:none;">
+                                <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="btnDownloadCover">⬇️ Скачать</button>
+                                <button type="button" class="secondary-btn danger-btn" onclick="removeCoverImage()" id="btnRemoveCover">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="countries-container"></div>
@@ -62,8 +111,212 @@
             </div>
         </div>
 
-        <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
+        <div class="gen-buttons-row">
+            <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
+            <button type="button" id="footerCoverBtn" class="secondary-gen-btn" onclick="openCoverModal()">🎨 Сделать обложку</button>
+        </div>
     </div>
+
+    <!-- Модальное окно конструктора обложки -->
+    <div class="modal-overlay" id="coverModal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeCoverModal()"></div>
+        <div class="modal-window cover-modal-window">
+            <div class="modal-header">
+                <div>
+                    <h2 id="coverModalTitle">🎨 Конструктор обложки для мода</h2>
+                    <p class="modal-subtitle" id="coverModalDesc">Создай обложку для мастерской Steam и лаунчера HoI4 (512×512 px)</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeCoverModal()">&times;</button>
+            </div>
+            <div class="cover-modal-body">
+                <div class="cover-preview-pane">
+                    <div class="cover-canvas-wrapper">
+                        <canvas id="coverCanvas" width="512" height="512"></canvas>
+                    </div>
+                    <div class="cover-preview-buttons">
+                        <button type="button" onclick="applyCoverToMod()" id="coverApplyBtn">💾 Применить к моду</button>
+                        <button type="button" class="secondary-btn" onclick="downloadCoverImage()" id="coverDownloadBtn">⬇️ Скачать PNG</button>
+                    </div>
+                </div>
+                <div class="cover-controls-pane">
+                    <!-- Заголовок и текст -->
+                    <div class="cover-group">
+                        <h3 id="coverTabTitleHead">Название и текст</h3>
+                        <div class="input-group">
+                            <label id="coverTitleInputLabel">Название на обложке:</label>
+                            <input type="text" id="coverTitleInput" oninput="updateCoverCanvas()">
+                        </div>
+                        <div class="input-group">
+                            <label id="coverSubtitleInputLabel">Подзаголовок:</label>
+                            <input type="text" id="coverSubtitleInput" value="A Hearts of Iron IV Mod" oninput="updateCoverCanvas()">
+                        </div>
+                        <div class="cover-two-col">
+                            <div class="input-group">
+                                <label id="coverFontLabel">Шрифт:</label>
+                                <select id="coverFontFamily" onchange="updateCoverCanvas()">
+                                    <option value="Impact, 'Arial Black', sans-serif">Impact (Милитари плакат)</option>
+                                    <option value="'Cinzel', 'Georgia', serif">Cinzel / Georgia (Исторический)</option>
+                                    <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI (Современный)</option>
+                                    <option value="'Courier New', monospace">Courier (Штабной)</option>
+                                    <option value="'Arial Black', Gadget, sans-serif">Arial Black (Массивный)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label id="coverTitleSizeLabel">Размер названия:</label>
+                                <input type="range" id="coverTitleSize" min="24" max="64" value="42" oninput="updateCoverCanvas()">
+                            </div>
+                        </div>
+                        <div class="cover-two-col">
+                            <div class="input-group">
+                                <label id="coverTitleColorLabel">Цвет названия:</label>
+                                <input type="color" id="coverTitleColor" value="#ffffff" onchange="updateCoverCanvas()">
+                            </div>
+                            <div class="input-group">
+                                <label id="coverSubtitleColorLabel">Цвет подзаголовка:</label>
+                                <input type="color" id="coverSubtitleColor" value="#d88a00" onchange="updateCoverCanvas()">
+                            </div>
+                        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverTextShadow" checked onchange="updateCoverCanvas()">
+                            <span id="coverTextShadowLabel">Тень и контур текста</span>
+                        </label>
+                    </div>
+
+                    <!-- Фон -->
+                    <div class="cover-group">
+                        <h3 id="coverTabBgHead">Фон</h3>
+                        <label id="coverThemePresetsLabel">Цветовые темы:</label>
+                        <div class="preset-theme-pills">
+                            <button type="button" class="theme-pill active" onclick="setCoverTheme('iron')">Сталь (Iron)</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('red')">Красный стяг</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('khaki')">Милитари хаки</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('gold')">Имперский</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('navy')">Флот</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('sepia')">Карта</button>
+                            <button type="button" class="theme-pill" onclick="setCoverTheme('custom')">Свой градиент</button>
+                        </div>
+                        <div class="cover-two-col" id="customColorPickerRow" style="display:none; margin-top:8px;">
+                            <div class="input-group">
+                                <label>Цвет 1:</label>
+                                <input type="color" id="coverCustomColor1" value="#1c2026" onchange="updateCoverCanvas()">
+                            </div>
+                            <div class="input-group">
+                                <label>Цвет 2:</label>
+                                <input type="color" id="coverCustomColor2" value="#2c3340" onchange="updateCoverCanvas()">
+                            </div>
+                        </div>
+                        <div class="input-group" style="margin-top:10px;">
+                            <label id="coverUploadBgImgLabel">Картинка для фона (фото / арт):</label>
+                            <input type="file" id="coverBgFileInput" accept="image/*" onchange="handleCoverBgUpload(event)">
+                        </div>
+                        <div class="cover-two-col" id="bgAdjustRow" style="display:none;">
+                            <div class="input-group">
+                                <label id="coverBgDarknessLabel">Затемнение картинки:</label>
+                                <input type="range" id="coverBgDarkness" min="0" max="90" value="45" oninput="updateCoverCanvas()">
+                            </div>
+                            <div class="input-group">
+                                <label id="coverBgBlurLabel">Размытие (blur):</label>
+                                <input type="range" id="coverBgBlur" min="0" max="10" value="0" oninput="updateCoverCanvas()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Флаг на обложке -->
+                    <div class="cover-group">
+                        <h3 id="coverTabFlagHead">Флаг на обложке</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverShowFlag" checked onchange="updateCoverCanvas()">
+                            <span id="coverEnableFlagLabel">Отображать флаг на обложке</span>
+                        </label>
+                        <div id="coverFlagControls">
+                            <div class="input-group">
+                                <label id="coverSelectFlagLabel">Выберите флаг:</label>
+                                <select id="coverFlagSelect" onchange="updateCoverCanvas()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="cover-two-col">
+                                <div class="input-group">
+                                    <label id="coverFlagStyleLabel">Форма эмблемы:</label>
+                                    <select id="coverFlagShape" onchange="updateCoverCanvas()">
+                                        <option value="shield">Щит с золотой каймой</option>
+                                        <option value="rect">Прямоугольный стяг</option>
+                                        <option value="circle">Круглый медальон</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label id="coverFlagPosLabel">Положение:</label>
+                                    <select id="coverFlagPos" onchange="updateCoverCanvas()">
+                                        <option value="center">По центру</option>
+                                        <option value="top">Вверху</option>
+                                        <option value="bottom">Внизу</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label id="coverFlagSizeLabel">Размер эмблемы:</label>
+                                <input type="range" id="coverFlagSize" min="80" max="240" value="160" oninput="updateCoverCanvas()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Рамка и эффекты -->
+                    <div class="cover-group">
+                        <h3 id="coverTabEffectsHead">Рамка и эффекты</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverShowHoI4Badge" checked onchange="updateCoverCanvas()">
+                            <span id="coverHoI4BadgeLabel">Бейдж «HEARTS OF IRON IV» вверху</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverShowBorder" checked onchange="updateCoverCanvas()">
+                            <span id="coverFrameLabel">Винтажная рамка в стиле HoI4</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverShowVignette" checked onchange="updateCoverCanvas()">
+                            <span id="coverVignetteLabel">Виньетка (затемнение по краям)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="coverShowGrid" checked onchange="updateCoverCanvas()">
+                            <span id="coverGrungeLabel">Тактическая сетка / текстура</span>
+                        </label>
+                    </div>
+
+                    <!-- Готовая обложка -->
+                    <div class="cover-group">
+                        <h3 id="coverUploadReadyLabel">Или загрузить готовую обложку:</h3>
+                        <input type="file" id="coverReadyFileInput" accept="image/*" onchange="handleCoverReadyUpload(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно библиотеки проектов -->
+    <div class="modal-overlay" id="projectsModal" style="display: none;">
+        <div class="modal-backdrop" onclick="closeProjectsModal()"></div>
+        <div class="modal-window projects-modal-window">
+            <div class="modal-header">
+                <div>
+                    <h2 id="projectsModalTitle">📁 Сохранённые проекты</h2>
+                    <p class="modal-subtitle" id="projectsModalDesc">Локальная библиотека проектов в браузере</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeProjectsModal()">&times;</button>
+            </div>
+            <div class="projects-modal-body">
+                <div class="projects-top-bar">
+                    <button type="button" class="add-btn" onclick="saveCurrentToLibrary()" id="saveCurrentToLibBtn" style="margin: 0;">
+                        💾 <span id="saveCurrentToLibBtnText">Сохранить текущий проект в библиотеку</span>
+                    </button>
+                </div>
+                <div id="projectsListContainer" class="projects-list">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Всплывающее уведомление (Toast) -->
+    <div id="toastNotification" class="toast-box"></div>
 
     <footer class="site-footer">
         <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3780620332" target="_blank" rel="noopener" id="footerWorkshopLink">Мод в мастерской</a>
