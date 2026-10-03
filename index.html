@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HoI4 Mod Generator</title>
+    <!-- Подключение вашего файла картинки из папки с сайтом -->
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-524MZCD3RY"></script>
     <script>
@@ -19,7 +21,17 @@
     <button id="langToggleBtn" class="lang-switch-btn" onclick="toggleLanguage()">RU</button>
 
     <div class="container" id="app-content" style="display: none;">
-        <h1 id="titleText">Генератор стран HoI4</h1>
+        <!-- Заголовок со счётчиком онлайна слева -->
+        <div class="site-header-row">
+            <div class="online-counter-badge" id="onlineCounterBadge" title="Пользователи на сайте">
+                <span class="online-indicator-dot"></span>
+                <span class="online-counter-text">
+                    <strong id="onlineCountNum">3</strong>
+                    <span id="onlineCountLabel">онлайн</span>
+                </span>
+            </div>
+            <h1 id="titleText">Генератор стран HoI4</h1>
+        </div>
 
         <!-- Панель управления проектами -->
         <div class="project-toolbar">
@@ -89,8 +101,6 @@
         <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
     </div>
 
-
-
     <!-- Модальное окно библиотеки проектов -->
     <div class="modal-overlay" id="projectsModal" style="display: none;">
         <div class="modal-backdrop" onclick="closeProjectsModal()"></div>
@@ -108,9 +118,7 @@
                         <span id="saveCurrentToLibBtnText">Сохранить текущий проект в библиотеку</span>
                     </button>
                 </div>
-                <div id="projectsListContainer" class="projects-list">
-                    <!-- Заполняется динамически -->
-                </div>
+                <div id="projectsListContainer" class="projects-list"></div>
             </div>
         </div>
     </div>

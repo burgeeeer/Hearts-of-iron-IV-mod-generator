@@ -20,6 +20,83 @@ body {
     margin: 0 auto;
 }
 
+/* Строка заголовка и счётчика онлайна */
+.site-header-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.site-header-row h1 {
+    margin: 0;
+    line-height: 1;
+}
+
+/* Счётчик пользователей в едином стиле сайта */
+.online-counter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #18181d;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--text-color);
+    user-select: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.online-counter-badge:hover {
+    border-color: var(--accent);
+}
+
+/* Маркер статуса в виде янтарного тактического светодиода */
+.online-indicator-dot {
+    width: 7px;
+    height: 7px;
+    background-color: var(--accent);
+    border-radius: 2px;
+    box-shadow: 0 0 6px var(--accent);
+    animation: hoi4Beacon 2.4s infinite ease-in-out;
+}
+
+@keyframes hoi4Beacon {
+    0%, 100% {
+        opacity: 0.45;
+        box-shadow: 0 0 2px var(--accent);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 8px var(--accent);
+    }
+}
+
+.online-counter-text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.online-counter-text strong {
+    color: var(--accent);
+    font-weight: bold;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.online-counter-text span {
+    color: #999;
+    font-size: 11px;
+    font-weight: 600;
+}
+
 h1, h2 {
     color: var(--accent);
     margin-top: 0;
@@ -507,6 +584,12 @@ canvas {
         top: 10px;
         right: 10px;
         padding: 6px 12px;
+    }
+
+    .site-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 
     .mod-header-grid {
