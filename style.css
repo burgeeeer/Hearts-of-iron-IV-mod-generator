@@ -20,83 +20,6 @@ body {
     margin: 0 auto;
 }
 
-/* Строка заголовка и счётчика онлайна */
-.site-header-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.site-header-row h1 {
-    margin: 0;
-    line-height: 1;
-}
-
-/* Счётчик пользователей в едином стиле сайта */
-.online-counter-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #18181d;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 7px 12px;
-    font-size: 13px;
-    color: var(--text-color);
-    user-select: none;
-    box-sizing: border-box;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-.online-counter-badge:hover {
-    border-color: var(--accent);
-}
-
-/* Маркер статуса в виде янтарного тактического светодиода */
-.online-indicator-dot {
-    width: 7px;
-    height: 7px;
-    background-color: var(--accent);
-    border-radius: 2px;
-    box-shadow: 0 0 6px var(--accent);
-    animation: hoi4Beacon 2.4s infinite ease-in-out;
-}
-
-@keyframes hoi4Beacon {
-    0%, 100% {
-        opacity: 0.45;
-        box-shadow: 0 0 2px var(--accent);
-    }
-    50% {
-        opacity: 1;
-        box-shadow: 0 0 8px var(--accent);
-    }
-}
-
-.online-counter-text {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.online-counter-text strong {
-    color: var(--accent);
-    font-weight: bold;
-    font-family: Consolas, 'Courier New', monospace;
-    font-size: 14px;
-}
-
-.online-counter-text span {
-    color: #999;
-    font-size: 11px;
-    font-weight: 600;
-}
-
 h1, h2 {
     color: var(--accent);
     margin-top: 0;
@@ -494,9 +417,96 @@ canvas {
 
 .site-footer {
     text-align: center;
-    padding: 16px 0 24px;
+    padding: 20px 0 30px;
     font-size: 11px;
     color: #666;
+}
+
+/* Онлайн-счётчик в стиле saharina.ru */
+.online-counter-card {
+    display: inline-block;
+    background: #23232c;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin: 10px auto 16px;
+    text-align: left;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    min-width: 230px;
+    box-sizing: border-box;
+}
+
+.online-counter-title {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.online-pulse-dot {
+    width: 9px;
+    height: 9px;
+    background-color: #2ecc71;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 rgba(46, 204, 113, 0.4);
+    animation: onlinePulse 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes onlinePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(46, 204, 113, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
+}
+
+.online-counter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+    color: #b5b5c0;
+}
+
+.online-counter-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    gap: 16px;
+}
+
+.online-counter-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.online-counter-num {
+    font-weight: 700;
+    color: #ffffff;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    transition: color 0.35s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.online-counter-num.changed {
+    color: #ffcc00;
+    transform: scale(1.18);
+}
+
+.footer-links {
+    margin-top: 10px;
 }
 
 .site-footer a {
@@ -584,12 +594,6 @@ canvas {
         top: 10px;
         right: 10px;
         padding: 6px 12px;
-    }
-
-    .site-header-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
     }
 
     .mod-header-grid {

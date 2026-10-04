@@ -5,6 +5,18 @@ var puppetRules = [];
 var stateNameRules = [];
 var cityNameRules = [];
 var modCoverData = null;
+var coverBgImageObj = null;
+var coverCurrentTheme = 'iron';
+
+var coverThemePresets = {
+    iron: { color1: '#1c2026', color2: '#2c3340', text: '#ffffff', sub: '#d88a00' },
+    red: { color1: '#6e1111', color2: '#2e0505', text: '#ffffff', sub: '#ffcc66' },
+    khaki: { color1: '#3d4429', color2: '#1c2013', text: '#f3eedb', sub: '#d88a00' },
+    gold: { color1: '#38290b', color2: '#171104', text: '#fff6d6', sub: '#e6a817' },
+    navy: { color1: '#10223d', color2: '#060f1c', text: '#ffffff', sub: '#68b1f5' },
+    sepia: { color1: '#3d3020', color2: '#1c150b', text: '#faedd9', sub: '#e39f3b' },
+    custom: { color1: '#1c2026', color2: '#2c3340', text: '#ffffff', sub: '#d88a00' }
+};
 
 var autonomyLevels = [
     'reichskommissariat', 'reichsprotectorate', 'satellite', 'puppet', 
@@ -15,8 +27,6 @@ var autonomyLevels = [
 var i18n = {
     english: {
         title: "HoI4 Mod Generator",
-        onlineLabel: "online",
-        onlineTitle: "Active visitors",
         modName: "Mod Name (English):",
         modNameDesc: "Used for the mod folder, descriptor, and project files.",
         countryLabel: "Country",
@@ -34,6 +44,7 @@ var i18n = {
         adjName: "Adjective:",
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
+        footerCoverBtn: "🎨 Make Cover",
         puppetTitle: "Puppet Names & Flags",
         puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
@@ -46,6 +57,10 @@ var i18n = {
         puppetModeExpanded: "Expanded (Individual variants)",
         puppetShortName: "Puppet Name (all autonomy levels):",
         puppetNameForIdeology: "Name for this ideology:",
+        puppetNameFascism: "Name (Fascism):",
+        puppetNameDemocratic: "Name (Democratic):",
+        puppetNameCommunism: "Name (Communism):",
+        puppetNameNeutrality: "Name (Non-Aligned):",
         autonomyReichskommissariat: "Name (Reichskommissariat):",
         autonomyReichsprotectorate: "Name (Reichsprotectorate):",
         autonomySatellite: "Name (Satellite):",
@@ -76,6 +91,11 @@ var i18n = {
         invalidCityRule: "Fill in Province ID, Controller tag and New city name first.",
         footerWorkshop: "Mod on Workshop",
         footerSource: "Source Code",
+        onlineNow: "Online right now:",
+        onlineUsers: "Users:",
+        onlineGuests: "Guests:",
+        onlineMobile: "Mobile:",
+        onlineRobots: "Robots:",
 
         // Project Management
         projStatusDraft: "Project:",
@@ -90,6 +110,47 @@ var i18n = {
         projectModLoadedSuccess: "Mod archive loaded and opened for editing!",
         projectLoadError: "Error reading file: invalid format.",
         invalidFile: "Please select a .json project or .zip mod archive.",
+
+        // Cover Card & Creator
+        modCoverLabel: "Mod Cover",
+        noCoverLabel: "No cover",
+        uploadCoverBtn: "Upload Cover",
+        makeCoverBtn: "Create in Editor",
+        editCoverBtn: "Edit in Editor",
+        downloadCoverBtn: "Download",
+        removeCoverBtn: "Remove",
+        coverModalTitle: "Mod Cover Creator",
+        coverModalDesc: "Design a cover / Steam Workshop & Launcher thumbnail for your mod (512×512 px)",
+        coverApplyBtn: "Apply to Mod",
+        coverDownloadBtn: "Download PNG",
+        coverTabTitleHead: "Title & Text",
+        coverTitleInputLabel: "Title on Cover:",
+        coverSubtitleInputLabel: "Subtitle / Tagline:",
+        coverFontLabel: "Title Font:",
+        coverTitleSizeLabel: "Title Size:",
+        coverTitleColorLabel: "Title Color:",
+        coverSubtitleColorLabel: "Subtitle Color:",
+        coverTextShadowLabel: "Text Shadow & Outline",
+        coverTabBgHead: "Background",
+        coverThemePresetsLabel: "Color Themes:",
+        coverUploadBgImgLabel: "Upload Background Image (Photo / Art):",
+        coverBgDarknessLabel: "Dimming Overlay:",
+        coverBgBlurLabel: "Blur Effect:",
+        coverTabFlagHead: "Flag on Cover",
+        coverEnableFlagLabel: "Display Flag on Cover",
+        coverSelectFlagLabel: "Select Flag:",
+        coverFlagStyleLabel: "Badge Shape:",
+        coverFlagPosLabel: "Flag Position:",
+        coverFlagSizeLabel: "Badge Size:",
+        coverTabEffectsHead: "Frames & Effects",
+        coverHoI4BadgeLabel: "«HEARTS OF IRON IV» Top Banner",
+        coverFrameLabel: "HoI4 Vintage Frame Border",
+        coverVignetteLabel: "Vignette (Dark edges)",
+        coverGrungeLabel: "Tactical Grid / Scanlines",
+        coverUploadReadyLabel: "Or Upload Ready-made Cover:",
+        coverAppliedToast: "Cover applied to mod!",
+        coverRemovedToast: "Cover removed.",
+        noFlagsForCover: "No flags uploaded yet (upload in country section)",
 
         // Projects Library
         projectsModalTitle: "Saved Projects",
@@ -106,8 +167,6 @@ var i18n = {
     },
     russian: {
         title: "Генератор стран HoI4",
-        onlineLabel: "онлайн",
-        onlineTitle: "Сейчас на сайте",
         modName: "Название мода (на англ):",
         modNameDesc: "Используется для папки мода, дескриптора и файлов проекта.",
         countryLabel: "Страна",
@@ -125,6 +184,7 @@ var i18n = {
         adjName: "Прилагательное:",
         uploadFlag: "Загрузить флаг (PNG):",
         genBtn: "Сгенерировать мод",
+        footerCoverBtn: "🎨 Сделать обложку",
         puppetTitle: "Названия и флаги марионеток",
         puppetDesc: "Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
@@ -137,6 +197,10 @@ var i18n = {
         puppetModeExpanded: "Развёрнутый (для каждого случая)",
         puppetShortName: "Название марионетки (для всех уровней автономии):",
         puppetNameForIdeology: "Название для этой идеологии:",
+        puppetNameFascism: "Название (Фашизм):",
+        puppetNameDemocratic: "Название (Демократия):",
+        puppetNameCommunism: "Название (Коммунизм):",
+        puppetNameNeutrality: "Название (Нейтралитет):",
         autonomyReichskommissariat: "Название (Рейхскомиссариат):",
         autonomyReichsprotectorate: "Название (Рейхспротекторат):",
         autonomySatellite: "Название (Сателлит):",
@@ -167,6 +231,11 @@ var i18n = {
         invalidCityRule: "Заполни ID провинции, тег и название перед добавлением.",
         footerWorkshop: "Мод в мастерской",
         footerSource: "Исходный код сайта",
+        onlineNow: "Сейчас на сайте:",
+        onlineUsers: "Пользователей:",
+        onlineGuests: "Гостей:",
+        onlineMobile: "Мобильных:",
+        onlineRobots: "Роботов:",
 
         // Управление проектом
         projStatusDraft: "Проект:",
@@ -182,6 +251,47 @@ var i18n = {
         projectLoadError: "Ошибка чтения файла: неподдерживаемый формат.",
         invalidFile: "Пожалуйста, выберите файл проекта .json или архив мода .zip.",
 
+        // Обложка
+        modCoverLabel: "Обложка мода",
+        noCoverLabel: "Нет обложки",
+        uploadCoverBtn: "Загрузить свою обложку",
+        makeCoverBtn: "Создать в редакторе",
+        editCoverBtn: "Редактировать в редакторе",
+        downloadCoverBtn: "Скачать",
+        removeCoverBtn: "Удалить",
+        coverModalTitle: "Конструктор обложки для мода",
+        coverModalDesc: "Создай обложку для мастерской Steam и лаунчера HoI4 (512×512 px)",
+        coverApplyBtn: "Применить к моду",
+        coverDownloadBtn: "Скачать PNG",
+        coverTabTitleHead: "Название и текст",
+        coverTitleInputLabel: "Название на обложке:",
+        coverSubtitleInputLabel: "Подзаголовок:",
+        coverFontLabel: "Шрифт названия:",
+        coverTitleSizeLabel: "Размер названия:",
+        coverTitleColorLabel: "Цвет названия:",
+        coverSubtitleColorLabel: "Цвет подзаголовка:",
+        coverTextShadowLabel: "Тень и контур текста",
+        coverTabBgHead: "Фон",
+        coverThemePresetsLabel: "Цветовые темы:",
+        coverUploadBgImgLabel: "Загрузить картинку для фона (фото / арт):",
+        coverBgDarknessLabel: "Затемнение фона:",
+        coverBgBlurLabel: "Размытие фона:",
+        coverTabFlagHead: "Флаг на обложке",
+        coverEnableFlagLabel: "Отображать флаг на обложке",
+        coverSelectFlagLabel: "Выберите флаг:",
+        coverFlagStyleLabel: "Форма эмблемы:",
+        coverFlagPosLabel: "Положение флага:",
+        coverFlagSizeLabel: "Размер эмблемы:",
+        coverTabEffectsHead: "Рамка и эффекты",
+        coverHoI4BadgeLabel: "Бейдж «HEARTS OF IRON IV» вверху",
+        coverFrameLabel: "Винтажная рамка в стиле HoI4",
+        coverVignetteLabel: "Виньетка (затемнение по краям)",
+        coverGrungeLabel: "Тактическая сетка / текстура",
+        coverUploadReadyLabel: "Или загрузить готовую обложку:",
+        coverAppliedToast: "Обложка применена к моду!",
+        coverRemovedToast: "Обложка удалена.",
+        noFlagsForCover: "Нет загруженных флагов (загрузите во вкладке страны)",
+
         // Библиотека проектов
         projectsModalTitle: "Сохранённые проекты",
         projectsModalDesc: "Локальная библиотека проектов в браузере",
@@ -196,20 +306,6 @@ var i18n = {
         projSavedToLibToast: "Проект сохранён в библиотеку!"
     }
 };
-
-function initOnlinePresence() {
-    var countEl = document.getElementById('onlineCountNum');
-    if (!countEl) return;
-
-    var curCount = Math.floor(Math.random() * 4) + 2; // 2..5
-    countEl.textContent = curCount;
-
-    setInterval(function() {
-        var diff = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
-        curCount = Math.max(1, Math.min(18, curCount + diff));
-        countEl.textContent = curCount;
-    }, 12000);
-}
 
 function mkEmptyCountry() {
     var c = { tag: '', tagType: 'normal', ideologies: {} };
@@ -243,6 +339,220 @@ function toggleSection(el) {
     if (card) card.classList.toggle('collapsed');
 }
 
+/* Онлайн-счётчик пользователей (как на saharina.ru) */
+var OnlineCounter = {
+    state: {
+        total: 0,
+        users: 0,
+        guests: 0,
+        mobile: 0,
+        robots: 0
+    },
+    timerId: null,
+    isUserActive: false,
+    isMobile: false,
+
+    init: function() {
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+
+        this.checkUserActivity();
+        this.bindActivityListeners();
+        this.calculateOnline();
+        this.render();
+
+        var self = this;
+        if (this.timerId) clearInterval(this.timerId);
+        this.timerId = setInterval(function() {
+            self.tick();
+        }, 22000 + Math.floor(Math.random() * 8000));
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'hoi4_online_counter_state') {
+                try {
+                    var remote = JSON.parse(e.newValue);
+                    if (remote && remote.total) {
+                        self.state = remote;
+                        self.render();
+                    }
+                } catch(err) {}
+            }
+        });
+    },
+
+    checkUserActivity: function() {
+        try {
+            if (localStorage.getItem('hoi4_user_activated') === '1' ||
+                (countries && countries.length > 1) ||
+                (countries && countries[0] && (countries[0].tag || countries[0].normalTag || (countries[0].fascism && countries[0].fascism.baseName)))) {
+                this.isUserActive = true;
+            }
+        } catch(e) {}
+    },
+
+    markUserActive: function() {
+        if (!this.isUserActive) {
+            this.isUserActive = true;
+            try { localStorage.setItem('hoi4_user_activated', '1'); } catch(e) {}
+            if (this.state.guests > 1) {
+                this.state.guests--;
+                this.state.users++;
+                this.saveState();
+                this.render();
+            }
+        }
+    },
+
+    bindActivityListeners: function() {
+        var self = this;
+        var onUserEvent = function() {
+            self.markUserActive();
+        };
+        window.addEventListener('input', onUserEvent, { passive: true, once: true });
+        window.addEventListener('change', onUserEvent, { passive: true, once: true });
+    },
+
+    calculateOnline: function() {
+        var cached = null;
+        try {
+            var raw = localStorage.getItem('hoi4_online_counter_state');
+            var rawTime = localStorage.getItem('hoi4_online_counter_time');
+            if (raw && rawTime && (Date.now() - parseInt(rawTime, 10) < 180000)) {
+                cached = JSON.parse(raw);
+            }
+        } catch(e) {}
+
+        if (cached && cached.total > 0) {
+            this.state = cached;
+            this.ensureLogicalConsistency();
+            return;
+        }
+
+        var hour = new Date().getHours();
+        var hourFactors = [
+            0.65, 0.55, 0.45, 0.40, 0.40, 0.45,
+            0.55, 0.70, 0.85, 0.95, 1.05, 1.10,
+            1.15, 1.10, 1.15, 1.20, 1.25, 1.30,
+            1.40, 1.45, 1.40, 1.30, 1.10, 0.85
+        ];
+        var factor = hourFactors[hour] || 1.0;
+
+        var baseTotal = Math.round((28 + Math.floor(Math.random() * 24)) * factor);
+        if (baseTotal < 12) baseTotal = 12;
+
+        var userRatio = 0.12 + Math.random() * 0.10;
+        var users = Math.max(1, Math.round(baseTotal * userRatio));
+        if (this.isUserActive && users < 1) users = 1;
+        var guests = baseTotal - users;
+
+        var mobileRatio = 0.32 + Math.random() * 0.14;
+        var mobile = Math.round(baseTotal * mobileRatio);
+        if (this.isMobile && mobile < 1) mobile = 1;
+
+        var robots = 2 + Math.floor(Math.random() * 7);
+
+        this.state = {
+            total: baseTotal,
+            users: users,
+            guests: guests,
+            mobile: mobile,
+            robots: robots
+        };
+
+        this.saveState();
+    },
+
+    ensureLogicalConsistency: function() {
+        if (this.state.total !== this.state.users + this.state.guests) {
+            this.state.total = this.state.users + this.state.guests;
+        }
+        if (this.state.mobile > this.state.total) {
+            this.state.mobile = Math.max(1, Math.round(this.state.total * 0.35));
+        }
+    },
+
+    tick: function() {
+        var delta = Math.floor(Math.random() * 5) - 2;
+        var newTotal = this.state.total + delta;
+        if (newTotal < 10) newTotal = 10;
+        if (newTotal > 150) newTotal = 150;
+
+        var userDelta = 0;
+        if (Math.random() > 0.7) {
+            userDelta = Math.random() > 0.5 ? 1 : -1;
+        }
+        var newUsers = Math.max(1, this.state.users + userDelta);
+        var newGuests = Math.max(2, newTotal - newUsers);
+        newTotal = newUsers + newGuests;
+
+        var mobileDelta = Math.floor(Math.random() * 3) - 1;
+        var newMobile = Math.max(this.isMobile ? 1 : 0, Math.min(newTotal, this.state.mobile + mobileDelta));
+
+        var robotsDelta = Math.random() > 0.8 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+        var newRobots = Math.max(1, Math.min(15, this.state.robots + robotsDelta));
+
+        this.state = {
+            total: newTotal,
+            users: newUsers,
+            guests: newGuests,
+            mobile: newMobile,
+            robots: newRobots
+        };
+
+        this.saveState();
+        this.render();
+    },
+
+    saveState: function() {
+        try {
+            localStorage.setItem('hoi4_online_counter_state', JSON.stringify(this.state));
+            localStorage.setItem('hoi4_online_counter_time', Date.now().toString());
+        } catch(e) {}
+    },
+
+    render: function() {
+        var setVal = function(id, val) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var oldVal = el.textContent;
+            var strVal = String(val);
+            if (oldVal && oldVal !== '0' && oldVal !== strVal) {
+                el.textContent = strVal;
+                el.classList.add('changed');
+                setTimeout(function() {
+                    el.classList.remove('changed');
+                }, 400);
+            } else {
+                el.textContent = strVal;
+            }
+        };
+
+        setVal('onlineCounterTotal', this.state.total);
+        setVal('onlineCountUsers', this.state.users);
+        setVal('onlineCountGuests', this.state.guests);
+        setVal('onlineCountMobile', this.state.mobile);
+        setVal('onlineCountRobots', this.state.robots);
+    },
+
+    updateLanguage: function(t) {
+        if (!t) return;
+        var titleEl = document.getElementById('onlineCounterTitle');
+        if (titleEl && t.onlineNow) titleEl.textContent = t.onlineNow;
+
+        var uLabel = document.getElementById('onlineLabelUsers');
+        if (uLabel && t.onlineUsers) uLabel.textContent = t.onlineUsers;
+
+        var gLabel = document.getElementById('onlineLabelGuests');
+        if (gLabel && t.onlineGuests) gLabel.textContent = t.onlineGuests;
+
+        var mLabel = document.getElementById('onlineLabelMobile');
+        if (mLabel && t.onlineMobile) mLabel.textContent = t.onlineMobile;
+
+        var rLabel = document.getElementById('onlineLabelRobots');
+        if (rLabel && t.onlineRobots) rLabel.textContent = t.onlineRobots;
+    }
+};
+
 window.onload = function() {
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem('hoi4modData')); } catch(e) {}
@@ -272,7 +582,9 @@ window.onload = function() {
 
     document.getElementById('app-content').style.display = 'block';
     applyLang(lang);
-    initOnlinePresence();
+    if (window.OnlineCounter && typeof window.OnlineCounter.init === 'function') {
+        window.OnlineCounter.init();
+    }
 };
 
 function loadSaved(d) {
@@ -340,6 +652,7 @@ function loadSaved(d) {
         return { stateId: r.stateId || '', provinceId: r.provinceId || '', controllerTag: r.controllerTag || '', name: r.name || '' };
     }) : [mkEmptyCity()];
 
+    renderCoverPreview();
     updateProjectToolbar();
 }
 
@@ -359,13 +672,26 @@ function applyLang(lang) {
     document.getElementById('titleText').innerText = t.title;
     document.getElementById('modNameLabel').innerText = t.modName;
 
-    var badgeEl = document.getElementById('onlineCounterBadge');
-    var badgeLabel = document.getElementById('onlineCountLabel');
-    if (badgeEl && t.onlineTitle) badgeEl.title = t.onlineTitle;
-    if (badgeLabel && t.onlineLabel) badgeLabel.textContent = t.onlineLabel;
-
     var nmDesc = document.getElementById('modNameDesc');
     if (nmDesc) nmDesc.innerText = t.modNameDesc;
+
+    var mcLabel = document.getElementById('modCoverLabel');
+    if (mcLabel) mcLabel.innerText = t.modCoverLabel;
+
+    var ncLabel = document.getElementById('noCoverLabel');
+    if (ncLabel) ncLabel.innerText = t.noCoverLabel;
+
+    var buc = document.getElementById('btnUploadCoverText');
+    if (buc) buc.innerText = t.uploadCoverBtn;
+
+    var bmc = document.getElementById('btnMakeCoverText');
+    if (bmc) bmc.innerText = modCoverData ? t.editCoverBtn : t.makeCoverBtn;
+
+    var bdc = document.getElementById('btnDownloadCover');
+    if (bdc) bdc.innerText = t.downloadCoverBtn;
+
+    var brc = document.getElementById('btnRemoveCover');
+    if (brc) brc.innerText = t.removeCoverBtn;
 
     // Project toolbar
     var spBtn = document.getElementById('btnSaveProjFileText');
@@ -379,6 +705,66 @@ function applyLang(lang) {
 
     var npBtn = document.getElementById('btnNewProjText');
     if (npBtn) npBtn.innerText = t.newProjectBtn;
+
+    // Cover Creator Modal
+    var cmt = document.getElementById('coverModalTitle');
+    if (cmt) cmt.innerText = t.coverModalTitle;
+    var cmd = document.getElementById('coverModalDesc');
+    if (cmd) cmd.innerText = t.coverModalDesc;
+    var cth = document.getElementById('coverTabTitleHead');
+    if (cth) cth.innerText = t.coverTabTitleHead;
+    var cti = document.getElementById('coverTitleInputLabel');
+    if (cti) cti.innerText = t.coverTitleInputLabel;
+    var csi = document.getElementById('coverSubtitleInputLabel');
+    if (csi) csi.innerText = t.coverSubtitleInputLabel;
+    var cfl = document.getElementById('coverFontLabel');
+    if (cfl) cfl.innerText = t.coverFontLabel;
+    var cts = document.getElementById('coverTitleSizeLabel');
+    if (cts) cts.innerText = t.coverTitleSizeLabel;
+    var ctc = document.getElementById('coverTitleColorLabel');
+    if (ctc) ctc.innerText = t.coverTitleColorLabel;
+    var csc = document.getElementById('coverSubtitleColorLabel');
+    if (csc) csc.innerText = t.coverSubtitleColorLabel;
+    var cst = document.getElementById('coverTextShadowLabel');
+    if (cst) cst.innerText = t.coverTextShadowLabel;
+    var ctb = document.getElementById('coverTabBgHead');
+    if (ctb) ctb.innerText = t.coverTabBgHead;
+    var ctp = document.getElementById('coverThemePresetsLabel');
+    if (ctp) ctp.innerText = t.coverThemePresetsLabel;
+    var cub = document.getElementById('coverUploadBgImgLabel');
+    if (cub) cub.innerText = t.coverUploadBgImgLabel;
+    var cbd = document.getElementById('coverBgDarknessLabel');
+    if (cbd) cbd.innerText = t.coverBgDarknessLabel;
+    var cbb = document.getElementById('coverBgBlurLabel');
+    if (cbb) cbb.innerText = t.coverBgBlurLabel;
+    var ctf = document.getElementById('coverTabFlagHead');
+    if (ctf) ctf.innerText = t.coverTabFlagHead;
+    var cef = document.getElementById('coverEnableFlagLabel');
+    if (cef) cef.innerText = t.coverEnableFlagLabel;
+    var csf = document.getElementById('coverSelectFlagLabel');
+    if (csf) csf.innerText = t.coverSelectFlagLabel;
+    var cfs = document.getElementById('coverFlagStyleLabel');
+    if (cfs) cfs.innerText = t.coverFlagStyleLabel;
+    var cfp = document.getElementById('coverFlagPosLabel');
+    if (cfp) cfp.innerText = t.coverFlagPosLabel;
+    var cfz = document.getElementById('coverFlagSizeLabel');
+    if (cfz) cfz.innerText = t.coverFlagSizeLabel;
+    var cte = document.getElementById('coverTabEffectsHead');
+    if (cte) cte.innerText = t.coverTabEffectsHead;
+    var chb = document.getElementById('coverHoI4BadgeLabel');
+    if (chb) chb.innerText = t.coverHoI4BadgeLabel;
+    var cfb = document.getElementById('coverFrameLabel');
+    if (cfb) cfb.innerText = t.coverFrameLabel;
+    var cvl = document.getElementById('coverVignetteLabel');
+    if (cvl) cvl.innerText = t.coverVignetteLabel;
+    var cgl = document.getElementById('coverGrungeLabel');
+    if (cgl) cgl.innerText = t.coverGrungeLabel;
+    var cur = document.getElementById('coverUploadReadyLabel');
+    if (cur) cur.innerText = t.coverUploadReadyLabel;
+    var cab = document.getElementById('coverApplyBtn');
+    if (cab) cab.innerText = t.coverApplyBtn;
+    var cdb = document.getElementById('coverDownloadBtn');
+    if (cdb) cdb.innerText = t.coverDownloadBtn;
 
     // Projects Modal
     var pmt = document.getElementById('projectsModalTitle');
@@ -405,10 +791,15 @@ function applyLang(lang) {
     if (fwl) fwl.textContent = t.footerWorkshop;
     if (fsl) fsl.textContent = t.footerSource;
 
+    if (window.OnlineCounter && typeof window.OnlineCounter.updateLanguage === 'function') {
+        window.OnlineCounter.updateLanguage(t);
+    }
+
     renderCountries();
     renderPuppetRules();
     renderStateNameRules();
     renderCityNameRules();
+    renderCoverPreview();
     updateProjectToolbar();
     saveData();
 }
@@ -660,6 +1051,7 @@ function renderPuppetRules() {
             card.appendChild(metaGrid);
 
             if (r.mode === 'short' || !r.mode) {
+                // Short mode: one name per ideology, shared by every autonomy level.
                 for (var ii = 0; ii < ideologies.length; ii++) {
                     (function(ideo) {
                         var ideoTitle = document.createElement('div');
@@ -677,6 +1069,7 @@ function renderPuppetRules() {
                     })(ideologies[ii]);
                 }
             } else {
+                // Expanded mode: each ideology is a collapsible group with its own autonomy names.
                 for (var ii = 0; ii < ideologies.length; ii++) {
                     (function(ideo) {
                         var data = r.ideologies[ideo] || { name: '', img: null, autonomy: {} };
@@ -1044,6 +1437,588 @@ function updateProjectToolbar() {
     }
 }
 
+function renderCoverPreview() {
+    var imgEl = document.getElementById('modCoverImg');
+    var phEl = document.getElementById('modCoverPlaceholder');
+    var btnMake = document.getElementById('btnMakeCoverText');
+    var subActs = document.getElementById('coverSubActions');
+
+    if (modCoverData) {
+        if (imgEl) {
+            imgEl.src = modCoverData;
+            imgEl.style.display = 'block';
+        }
+        if (phEl) phEl.style.display = 'none';
+        if (btnMake) btnMake.textContent = i18n[currentLang] ? i18n[currentLang].editCoverBtn : 'Edit Cover';
+        if (subActs) subActs.style.display = 'flex';
+    } else {
+        if (imgEl) {
+            imgEl.src = '';
+            imgEl.style.display = 'none';
+        }
+        if (phEl) phEl.style.display = 'flex';
+        if (btnMake) btnMake.textContent = i18n[currentLang] ? i18n[currentLang].makeCoverBtn : 'Make Cover';
+        if (subActs) subActs.style.display = 'none';
+    }
+}
+
+function openCoverModal() {
+    var modal = document.getElementById('coverModal');
+    if (!modal) return;
+
+    var curModName = (document.getElementById('modName') || {}).value.trim();
+    var titleInp = document.getElementById('coverTitleInput');
+    if (titleInp && (!titleInp.value || titleInp.value === 'MyAwesomeMod' || titleInp.value === 'Custom Mod')) {
+        titleInp.value = curModName || 'My Mod';
+    }
+
+    populateCoverFlagsDropdown();
+    modal.style.display = 'flex';
+    updateCoverCanvas();
+}
+
+function closeCoverModal() {
+    var modal = document.getElementById('coverModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function setCoverTheme(themeName) {
+    coverCurrentTheme = themeName;
+    var pills = document.querySelectorAll('.theme-pill');
+    pills.forEach(function(p) { p.classList.remove('active'); });
+
+    for (var i = 0; i < pills.length; i++) {
+        var oc = pills[i].getAttribute('onclick') || '';
+        if (oc.indexOf("'" + themeName + "'") !== -1) {
+            pills[i].classList.add('active');
+            break;
+        }
+    }
+
+    var customRow = document.getElementById('customColorPickerRow');
+    if (customRow) {
+        customRow.style.display = (themeName === 'custom') ? 'grid' : 'none';
+    }
+
+    var preset = coverThemePresets[themeName];
+    if (preset) {
+        if (themeName !== 'custom') {
+            document.getElementById('coverCustomColor1').value = preset.color1;
+            document.getElementById('coverCustomColor2').value = preset.color2;
+            document.getElementById('coverTitleColor').value = preset.text;
+            document.getElementById('coverSubtitleColor').value = preset.sub;
+        }
+    }
+    updateCoverCanvas();
+}
+
+function handleCoverBgUpload(ev) {
+    var f = ev.target.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(e) {
+        var im = new Image();
+        im.onload = function() {
+            coverBgImageObj = im;
+            var adjRow = document.getElementById('bgAdjustRow');
+            if (adjRow) adjRow.style.display = 'grid';
+            updateCoverCanvas();
+        };
+        im.src = e.target.result;
+    };
+    rd.readAsDataURL(f);
+}
+
+function handleCoverReadyUpload(ev) {
+    var f = ev.target.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(e) {
+        var im = new Image();
+        im.onload = function() {
+            var cv = document.getElementById('coverCanvas');
+            var cx = cv.getContext('2d');
+            cx.clearRect(0, 0, 512, 512);
+            cx.drawImage(im, 0, 0, 512, 512);
+            modCoverData = cv.toDataURL('image/png');
+            renderCoverPreview();
+            saveData();
+            showToast(i18n[currentLang] ? i18n[currentLang].coverAppliedToast : 'Cover applied!');
+        };
+        im.src = e.target.result;
+    };
+    rd.readAsDataURL(f);
+}
+
+function populateCoverFlagsDropdown() {
+    var sel = document.getElementById('coverFlagSelect');
+    if (!sel) return;
+    var prevVal = sel.value;
+    sel.innerHTML = '';
+
+    var optionsCount = 0;
+    pullCountriesFromDOM();
+
+    for (var ci = 0; ci < countries.length; ci++) {
+        var c = countries[ci];
+        var cTag = c.tag || ('TAG' + (ci + 1));
+        for (var ii = 0; ii < ideologies.length; ii++) {
+            var ideo = ideologies[ii];
+            var ideoData = c.ideologies[ideo];
+            var imgData = (ideoData && ideoData.img) || null;
+            if (!imgData) {
+                var cvn = document.getElementById('c' + ci + '_' + ideo + '_cn');
+                if (cvn) imgData = cvn.getAttribute('data-img');
+            }
+            if (imgData) {
+                var opt = document.createElement('option');
+                opt.value = imgData;
+                opt.textContent = cTag + ' — ' + (i18n[currentLang][ideo] || ideo);
+                sel.appendChild(opt);
+                optionsCount++;
+            }
+        }
+    }
+
+    if (optionsCount === 0) {
+        var emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = i18n[currentLang].noFlagsForCover || 'No flags uploaded yet';
+        sel.appendChild(emptyOpt);
+    } else {
+        if (prevVal) sel.value = prevVal;
+    }
+}
+
+var flagImgCache = {};
+function getCachedImage(src, cb) {
+    if (!src) { cb(null); return; }
+    if (flagImgCache[src] && flagImgCache[src].complete) {
+        cb(flagImgCache[src]);
+        return;
+    }
+    var im = new Image();
+    im.onload = function() {
+        flagImgCache[src] = im;
+        cb(im);
+    };
+    im.onerror = function() { cb(null); };
+    im.src = src;
+}
+
+function createShieldPath(ctx, x, y, w, h) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + w, y);
+    ctx.lineTo(x + w, y + h * 0.55);
+    ctx.quadraticCurveTo(x + w, y + h * 0.85, x + w / 2, y + h);
+    ctx.quadraticCurveTo(x, y + h * 0.85, x, y + h * 0.55);
+    ctx.closePath();
+}
+
+function drawWrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    var words = text.split(' ');
+    var lines = [];
+    var currentLine = '';
+
+    for (var i = 0; i < words.length; i++) {
+        var testLine = currentLine ? (currentLine + ' ' + words[i]) : words[i];
+        var testWidth = ctx.measureText(testLine).width;
+        if (testWidth > maxWidth && currentLine) {
+            lines.push(currentLine);
+            currentLine = words[i];
+        } else {
+            currentLine = testLine;
+        }
+    }
+    if (currentLine) lines.push(currentLine);
+
+    var totalHeight = (lines.length - 1) * lineHeight;
+    var startY = y - (totalHeight / 2);
+
+    for (var j = 0; j < lines.length; j++) {
+        var lineY = startY + (j * lineHeight);
+        if (document.getElementById('coverTextShadow').checked) {
+            ctx.save();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 6;
+            ctx.lineJoin = 'miter';
+            ctx.miterLimit = 2;
+            ctx.strokeText(lines[j], x, lineY);
+            ctx.restore();
+        }
+        ctx.fillText(lines[j], x, lineY);
+    }
+    return lines.length;
+}
+
+function updateCoverCanvas() {
+    var cv = document.getElementById('coverCanvas');
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+    var w = 512;
+    var h = 512;
+
+    var flagSel = document.getElementById('coverFlagSelect');
+    var flagSrc = flagSel ? flagSel.value : null;
+
+    getCachedImage(flagSrc, function(flagImg) {
+        renderCoverToContext(ctx, w, h, flagImg);
+    });
+}
+
+function renderCoverToContext(ctx, w, h, flagImg) {
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Background
+    if (coverBgImageObj && coverBgImageObj.complete && coverBgImageObj.naturalWidth) {
+        var iw = coverBgImageObj.naturalWidth;
+        var ih = coverBgImageObj.naturalHeight;
+        var r = Math.max(w / iw, h / ih);
+        var nw = iw * r;
+        var nh = ih * r;
+        var nx = (w - nw) / 2;
+        var ny = (h - nh) / 2;
+        var blurVal = parseInt((document.getElementById('coverBgBlur') || {}).value, 10) || 0;
+        ctx.save();
+        if (blurVal > 0) ctx.filter = 'blur(' + blurVal + 'px)';
+        ctx.drawImage(coverBgImageObj, nx, ny, nw, nh);
+        ctx.restore();
+
+        var darkness = (parseInt((document.getElementById('coverBgDarkness') || {}).value, 10) || 45) / 100;
+        ctx.fillStyle = 'rgba(0,0,0,' + darkness + ')';
+        ctx.fillRect(0, 0, w, h);
+    } else {
+        var c1 = (document.getElementById('coverCustomColor1') || {}).value || '#1c2026';
+        var c2 = (document.getElementById('coverCustomColor2') || {}).value || '#2c3340';
+        var grad = ctx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0, c1);
+        grad.addColorStop(1, c2);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+    }
+
+    // 2. Tactical grid overlay
+    var showGrid = (document.getElementById('coverShowGrid') || {}).checked;
+    if (showGrid) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.lineWidth = 1;
+        for (var x = 32; x < w; x += 32) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+        }
+        for (var y = 32; y < h; y += 32) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // 3. HoI4 Top Badge
+    var showBadge = (document.getElementById('coverShowHoI4Badge') || {}).checked;
+    if (showBadge) {
+        ctx.save();
+        ctx.fillStyle = '#d88a00';
+        ctx.font = 'bold 12px "Segoe UI", Tahoma, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('★  HEARTS OF IRON IV MOD  ★', w / 2, 42);
+        ctx.strokeStyle = 'rgba(216, 138, 0, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(40, 38);
+        ctx.lineTo(135, 38);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(377, 38);
+        ctx.lineTo(472, 38);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // 4. Flag
+    var showFlag = (document.getElementById('coverShowFlag') || {}).checked;
+    var flagPos = (document.getElementById('coverFlagPos') || {}).value || 'center';
+    var flagShape = (document.getElementById('coverFlagShape') || {}).value || 'shield';
+    var flagSize = parseInt((document.getElementById('coverFlagSize') || {}).value, 10) || 160;
+
+    if (showFlag && flagImg) {
+        var fw = flagSize;
+        var fh = Math.round(flagSize * (52 / 82));
+        var fx = (w - fw) / 2;
+        var fy = 200;
+
+        if (flagPos === 'top') {
+            fy = 90;
+        } else if (flagPos === 'center') {
+            fy = 170;
+        } else if (flagPos === 'bottom') {
+            fy = 310;
+        }
+
+        ctx.save();
+        if (flagShape === 'shield') {
+            var shW = fw;
+            var shH = Math.round(fw * 1.15);
+            var shX = (w - shW) / 2;
+            var shY = fy - 10;
+
+            createShieldPath(ctx, shX, shY, shW, shH);
+            ctx.save();
+            ctx.clip();
+            ctx.drawImage(flagImg, shX, shY, shW, shH);
+            ctx.restore();
+
+            createShieldPath(ctx, shX, shY, shW, shH);
+            ctx.strokeStyle = '#d88a00';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else if (flagShape === 'circle') {
+            var rad = Math.round(fw / 2);
+            var cx = w / 2;
+            var cy = fy + Math.round(fh / 2);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(flagImg, cx - rad, cy - rad, rad * 2, rad * 2);
+            ctx.restore();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+            ctx.strokeStyle = '#d88a00';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        } else {
+            ctx.shadowColor = 'rgba(0,0,0,0.85)';
+            ctx.shadowBlur = 18;
+            ctx.shadowOffsetY = 6;
+            ctx.drawImage(flagImg, fx, fy, fw, fh);
+            ctx.strokeStyle = '#d88a00';
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(fx, fy, fw, fh);
+        }
+        ctx.restore();
+    }
+
+    // 5. Title & Subtitle Text
+    var titleVal = (document.getElementById('coverTitleInput') || {}).value || '';
+    if (!titleVal.trim()) {
+        titleVal = (document.getElementById('modName') || {}).value || 'Mod Title';
+    }
+    var subVal = (document.getElementById('coverSubtitleInput') || {}).value || '';
+    var fontFam = (document.getElementById('coverFontFamily') || {}).value || "Impact, 'Arial Black', sans-serif";
+    var titleSize = parseInt((document.getElementById('coverTitleSize') || {}).value, 10) || 42;
+    var titleCol = (document.getElementById('coverTitleColor') || {}).value || '#ffffff';
+    var subCol = (document.getElementById('coverSubtitleColor') || {}).value || '#d88a00';
+
+    var textY = 410;
+    if (showFlag && flagImg) {
+        if (flagPos === 'top') {
+            textY = 320;
+        } else if (flagPos === 'center') {
+            textY = 415;
+        } else if (flagPos === 'bottom') {
+            textY = 180;
+        }
+    } else {
+        textY = 260;
+    }
+
+    ctx.save();
+    ctx.font = 'bold ' + titleSize + 'px ' + fontFam;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = titleCol;
+
+    var numLines = drawWrapText(ctx, titleVal.toUpperCase(), w / 2, textY, 460, titleSize * 1.12);
+
+    if (subVal.trim()) {
+        var subY = textY + (numLines * (titleSize * 1.12) / 2) + 22;
+        ctx.font = '600 16px "Segoe UI", Tahoma, sans-serif';
+        ctx.fillStyle = subCol;
+        if ((document.getElementById('coverTextShadow') || {}).checked) {
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeText(subVal, w / 2, subY);
+        }
+        ctx.fillText(subVal, w / 2, subY);
+    }
+    ctx.restore();
+
+    // 6. Vignette
+    var showVignette = (document.getElementById('coverShowVignette') || {}).checked;
+    if (showVignette) {
+        ctx.save();
+        var vig = ctx.createRadialGradient(w / 2, h / 2, 120, w / 2, h / 2, 360);
+        vig.addColorStop(0, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.74)');
+        ctx.fillStyle = vig;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+    }
+
+    // 7. Vintage Frame Border
+    var showBorder = (document.getElementById('coverShowBorder') || {}).checked;
+    if (showBorder) {
+        ctx.save();
+        ctx.strokeStyle = '#d88a00';
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(12, 12, w - 24, h - 24);
+
+        ctx.strokeStyle = 'rgba(216, 138, 0, 0.55)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(18, 18, w - 36, h - 36);
+
+        ctx.fillStyle = '#d88a00';
+        var csz = 5;
+        ctx.fillRect(15, 15, csz, csz);
+        ctx.fillRect(w - 20, 15, csz, csz);
+        ctx.fillRect(15, h - 20, csz, csz);
+        ctx.fillRect(w - 20, h - 20, csz, csz);
+        ctx.restore();
+    }
+}
+
+function applyCoverToMod() {
+    var cv = document.getElementById('coverCanvas');
+    if (!cv) return;
+    modCoverData = cv.toDataURL('image/png');
+    renderCoverPreview();
+    saveData();
+    closeCoverModal();
+    showToast(i18n[currentLang] ? i18n[currentLang].coverAppliedToast : 'Cover applied to mod!');
+}
+
+function downloadCoverImage() {
+    var cv = document.getElementById('coverCanvas');
+    var modName = ((document.getElementById('modName') || {}).value.trim() || 'mod') + '_cover.png';
+    if (cv && cv.style.display !== 'none') {
+        cv.toBlob(function(b) {
+            saveAs(b, modName);
+        });
+    } else if (modCoverData) {
+        var b = dataURLToBlob(modCoverData);
+        saveAs(b, modName);
+    }
+}
+
+function triggerDirectCoverUpload() {
+    var inp = document.getElementById('directCoverFileInput');
+    if (inp) inp.click();
+}
+
+function handleDirectCoverUpload(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            var ctx = canvas.getContext('2d');
+
+            // Draw image cropped and centered to fill 512x512 (official HoI4 / Steam Workshop thumbnail format)
+            var scale = Math.max(512 / img.width, 512 / img.height);
+            var w = img.width * scale;
+            var h = img.height * scale;
+            var x = (512 - w) / 2;
+            var y = (512 - h) / 2;
+
+            ctx.drawImage(img, x, y, w, h);
+
+            modCoverData = canvas.toDataURL('image/png');
+            renderCoverPreview();
+            saveData();
+            showToast(currentLang === 'russian'
+                ? 'Обложка мода загружена (авто-размер 512×512 px)!'
+                : 'Mod cover uploaded (auto-scaled to 512×512 px)!');
+        };
+        img.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+}
+
+function removeCoverImage() {
+    modCoverData = null;
+    var inp = document.getElementById('directCoverFileInput');
+    if (inp) inp.value = '';
+    renderCoverPreview();
+    saveData();
+    showToast(i18n[currentLang] ? i18n[currentLang].coverRemovedToast : 'Cover removed.');
+}
+
+function dataURLToBlob(dataurl) {
+    var parts = dataurl.split(',');
+    var mime = parts[0].match(/:(.*?);/)[1];
+    var bstr = atob(parts[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+}
+
+function tgaToCanvas(buf) {
+    var dv = new DataView(buf);
+    var idLen = dv.getUint8(0);
+    var colorMapType = dv.getUint8(1);
+    var imageType = dv.getUint8(2);
+    var width = dv.getUint16(12, true);
+    var height = dv.getUint16(14, true);
+    var bpp = dv.getUint8(16);
+    var descriptor = dv.getUint8(17);
+    var isTopDown = (descriptor & 0x20) !== 0;
+
+    var canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext('2d');
+    var imgData = ctx.createImageData(width, height);
+    var data = imgData.data;
+
+    var offset = 18 + idLen;
+    if (colorMapType === 1) {
+        var cmLen = dv.getUint16(5, true);
+        var cmSize = dv.getUint8(7);
+        offset += cmLen * Math.ceil(cmSize / 8);
+    }
+
+    var bytesPerPixel = Math.floor(bpp / 8);
+    var u8 = new Uint8Array(buf);
+
+    for (var i = 0; i < height; i++) {
+        var y = isTopDown ? i : (height - 1 - i);
+        for (var x = 0; x < width; x++) {
+            var srcIdx = offset + (i * width + x) * bytesPerPixel;
+            var dstIdx = (y * width + x) * 4;
+            if (bytesPerPixel >= 3) {
+                var b = u8[srcIdx];
+                var g = u8[srcIdx + 1];
+                var r = u8[srcIdx + 2];
+                var a = (bytesPerPixel === 4) ? u8[srcIdx + 3] : 255;
+                data[dstIdx] = r;
+                data[dstIdx + 1] = g;
+                data[dstIdx + 2] = b;
+                data[dstIdx + 3] = a;
+            }
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return canvas;
+}
+
 function saveProjectToFile() {
     pullCountriesFromDOM();
     var modName = ((document.getElementById('modName') || {}).value.trim()) || 'CustomMod';
@@ -1090,9 +2065,330 @@ async function handleProjectFileUpload(ev) {
             }
         };
         rd.readAsText(f);
+    } else if (name.endsWith('.zip')) {
+        try {
+            var zip = await JSZip.loadAsync(f);
+            await importModZip(zip);
+        } catch(err) {
+            alert((i18n[currentLang] ? i18n[currentLang].projectLoadError : 'Error loading zip') + '\n' + err.message);
+        }
     } else {
         alert(i18n[currentLang] ? i18n[currentLang].invalidFile : 'Invalid file format.');
     }
+}
+
+async function importModZip(zip) {
+    // 1. Look for project.json anywhere in zip
+    var projFile = zip.file('project.json');
+    if (!projFile) {
+        var matches = zip.file(/project\.json$/i);
+        if (matches && matches.length) projFile = matches[0];
+    }
+
+    if (projFile) {
+        var jsonText = await projFile.async('text');
+        var data = JSON.parse(jsonText);
+        loadSaved(data);
+        applyLang(currentLang);
+        showToast(i18n[currentLang] ? i18n[currentLang].projectModLoadedSuccess : 'Mod loaded successfully!');
+        return;
+    }
+
+    // 2. Legacy mod ZIP reconstruction
+    var recovered = {
+        lang: currentLang,
+        modName: 'ImportedMod',
+        cover: null,
+        countries: [],
+        puppetRules: [],
+        stateNameRules: [],
+        cityNameRules: []
+    };
+
+    var modFiles = zip.file(/\.mod$/i);
+    if (modFiles && modFiles.length) {
+        var mFile = modFiles[0];
+        recovered.modName = mFile.name.replace(/\.mod$/i, '').replace(/.*\//, '');
+        var mText = await mFile.async('text');
+        var nmMatch = mText.match(/name\s*=\s*"([^"]+)"/);
+        if (nmMatch && nmMatch[1]) recovered.modName = nmMatch[1];
+    }
+
+    var thumbFiles = zip.file(/thumbnail\.png$/i);
+    if (!thumbFiles.length) thumbFiles = zip.file(/cover\.png$/i);
+    if (thumbFiles && thumbFiles.length) {
+        var b64 = await thumbFiles[0].async('base64');
+        recovered.cover = 'data:image/png;base64,' + b64;
+    }
+
+    // Step 2.1: Parse custom_puppets.txt first so we know all puppet rules & cosmetic tags
+    var puppetRuleMap = {};
+    var puppetFiles = zip.file(/custom_puppets\.txt$/i);
+    if (puppetFiles.length) {
+        var pText = await puppetFiles[0].async('text');
+        var pRegex = /limit\s*=\s*\{\s*ROOT\s*=\s*\{\s*OR\s*=\s*\{(?:\s*tag\s*=\s*([A-Za-z0-9_]+))[^}]*\}\s*\}\s*FROM\s*=\s*\{\s*OR\s*=\s*\{(?:\s*tag\s*=\s*([A-Za-z0-9_]+))[^}]*\}\s*\}\s*\}\s*ROOT\s*=\s*\{\s*set_cosmetic_tag\s*=\s*([A-Za-z0-9_]+)\s*\}/gs;
+        var pMatch;
+        while ((pMatch = pRegex.exec(pText)) !== null) {
+            var pTag = pMatch[1].toUpperCase();
+            var oTag = pMatch[2].toUpperCase();
+            if (oTag === 'EUR') oTag = 'EUR_UNIFIED';
+            var cosTag = pMatch[3].toUpperCase();
+            var pRule = recovered.puppetRules.find(function(r) {
+                return r.tag === pTag && r.overlord === oTag;
+            });
+            if (!pRule) {
+                pRule = mkEmptyPuppet();
+                pRule.tag = pTag;
+                pRule.overlord = oTag;
+                recovered.puppetRules.push(pRule);
+            }
+            puppetRuleMap[cosTag] = pRule;
+            puppetRuleMap[pTag + '_' + oTag] = pRule;
+            if (oTag === 'EUR_UNIFIED') puppetRuleMap[pTag + '_EUR'] = pRule;
+            if (oTag === 'EUR') puppetRuleMap[pTag + '_EUR_UNIFIED'] = pRule;
+        }
+
+        var pSimpleMatches = pText.matchAll(/set_cosmetic_tag\s*=\s*([A-Za-z0-9_]+)/g);
+        for (var pm of pSimpleMatches) {
+            var sCosTag = pm[1].toUpperCase();
+            if (!puppetRuleMap[sCosTag]) {
+                var sParts = sCosTag.split('_');
+                if (sParts.length >= 2) {
+                    var spTag = sParts[0];
+                    var soTag = sParts.slice(1).join('_');
+                    if (soTag === 'EUR') soTag = 'EUR_UNIFIED';
+                    var spRule = recovered.puppetRules.find(function(r) {
+                        return r.tag === spTag && r.overlord === soTag;
+                    });
+                    if (!spRule) {
+                        spRule = mkEmptyPuppet();
+                        spRule.tag = spTag;
+                        spRule.overlord = soTag;
+                        recovered.puppetRules.push(spRule);
+                    }
+                    puppetRuleMap[sCosTag] = spRule;
+                    puppetRuleMap[spTag + '_' + soTag] = spRule;
+                    if (soTag === 'EUR_UNIFIED') puppetRuleMap[spTag + '_EUR'] = spRule;
+                    if (soTag === 'EUR') puppetRuleMap[spTag + '_EUR_UNIFIED'] = spRule;
+                }
+            }
+        }
+    }
+
+    var countryMap = {};
+    function ensureCountry(tag, tagType) {
+        tag = tag.toUpperCase();
+        if (!countryMap[tag]) {
+            countryMap[tag] = { tag: tag, tagType: tagType || 'normal', ideologies: {} };
+            for (var k = 0; k < ideologies.length; k++) {
+                countryMap[tag].ideologies[ideologies[k]] = { base: '', def: '', adj: '', img: null };
+            }
+        }
+        if (tagType === 'cosmetic') countryMap[tag].tagType = 'cosmetic';
+        return countryMap[tag];
+    }
+
+    // Parse custom_state_names.txt to associate provinceId with stateId
+    var stateProvinceMap = {};
+    var stateFiles = zip.file(/custom_state_names\.txt$/i);
+    if (stateFiles.length) {
+        var sText = await stateFiles[0].async('text');
+        var ifBlocks = sText.split(/if\s*=\s*\{/);
+        for (var bi = 0; bi < ifBlocks.length; bi++) {
+            var b = ifBlocks[bi];
+            var sm = b.match(/state\s*=\s*(\d+)/);
+            if (sm) {
+                var sId = sm[1];
+                var pm1 = b.match(/reset_province_name\s*=\s*(\d+)/);
+                var pm2 = b.match(/set_province_name\s*=\s*\{\s*id\s*=\s*(\d+)/);
+                var pId = (pm1 && pm1[1]) || (pm2 && pm2[1]);
+                if (pId) stateProvinceMap[pId] = sId;
+            }
+        }
+    }
+
+    // Step 2.2: Parse localisation files
+    var locFiles = zip.file(/localisation\/.*\.ya?ml$/i);
+    for (var li = 0; li < locFiles.length; li++) {
+        var lf = locFiles[li];
+        var lfName = lf.name.toLowerCase();
+        var lText = await lf.async('text');
+        var lLines = lText.split(/\r?\n/);
+        var isCosmeticFile = lfName.indexOf('cosmetic') !== -1;
+        var isStateFile = lfName.indexOf('states_names') !== -1 || lfName.indexOf('state') !== -1;
+        var isCityFile = lfName.indexOf('victory_points') !== -1 || lfName.indexOf('city') !== -1;
+
+        for (var lineIdx = 0; lineIdx < lLines.length; lineIdx++) {
+            var line = lLines[lineIdx].trim();
+            if (line.charCodeAt(0) === 0xFEFF) line = line.slice(1);
+            if (!line || line.startsWith('#') || line.startsWith('l_')) continue;
+
+            var m = line.match(/^([A-Za-z0-9_]+):(?:0)?\s*"(.*)"$/);
+            if (!m) continue;
+            var key = m[1];
+            var val = m[2].replace(/\\"/g, '"');
+
+            if (isStateFile) {
+                var sm = key.match(/^([A-Za-z0-9_]+)_STATE_(\d+)$/);
+                if (sm) {
+                    recovered.stateNameRules.push({
+                        controllerTag: sm[1].toUpperCase(),
+                        stateId: sm[2],
+                        name: val
+                    });
+                }
+            } else if (isCityFile) {
+                var vm = key.match(/^([A-Za-z0-9_]+)_VICTORY_POINTS_(\d+)$/);
+                if (vm) {
+                    recovered.cityNameRules.push({
+                        controllerTag: vm[1].toUpperCase(),
+                        provinceId: vm[2],
+                        stateId: stateProvinceMap[vm[2]] || '',
+                        name: val
+                    });
+                }
+            } else {
+                // Check if key belongs to a puppet rule
+                var matchedPuppet = false;
+                for (var cosPrefix in puppetRuleMap) {
+                    if (key === cosPrefix || key.startsWith(cosPrefix + '_')) {
+                        matchedPuppet = true;
+                        var pr = puppetRuleMap[cosPrefix];
+                        if (!pr.shortName && val) pr.shortName = val;
+
+                        for (var pi = 0; pi < ideologies.length; pi++) {
+                            var pIdeo = ideologies[pi];
+                            if (key.indexOf('_' + pIdeo) !== -1) {
+                                if (!pr.ideologies[pIdeo].name) pr.ideologies[pIdeo].name = val;
+                                for (var ai = 0; ai < autonomyLevels.length; ai++) {
+                                    var aLvl = autonomyLevels[ai];
+                                    if (key.indexOf('_autonomy_' + aLvl) !== -1) {
+                                        if (!pr.ideologies[pIdeo].autonomy) pr.ideologies[pIdeo].autonomy = {};
+                                        pr.ideologies[pIdeo].autonomy[aLvl] = val;
+                                    }
+                                }
+                            }
+                        }
+                        // Also check autonomy without ideology (native HoI4 fallback)
+                        for (var ai2 = 0; ai2 < autonomyLevels.length; ai2++) {
+                            var aLvl2 = autonomyLevels[ai2];
+                            if (key.indexOf('_autonomy_' + aLvl2) !== -1) {
+                                for (var pi2 = 0; pi2 < ideologies.length; pi2++) {
+                                    var pIdeo2 = ideologies[pi2];
+                                    if (!pr.ideologies[pIdeo2].autonomy) pr.ideologies[pIdeo2].autonomy = {};
+                                    if (!pr.ideologies[pIdeo2].autonomy[aLvl2]) {
+                                        pr.ideologies[pIdeo2].autonomy[aLvl2] = val;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                // If not a puppet rule, check if it's a regular/cosmetic country
+                if (!matchedPuppet) {
+                    for (var ideoIdx = 0; ideoIdx < ideologies.length; ideoIdx++) {
+                        var ideoName = ideologies[ideoIdx];
+                        var re = new RegExp('^([A-Za-z0-9_]+)_' + ideoName + '(_DEF|_ADJ)?$');
+                        var cm = key.match(re);
+                        if (cm) {
+                            var cTag = cm[1];
+                            var suffix = cm[2];
+                            var co = ensureCountry(cTag, isCosmeticFile ? 'cosmetic' : 'normal');
+                            if (suffix === '_DEF') co.ideologies[ideoName].def = val;
+                            else if (suffix === '_ADJ') co.ideologies[ideoName].adj = val;
+                            else co.ideologies[ideoName].base = val;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Determine mode ('short' vs 'expanded') for each puppet rule:
+    // If all autonomy values equal the base ideology name, keep 'short' mode so the UI stays simple and compact.
+    // Only switch to 'expanded' if there are genuinely different names for individual autonomy levels.
+    for (var pri = 0; pri < recovered.puppetRules.length; pri++) {
+        var pRule = recovered.puppetRules[pri];
+        var isExpanded = false;
+        for (var pj = 0; pj < ideologies.length; pj++) {
+            var pid = ideologies[pj];
+            var pData = pRule.ideologies[pid];
+            if (!pData) continue;
+            var baseName = (pData.name || pRule.shortName || '').trim();
+            if (pData.autonomy) {
+                for (var ak = 0; ak < autonomyLevels.length; ak++) {
+                    var al = autonomyLevels[ak];
+                    var aVal = (pData.autonomy[al] || '').trim();
+                    if (aVal && baseName && aVal !== baseName) {
+                        isExpanded = true;
+                        break;
+                    }
+                }
+            }
+            if (isExpanded) break;
+        }
+        pRule.mode = isExpanded ? 'expanded' : 'short';
+    }
+
+    // Step 2.3: Parse flag files
+    var flagFiles = zip.file(/gfx\/flags\/[^/]+\.tga$/i);
+    for (var fi = 0; fi < flagFiles.length; fi++) {
+        var ff = flagFiles[fi];
+        var ffBase = ff.name.replace(/^.*[\\\/]/, '').replace(/\.tga$/i, '');
+        var buf = await ff.async('arraybuffer');
+        var cv = tgaToCanvas(buf);
+        var fUrl = cv.toDataURL('image/png');
+
+        var matchedPuppetFlag = false;
+        for (var cosPrefixF in puppetRuleMap) {
+            if (ffBase === cosPrefixF || ffBase.startsWith(cosPrefixF + '_')) {
+                matchedPuppetFlag = true;
+                var prF = puppetRuleMap[cosPrefixF];
+                var foundIdeo = false;
+                for (var piF = 0; piF < ideologies.length; piF++) {
+                    var pIdF = ideologies[piF];
+                    if (ffBase.endsWith('_' + pIdF)) {
+                        prF.ideologies[pIdF].img = fUrl;
+                        foundIdeo = true;
+                        break;
+                    }
+                }
+                if (!foundIdeo) {
+                    for (var piF2 = 0; piF2 < ideologies.length; piF2++) {
+                        var pIdF2 = ideologies[piF2];
+                        if (!prF.ideologies[pIdF2].img) prF.ideologies[pIdF2].img = fUrl;
+                    }
+                }
+                break;
+            }
+        }
+
+        if (!matchedPuppetFlag) {
+            for (var fi2 = 0; fi2 < ideologies.length; fi2++) {
+                var idName = ideologies[fi2];
+                if (ffBase.endsWith('_' + idName)) {
+                    var fTag = ffBase.slice(0, ffBase.length - idName.length - 1).toUpperCase();
+                    var coObj = ensureCountry(fTag, 'normal');
+                    coObj.ideologies[idName].img = fUrl;
+                    break;
+                }
+            }
+        }
+    }
+
+    var cKeys = Object.keys(countryMap);
+    if (cKeys.length > 0) {
+        recovered.countries = cKeys.map(function(k) { return countryMap[k]; });
+    } else {
+        recovered.countries = [mkEmptyCountry()];
+    }
+
+    loadSaved(recovered);
+    applyLang(currentLang);
+    showToast(i18n[currentLang] ? i18n[currentLang].projectModLoadedSuccess : 'Mod loaded successfully!');
 }
 
 function openProjectsModal() {
@@ -1339,6 +2635,7 @@ function buildPuppetOnActions(pRules) {
 
     var lines = [
         'on_actions = {',
+        '    # Automatic cosmetic tag application when puppeted (supports normal and cosmetic overlords)',
         '    on_puppet = {',
         '        effect = {'
     ];
@@ -1424,6 +2721,97 @@ function buildPuppetOnActions(pRules) {
         lines.push('            }');
     }
 
+    lines.push('        }');
+    lines.push('    }');
+
+    // Country-specific daily check for immediate response
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
+        lines.push('    on_daily_' + vr.tag + ' = {');
+        lines.push('        effect = {');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    is_subject = yes');
+        lines.push('                    OVERLORD = {');
+        lines.push('                        OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                            ' + ovConds[c]);
+        }
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                    NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('                }');
+        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+        lines.push('            }');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    has_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                    OR = {');
+        lines.push('                        is_subject = no');
+        lines.push('                        NOT = {');
+        lines.push('                            OVERLORD = {');
+        lines.push('                                OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                    ' + ovConds[c]);
+        }
+        lines.push('                                }');
+        lines.push('                            }');
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                drop_cosmetic_tag = yes');
+        lines.push('            }');
+        lines.push('        }');
+        lines.push('    }');
+    }
+
+    // Weekly global fallback
+    lines.push('    on_weekly = {');
+    lines.push('        effect = {');
+    for (var i = 0; i < validRules.length; i++) {
+        var vr = validRules[i];
+        var ovConds = getOverlordCond(vr.overlord);
+
+        lines.push('            # ' + vr.tag + ' as puppet of ' + vr.overlord);
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    ' + vr.tag + ' = {');
+        lines.push('                        is_subject = yes');
+        lines.push('                        OVERLORD = {');
+        lines.push('                            OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                ' + ovConds[c]);
+        }
+        lines.push('                            }');
+        lines.push('                        }');
+        lines.push('                        NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                ' + vr.tag + ' = { set_cosmetic_tag = ' + vr.cosTag + ' }');
+        lines.push('            }');
+        lines.push('            if = {');
+        lines.push('                limit = {');
+        lines.push('                    ' + vr.tag + ' = {');
+        lines.push('                        has_cosmetic_tag = ' + vr.cosTag);
+        lines.push('                        OR = {');
+        lines.push('                            is_subject = no');
+        lines.push('                            NOT = {');
+        lines.push('                                OVERLORD = {');
+        lines.push('                                    OR = {');
+        for (var c = 0; c < ovConds.length; c++) {
+            lines.push('                                        ' + ovConds[c]);
+        }
+        lines.push('                                    }');
+        lines.push('                                }');
+        lines.push('                            }');
+        lines.push('                        }');
+        lines.push('                    }');
+        lines.push('                }');
+        lines.push('                ' + vr.tag + ' = { drop_cosmetic_tag = yes }');
+        lines.push('            }');
+    }
     lines.push('        }');
     lines.push('    }');
     lines.push('}');
@@ -1535,6 +2923,8 @@ async function generateMod() {
     var fNorm = modFolder.folder('gfx/flags');
     var fMed = modFolder.folder('gfx/flags/medium');
     var fSmall = modFolder.folder('gfx/flags/small');
+
+    // In HoI4, files in localisation/replace must be located DIRECTLY inside localisation/replace without language subdirectories
     var replaceFolder = modFolder.folder('localisation/replace');
 
     var normalLocRu = ['l_russian:'];
@@ -1544,6 +2934,7 @@ async function generateMod() {
     var hasNormal = false;
     var hasCosmetic = false;
 
+    // 1. Normal and Cosmetic countries
     for (var ci = 0; ci < countries.length; ci++) {
         var tag = countries[ci].tag;
         if (!tag) continue;
@@ -1599,6 +2990,7 @@ async function generateMod() {
             }
         }
 
+        // Add base fallback keys (TAG, TAG_DEF, TAG_ADJ) so non-ideology lookups also work
         for (var tv3 = 0; tv3 < tagVariants.length; tv3++) {
             var cTag3 = tagVariants[tv3];
             if (firstBase) addLoc(targetRu, targetEn, cTag3, firstBase);
@@ -1607,6 +2999,7 @@ async function generateMod() {
         }
     }
 
+    // 2. Puppets (Stored in cosmetic localisation files)
     for (var pi = 0; pi < puppetRules.length; pi++) {
         var pr = puppetRules[pi];
         var pOv = String(pr.overlord || '').toUpperCase().trim();
@@ -1615,6 +3008,7 @@ async function generateMod() {
 
         hasCosmetic = true;
         var pMode = pr.mode || 'short';
+
         var ovVariants = [pOv];
         if (pOv === 'EUR' && ovVariants.indexOf('EUR_UNIFIED') === -1) ovVariants.push('EUR_UNIFIED');
         if (pOv === 'EUR_UNIFIED' && ovVariants.indexOf('EUR') === -1) ovVariants.push('EUR');
@@ -1637,6 +3031,7 @@ async function generateMod() {
                             var alShort = autonomyLevels[ak];
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + alShort, shortIdeoName);
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + alShort + '_DEF', shortIdeoName);
+                            // Also without ideology (native HoI4 autonomy fallback)
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + alShort, shortIdeoName);
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + alShort + '_DEF', shortIdeoName);
                         }
@@ -1665,6 +3060,7 @@ async function generateMod() {
                             var oTag = ovVariants[ovi];
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + al2, aNm);
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_' + pIdeo + '_autonomy_' + al2 + '_DEF', aNm);
+                            // Also without ideology (native HoI4 autonomy fallback)
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + al2, aNm);
                             addLoc(cosmeticLocRu, cosmeticLocEn, pTg + '_' + oTag + '_autonomy_' + al2 + '_DEF', aNm);
                         }
@@ -1673,6 +3069,7 @@ async function generateMod() {
             }
         }
 
+        // Add base fallback keys for the puppet
         if (puppetDefaultName) {
             for (var ovi = 0; ovi < ovVariants.length; ovi++) {
                 var oTag = ovVariants[ovi];
@@ -1681,6 +3078,7 @@ async function generateMod() {
             }
         }
 
+        // Flags for puppets
         for (var pj2 = 0; pj2 < ideologies.length; pj2++) {
             var pIdeo2 = ideologies[pj2];
             var pCn = document.getElementById('p' + pi + '_' + pIdeo2 + '_cn');
@@ -1694,6 +3092,7 @@ async function generateMod() {
                     if (pCm) fMed.file(pFn, canvasToTGA(pCm));
                     if (pCs) fSmall.file(pFn, canvasToTGA(pCs));
 
+                    // Write base flag fallback so country always has a flag regardless of ideology
                     var pBaseFn = pTg + '_' + oTag + '.tga';
                     if (!fNorm.file(pBaseFn)) {
                         fNorm.file(pBaseFn, canvasToTGA(pCn));
@@ -1705,6 +3104,7 @@ async function generateMod() {
         }
     }
 
+    // Save localisation files directly into localisation/replace/ with both languages
     if (hasNormal) {
         replaceFolder.file('countries_l_russian.yml', '\uFEFF' + normalLocRu.join('\n') + '\n');
         replaceFolder.file('countries_l_english.yml', '\uFEFF' + normalLocEn.join('\n') + '\n');
@@ -1714,6 +3114,7 @@ async function generateMod() {
         replaceFolder.file('countries_cosmetic_l_english.yml', '\uFEFF' + cosmeticLocEn.join('\n') + '\n');
     }
 
+    // Generate on_actions for puppets
     var puppetOnAct = buildPuppetOnActions(puppetRules);
     if (puppetOnAct) {
         modFolder.folder('common/on_actions').file('custom_puppets.txt', puppetOnAct + '\n');
@@ -1773,6 +3174,7 @@ async function generateMod() {
 
     zip.file(modName + '.mod', rootDescriptor);
 
+    // Embed project.json into both zip root and mod folder so any mod generated here can be reloaded and edited anytime!
     pullCountriesFromDOM();
     var projectData = {
         version: "2.0",
