@@ -166,7 +166,7 @@ var i18n = {
         projSavedToLibToast: "Project saved to library!"
     },
     russian: {
-        title: "Генератор стран HoI4",
+        title: "HOI4 Mod Generator",
         modName: "Название мода (на англ):",
         modNameDesc: "Используется для папки мода, дескриптора и файлов проекта.",
         countryLabel: "Страна",
