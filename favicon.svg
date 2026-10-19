@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="shieldBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#242830" />
+      <stop offset="100%" stop-color="#101216" />
+    </linearGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5c26b" />
+      <stop offset="50%" stop-color="#d49432" />
+      <stop offset="100%" stop-color="#8c5812" />
+    </linearGradient>
+    <linearGradient id="chevronGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#92400e" />
+    </linearGradient>
+    <filter id="badgeShadow" x="-15%" y="-10%" width="130%" height="135%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Outer Shield Shadow & Fill -->
+  <path d="M 14 8 C 14 6.3 15.3 5 17 5 L 47 5 C 48.7 5 50 6.3 50 8 L 50 32 C 50 44 41 53.5 32 58 C 23 53.5 14 44 14 32 Z"
+        fill="url(#shieldBg)"
+        stroke="url(#goldBorder)"
+        stroke-width="2.2"
+        stroke-linejoin="round"
+        filter="url(#badgeShadow)" />
+
+  <!-- Inner Inset Accent Line -->
+  <path d="M 16.5 8.5 L 47.5 8.5 L 47.5 31.5 C 47.5 42 39.5 50.5 32 54.5 C 24.5 50.5 16.5 42 16.5 31.5 Z"
+        fill="none"
+        stroke="#ffffff"
+        stroke-opacity="0.1"
+        stroke-width="0.8" />
+
+  <!-- Tactical Chevron Ribbon -->
+  <path d="M 18 35.5 L 32 43.5 L 46 35.5 L 46 39.5 L 32 47.5 L 18 39.5 Z"
+        fill="url(#chevronGrad)" />
+  <path d="M 18 35.5 L 32 43.5 L 32 45.5 L 18 37.5 Z"
+        fill="#f59e0b"
+        opacity="0.8" />
+
+  <!-- Tactical Compass Star -->
+  <!-- Top-Right: Pale Gold -->
+  <polygon points="32,14 32,26.5 36,22.5" fill="#fef08a" />
+  <!-- Top-Left: Medium Gold -->
+  <polygon points="32,14 32,26.5 28,22.5" fill="#d97706" />
+  <!-- Right-Top: Bright Gold -->
+  <polygon points="44.5,26.5 32,26.5 36,22.5" fill="#facc15" />
+  <!-- Right-Bottom: Medium Gold -->
+  <polygon points="44.5,26.5 32,26.5 36,30.5" fill="#ca8a04" />
+  <!-- Bottom-Right: Deep Bronze -->
+  <polygon points="32,39 32,26.5 36,30.5" fill="#a16207" />
+  <!-- Bottom-Left: Dark Bronze -->
+  <polygon points="32,39 32,26.5 28,30.5" fill="#713f12" />
+  <!-- Left-Bottom: Deep Bronze -->
+  <polygon points="19.5,26.5 32,26.5 28,30.5" fill="#b45309" />
+  <!-- Left-Top: Warm Gold -->
+  <polygon points="19.5,26.5 32,26.5 28,22.5" fill="#fde047" />
+
+  <!-- Center Diamond Pip -->
+  <polygon points="32,24.5 34,26.5 32,28.5 30,26.5" fill="#fffbeb" />
+
+  <!-- Subtle Strategic Compass Dots -->
+  <circle cx="32" cy="7.5" r="0.9" fill="#f5c26b" opacity="0.9" />
+</svg>
