@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOI4 Mod Generator</title>
+    
+    <!-- Clean Grotesque Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Instant theme initializer to prevent flash of wrong theme -->
+    <script>
+        (function() {
+            var savedTheme = 'light';
+            try {
+                savedTheme = localStorage.getItem('hoi4_theme') || 'light';
+            } catch(e) {}
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-524MZCD3RY"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -16,107 +34,394 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
-    <button id="langToggleBtn" class="lang-switch-btn" onclick="toggleLanguage()">RU</button>
-
-    <div class="container" id="app-content" style="display: none;">
-        <h1 id="titleText">HoI4 Mod Generator</h1>
-
-        <!-- Панель управления проектами -->
-        <div class="project-toolbar">
-            <div class="project-toolbar-left">
-                <span class="project-toolbar-label" id="projectStatusIndicator">Проект:</span>
-                <strong class="project-title-display" id="projectActiveName">MyAwesomeMod</strong>
+    <!-- Clean Minimalist Topbar -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="/" class="brand-link" aria-label="HOI4 Mod Generator">
+                    <span class="brand-logo-icon">🗺️</span>
+                    <div class="brand-titles">
+                        <span class="brand-name">HOI4 Mod Studio</span>
+                        <span class="brand-sub">Clausewitz v1.19.*</span>
+                    </div>
+                </a>
             </div>
-            <div class="project-toolbar-actions">
-                <button type="button" class="secondary-btn" onclick="saveProjectToFile()" id="btnSaveProjFile" title="Скачать файл проекта (.json)">
-                    <span id="btnSaveProjFileText">Сохранить проект</span>
+
+            <div class="project-toolbar">
+                <div class="project-toolbar-left">
+                    <span class="status-dot"></span>
+                    <span class="project-toolbar-label" id="projectStatusIndicator">Проект:</span>
+                    <strong class="project-title-display" id="projectActiveName">MyAwesomeMod</strong>
+                </div>
+                <div class="project-toolbar-actions">
+                    <button type="button" class="btn-secondary" onclick="saveProjectToFile()" id="btnSaveProjFile" title="Скачать проект (.json)">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        <span id="btnSaveProjFileText">Сохранить</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="triggerLoadProjectFile()" id="btnLoadProjFile" title="Загрузить проект (.json) или архив (.zip)">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span id="btnLoadProjFileText">Загрузить</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="openProjectsModal()" id="btnMyProjects" title="Библиотека проектов">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span id="btnMyProjectsText">Мои проекты</span>
+                    </button>
+                    <button type="button" class="btn-secondary btn-danger" onclick="createNewProject()" id="btnNewProj" title="Новый проект">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span id="btnNewProjText">Новый</span>
+                    </button>
+                </div>
+                <input type="file" id="projectFileInput" accept=".json,.zip" style="display:none" onchange="handleProjectFileUpload(event)">
+            </div>
+
+            <div class="header-right">
+                <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Переключить тему (Светлая / Тёмная)" aria-label="Сменить тему">
+                    <span id="themeToggleIcon">☀️</span>
+                    <span id="themeToggleText" class="theme-text">Светлая</span>
                 </button>
-                <button type="button" class="secondary-btn" onclick="triggerLoadProjectFile()" id="btnLoadProjFile" title="Загрузить проект (.json) или архив мода (.zip)">
-                    <span id="btnLoadProjFileText">Загрузить проект</span>
-                </button>
-                <button type="button" class="secondary-btn" onclick="openProjectsModal()" id="btnMyProjects" title="Библиотека проектов">
-                    <span id="btnMyProjectsText">Мои проекты</span>
-                </button>
-                <button type="button" class="secondary-btn danger-btn" onclick="createNewProject()" id="btnNewProj" title="Новый проект">
-                    <span id="btnNewProjText">Новый проект</span>
-                </button>
-            </div>
-            <input type="file" id="projectFileInput" accept=".json,.zip" style="display:none" onchange="handleProjectFileUpload(event)">
-        </div>
-
-        <div class="section mod-header-section">
-            <label id="modNameLabel" class="field-label" style="display:block; margin-bottom:6px; font-weight:600;">Название мода (на англ)</label>
-            <input type="text" id="modName" placeholder="MyAwesomeMod" oninput="onModNameChange()">
-            <p class="section-desc" id="modNameDesc" style="margin-top: 8px; margin-bottom: 0;">Используется для папки мода, дескриптора и файлов проекта.</p>
-        </div>
-
-        <div id="countries-container"></div>
-
-        <div class="section collapsible" id="puppet-section">
-            <div class="section-head" onclick="toggleSection(this)">
-                <h2 id="puppetTitle">Названия марионеток</h2>
-            </div>
-            <div class="section-body">
-                <p class="section-desc" id="puppetDesc">Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).</p>
-                <div id="puppet-rules-container"></div>
-                <button type="button" class="add-btn" id="puppetAddBtn" onclick="addPuppetRule()">＋ Добавить марионетку</button>
+                <button id="langToggleBtn" class="lang-btn" onclick="toggleLanguage()">RU</button>
             </div>
         </div>
+    </header>
 
-        <div class="section collapsible" id="state-name-section">
-            <div class="section-head" onclick="toggleSection(this)">
-                <h2 id="stateTitle">Названия регионов по контролирующей стране</h2>
+    <!-- Sub-navigation tabs -->
+    <nav class="sub-nav-bar" aria-label="Быстрый переход">
+        <div class="sub-nav-container">
+            <a href="#countries-section" class="sub-nav-link active">1. Страны и флаги</a>
+            <a href="#puppet-section" class="sub-nav-link">2. Марионетки</a>
+            <a href="#state-name-section" class="sub-nav-link">3. Регионы</a>
+            <a href="#city-name-section" class="sub-nav-link">4. Города</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container" id="app-content" style="display: none;">
+        <!-- Hidden semantic title for i18n -->
+        <h1 id="titleText" class="visually-hidden">HoI4 Mod Generator</h1>
+
+        <!-- Overview Hero / Split Setup -->
+        <div class="overview-grid">
+            <!-- Left: Mod Basics -->
+            <div class="card mod-header-section">
+                <div class="field-wrap">
+                    <div class="mod-header-headline">
+                        <label id="modNameLabel" for="modName" class="field-label">Название мода (на англ)</label>
+                        <span class="dim-badge">descriptor.mod</span>
+                    </div>
+                    <div class="input-prefix-box">
+                        <span class="prefix-label">mod/</span>
+                        <input type="text" id="modName" placeholder="MyAwesomeMod" oninput="onModNameChange()" autocomplete="off" spellcheck="false">
+                    </div>
+                    <p class="section-desc" id="modNameDesc">Используется для папки мода, дескриптора и файлов проекта.</p>
+                </div>
+
+                <div class="mod-details-grid">
+                    <div class="mod-detail-box">
+                        <span class="detail-label">Движок / Версия</span>
+                        <span class="detail-value">Clausewitz 1.14.* — 1.19.*</span>
+                    </div>
+                    <div class="mod-detail-box">
+                        <span class="detail-label">Кодировка локализации</span>
+                        <span class="detail-value">UTF-8 with BOM</span>
+                    </div>
+                </div>
             </div>
-            <div class="section-body">
-                <p class="section-desc" id="stateDesc">Переименовывай регион, когда им управляет конкретная страна.</p>
-                <div id="state-name-rules-container"></div>
-                <button type="button" class="add-btn" id="stateAddBtn" onclick="addStateNameRule()">＋ Добавить название региона</button>
-                <p class="section-note" id="stateDefaultNote">Исходное название восстанавливается при переходе под контроль другой страны.</p>
+
+            <!-- Right: Live Summary & Telemetry -->
+            <div class="card summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Сводка мода</span>
+                    <span class="format-pill">Clausewitz UTF-8 BOM</span>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="metric-item">
+                        <span class="metric-val" id="statCountCountries">1</span>
+                        <span class="metric-label">Стран</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-val" id="statCountPuppets">1</span>
+                        <span class="metric-label">Марионеток</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-val" id="statCountStates">1</span>
+                        <span class="metric-label">Регионов</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-val" id="statCountCities">1</span>
+                        <span class="metric-label">Городов</span>
+                    </div>
+                </div>
+
+                <div class="summary-file-tree">
+                    <span class="tree-caption">Структура создаваемого архива:</span>
+                    <div class="tree-body">
+                        <div>📁 <strong id="treeModDirName">MyAwesomeMod</strong>/</div>
+                        <div class="tree-sub">├── 📄 descriptor.mod</div>
+                        <div class="tree-sub">├── 📁 localisation/replace/ <span class="muted-note">(RU + EN)</span></div>
+                        <div class="tree-sub">├── 📁 gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
+                        <div class="tree-sub">└── 📁 common/on_actions/ <span class="muted-note">(марионетки и регионы)</span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="section collapsible" id="city-name-section">
-            <div class="section-head" onclick="toggleSection(this)">
-                <h2 id="cityTitle">Названия городов по контролирующей стране</h2>
+        <!-- SECTION 01: Countries & Flags -->
+        <section class="section-group" id="countries-section">
+            <div class="section-group-header">
+                <div>
+                    <h2 class="section-group-title">1. Названия стран и национальные флаги</h2>
+                    <p class="section-group-desc">Настройка названий для 4 идеологий и автоматическая нарезка флагов в TGA формат</p>
+                </div>
+                <div class="dim-pills">
+                    <span class="dim-pill">82×52</span>
+                    <span class="dim-pill">41×26</span>
+                    <span class="dim-pill">10×7</span>
+                </div>
             </div>
-            <div class="section-body">
-                <p class="section-desc" id="cityDesc">Переименовывай город / победную точку, когда его провинцией управляет конкретная страна.</p>
-                <div id="city-name-rules-container"></div>
-                <button type="button" class="add-btn" id="cityAddBtn" onclick="addCityNameRule()">＋ Добавить название города</button>
+
+            <!-- Filled dynamically by app.js -->
+            <div id="countries-container" class="countries-list"></div>
+        </section>
+
+        <!-- SECTION 02: Puppet Rules -->
+        <section class="section-group" id="puppet-section-wrap">
+            <div class="section collapsible" id="puppet-section">
+                <div class="section-head" onclick="toggleSection(this)">
+                    <div>
+                        <h2 id="puppetTitle">Названия марионеток</h2>
+                        <p class="section-head-desc">Правила автономии и кастомные флаги для связки Сюзерен ➔ Марионетка</p>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="section-body">
+                    <p class="section-desc" id="puppetDesc">Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).</p>
+                    
+                    <div id="puppet-rules-container" class="rules-list"></div>
+                    
+                    <button type="button" class="btn-add" id="puppetAddBtn" onclick="addPuppetRule()">
+                        ＋ Добавить марионетку
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 03: State Names by Controller -->
+        <section class="section-group" id="state-section-wrap">
+            <div class="section collapsible" id="state-name-section">
+                <div class="section-head" onclick="toggleSection(this)">
+                    <div>
+                        <h2 id="stateTitle">Названия регионов по контролирующей стране</h2>
+                        <p class="section-head-desc">Динамическое переименование регионов при оккупации или аннексии</p>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="section-body">
+                    <p class="section-desc" id="stateDesc">Переименовывай регион, когда им управляет конкретная страна. Например: State 39 под контролем GER становится Krakau.</p>
+                    
+                    <div id="state-name-rules-container" class="rules-list"></div>
+                    
+                    <button type="button" class="btn-add" id="stateAddBtn" onclick="addStateNameRule()">
+                        ＋ Добавить название региона
+                    </button>
+                    
+                    <p class="section-note" id="stateDefaultNote">Исходное название восстанавливается при переходе под контроль другой страны.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 04: City Names by Controller -->
+        <section class="section-group" id="city-section-wrap">
+            <div class="section collapsible" id="city-name-section">
+                <div class="section-head" onclick="toggleSection(this)">
+                    <div>
+                        <h2 id="cityTitle">Названия городов по контролирующей стране</h2>
+                        <p class="section-head-desc">Переименование ключевых городов и очков победы (Victory Points)</p>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="section-body">
+                    <p class="section-desc" id="cityDesc">Переименовывай город / победную точку, когда его провинцией управляет конкретная страна.</p>
+                    
+                    <div id="city-name-rules-container" class="rules-list"></div>
+                    
+                    <button type="button" class="btn-add" id="cityAddBtn" onclick="addCityNameRule()">
+                        ＋ Добавить название города
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sticky Bottom Bar -->
+        <div class="bottom-action-dock">
+            <div class="dock-container">
+                <div class="dock-summary">
+                    <span class="status-indicator-green"></span>
+                    <span id="launchSummaryText" class="dock-summary-text">1 страна • 1 правило марионетки • 1 регион</span>
+                </div>
+                <div class="dock-buttons">
+                    <button type="button" class="btn-secondary" onclick="saveProjectToFile()">
+                        <span>Экспорт .json</span>
+                    </button>
+                    <button id="generateBtn" onclick="generateMod()" class="btn-primary btn-generate">
+                        <span>Сгенерировать мод</span>
+                    </button>
+                </div>
             </div>
         </div>
+    </main>
 
-        <button id="generateBtn" onclick="generateMod()">Сгенерировать мод</button>
-    </div>
-
-
-
-    <!-- Модальное окно библиотеки проектов -->
+    <!-- Projects Library Modal -->
     <div class="modal-overlay" id="projectsModal" style="display: none;">
         <div class="modal-backdrop" onclick="closeProjectsModal()"></div>
         <div class="modal-window projects-modal-window">
             <div class="modal-header">
                 <div>
-                    <h2 id="projectsModalTitle">Сохранённые проекты</h2>
+                    <h2 id="projectsModalTitle" class="modal-title">Сохранённые проекты</h2>
                     <p class="modal-subtitle" id="projectsModalDesc">Локальная библиотека проектов в браузере</p>
                 </div>
-                <button type="button" class="modal-close-btn" onclick="closeProjectsModal()">&times;</button>
+                <button type="button" class="modal-close-btn" onclick="closeProjectsModal()" aria-label="Закрыть">&times;</button>
             </div>
             <div class="projects-modal-body">
                 <div class="projects-top-bar">
-                    <button type="button" class="add-btn" onclick="saveCurrentToLibrary()" id="saveCurrentToLibBtn" style="margin: 0;">
+                    <button type="button" class="btn-primary" onclick="saveCurrentToLibrary()" id="saveCurrentToLibBtn">
                         <span id="saveCurrentToLibBtnText">Сохранить текущий проект в библиотеку</span>
                     </button>
                 </div>
                 <div id="projectsListContainer" class="projects-list">
-                    <!-- Заполняется динамически -->
+                    <!-- Populated dynamically by app.js -->
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-box" role="status" aria-live="polite"></div>
+
+    <!-- Clean Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <span>Hearts of Iron IV Mod Generator</span>
+                <span class="bullet">•</span>
+                <span>Clausewitz Engine (1.14 - 1.19+)</span>
+            </div>
+            <div class="footer-right">
+                <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3780620332" target="_blank" rel="noopener noreferrer" id="footerWorkshopLink" class="footer-link">Steam Workshop</a>
+                <span class="bullet">•</span>
+                <a href="https://github.com/burgeeeer/Hearts-of-iron-IV-mod-generator" target="_blank" rel="noopener noreferrer" id="footerSourceLink" class="footer-link">GitHub Repository</a>
+            </div>
         </div>
     </footer>
 
+    <!-- Core App Engine -->
     <script src="app.js"></script>
+
+    <!-- Real-time Metrics & Drag-and-Drop Enhancements -->
+    <script>
+        (function() {
+            function updateSummary() {
+                var modName = (document.getElementById('modName') || {}).value || 'MyAwesomeMod';
+                var dirEl = document.getElementById('treeModDirName');
+                if (dirEl) dirEl.textContent = modName.trim() || 'MyAwesomeMod';
+
+                var cCount = (window.countries && window.countries.length) || 0;
+                var pCount = (window.puppetRules && window.puppetRules.length) || 0;
+                var sCount = (window.stateNameRules && window.stateNameRules.length) || 0;
+                var vCount = (window.cityNameRules && window.cityNameRules.length) || 0;
+
+                var elC = document.getElementById('statCountCountries');
+                var elP = document.getElementById('statCountPuppets');
+                var elS = document.getElementById('statCountStates');
+                var elV = document.getElementById('statCountCities');
+                if (elC) elC.textContent = cCount;
+                if (elP) elP.textContent = pCount;
+                if (elS) elS.textContent = sCount;
+                if (elV) elV.textContent = vCount;
+
+                var summaryText = document.getElementById('launchSummaryText');
+                if (summaryText) {
+                    summaryText.textContent = cCount + ' стран(ы) • ' + pCount + ' правил марионеток • ' + sCount + ' регионов • ' + vCount + ' городов';
+                }
+            }
+
+            document.addEventListener('input', function() {
+                setTimeout(updateSummary, 80);
+            });
+
+            window.addEventListener('load', function() {
+                setTimeout(updateSummary, 350);
+                setInterval(updateSummary, 2000);
+            });
+
+            // Drag and drop for flags
+            document.addEventListener('dragover', function(e) {
+                var box = e.target.closest('.flag-preview-container');
+                if (box) {
+                    e.preventDefault();
+                    box.classList.add('drag-active');
+                }
+            });
+
+            document.addEventListener('dragleave', function(e) {
+                var box = e.target.closest('.flag-preview-container');
+                if (box) {
+                    box.classList.remove('drag-active');
+                }
+            });
+
+            document.addEventListener('drop', function(e) {
+                var box = e.target.closest('.flag-preview-container');
+                if (box) {
+                    e.preventDefault();
+                    box.classList.remove('drag-active');
+                    var file = e.dataTransfer.files && e.dataTransfer.files[0];
+                    if (file && file.type.indexOf('image') !== -1) {
+                        var fileInput = box.querySelector('input[type="file"]');
+                        if (fileInput) {
+                            var dt = new DataTransfer();
+                            dt.items.add(file);
+                            fileInput.files = dt.files;
+                            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
+                }
+            });
+
+            // Theme switcher with persistence in localStorage
+            window.toggleTheme = function() {
+                var cur = document.documentElement.getAttribute('data-theme') || 'light';
+                var next = cur === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', next);
+                try {
+                    localStorage.setItem('hoi4_theme', next);
+                } catch(e) {}
+                updateThemeToggleUI(next);
+            };
+
+            function updateThemeToggleUI(theme) {
+                var iconEl = document.getElementById('themeToggleIcon');
+                var textEl = document.getElementById('themeToggleText');
+                var isDark = (theme === 'dark');
+                if (iconEl) iconEl.textContent = isDark ? '🌙' : '☀️';
+                if (textEl) {
+                    var isRu = (!window.currentLang || window.currentLang === 'russian');
+                    textEl.textContent = isDark ? (isRu ? 'Тёмная' : 'Dark') : (isRu ? 'Светлая' : 'Light');
+                }
+            }
+
+            // Sync theme button label on boot
+            updateThemeToggleUI(document.documentElement.getAttribute('data-theme') || 'light');
+
+            // Also sync when language changes
+            var origApplyLang = window.applyLang;
+            if (typeof origApplyLang === 'function') {
+                window.applyLang = function(lang) {
+                    origApplyLang(lang);
+                    updateThemeToggleUI(document.documentElement.getAttribute('data-theme') || 'light');
+                };
+            }
+        })();
+    </script>
 </body>
 </html>
