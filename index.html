@@ -37,6 +37,8 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="vanilla_cosmetic_data.js"></script>
+    <script src="cosmetic_app.js"></script>
 </head>
 <body>
     <!-- Clean Minimalist Topbar -->
@@ -52,7 +54,18 @@
                         <span class="brand-sub">Clausewitz v1.19.*</span>
                     </div>
                 </a>
-            </div>
+                        </div>
+
+            <nav class="header-mode-nav" aria-label="Режим работы студии">
+                <button type="button" class="mode-tab-btn active" id="btnModeGeneral" onclick="switchStudioMode('general')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                    <span id="labelModeGeneral">Страны и марионетки</span>
+                </button>
+                <button type="button" class="mode-tab-btn" id="btnModeCosmetic" onclick="switchStudioMode('cosmetic')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>
+                    <span id="labelModeCosmetic">Формируемые нации и решения</span>
+                </button>
+            </nav>
 
             <div class="project-toolbar">
                 <div class="project-toolbar-left">
@@ -92,7 +105,7 @@
     </header>
 
     <!-- Sub-navigation tabs -->
-    <nav class="sub-nav-bar" aria-label="Быстрый переход">
+    <nav class="sub-nav-bar" id="sub-nav-general" aria-label="Быстрый переход (Страны и марионетки)">
         <div class="sub-nav-container">
             <a href="#countries-section" class="sub-nav-link active">1. Страны и флаги</a>
             <a href="#puppet-section" class="sub-nav-link">2. Марионетки</a>
@@ -100,10 +113,20 @@
             <a href="#city-name-section" class="sub-nav-link">4. Города</a>
         </div>
     </nav>
+    <nav class="sub-nav-bar" id="sub-nav-cosmetic" aria-label="Быстрый переход (Формируемые нации)" style="display: none;">
+        <div class="sub-nav-container">
+            <a href="#cosm-section-info" class="sub-nav-link active">1. Данные мода</a>
+            <a href="#cosm-section-decision" class="sub-nav-link">2. Решение и условия</a>
+            <a href="#cosm-section-cosmetic" class="sub-nav-link">3. Косметический тег и флаги</a>
+            <a href="#cosm-section-preview" class="sub-nav-link">4. Просмотр кода и экспорт</a>
+        </div>
+    </nav>
 
     <!-- Main Content Area -->
     <main class="container" id="app-content" style="display: none;">
-        <!-- Hidden semantic title for i18n -->
+        <!-- View 1: General Mod Generator (Countries, Puppets, States, Cities) -->
+        <div id="view-general-mod">
+<!-- Hidden semantic title for i18n -->
         <h1 id="titleText" class="visually-hidden">HoI4 Mod Generator</h1>
 
         <!-- Overview Hero / Split Setup -->
@@ -276,6 +299,568 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <!-- View 2: Cosmetic Tag & Formable Nations Creator -->
+﻿
+    <!-- ════════════════════════════════════════════════════════════════════════
+         VIEW 2: COSMETIC TAG & FORMABLE NATIONS CREATOR
+         ════════════════════════════════════════════════════════════════════════ -->
+    <div id="view-cosmetic-mod" style="display: none;">
+
+
+
+
+      <!-- Project Toolbar -->
+      <div class="project-toolbar">
+        <div class="project-toolbar-left">
+          <span class="project-toolbar-label" data-t="proj_label">Проект:</span>
+          <strong class="project-title-display" id="cosm_projectActiveName">MyCosmeticMod</strong>
+          <span class="project-save-status" id="autoSaveStatus" data-t="autosave_on">● Сохранено</span>
+        </div>
+        <div class="project-toolbar-actions">
+          <button type="button" class="secondary-btn" onclick="cosm_saveProjectToFile()" title="Скачать .json файл проекта">
+            <span data-t="btn_save_proj">💾 Сохранить в файл</span>
+          </button>
+          <button type="button" class="secondary-btn" onclick="cosm_triggerLoadProjectFile()" title="Загрузить .json файл">
+            <span data-t="btn_load_proj">📂 Загрузить из файла</span>
+          </button>
+          <button type="button" class="secondary-btn" onclick="cosm_openProjectsModal()" title="Библиотека проектов в браузере">
+            <span data-t="btn_lib_proj">📚 Мои проекты</span>
+          </button>
+          <button type="button" class="secondary-btn danger-btn" onclick="cosm_createNewProject()" title="Начать новый проект">
+            <span data-t="btn_new_proj">+ Новый</span>
+          </button>
+        </div>
+        <input type="file" id="cosm_projectFileInput" accept=".json" style="display:none" onchange="cosm_handleProjectFileUpload(event)" />
+      </div>
+
+      <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
+      <div class="section" id="cosm-section-info">
+        <div class="section-head">
+          <h2 data-t="s1_head">Данные мода</h2>
+          <p class="section-desc" data-t="s1_desc">Параметры дескриптора для лаунчера Hearts of Iron IV</p>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label data-t="f_modname">Название мода <span class="req">*</span></label>
+            <input type="text" id="mod-name" class="inp" placeholder="My Formable Country Mod" maxlength="60" oninput="cosm_onFieldChange()" />
+            <div class="hint" data-t="f_modname_h">Отображается в списке модов лаунчера HoI4</div>
+          </div>
+          <div class="field">
+            <label data-t="f_ver">Версия мода</label>
+            <input type="text" id="mod-version" class="inp" value="1.0.0" maxlength="20" oninput="cosm_onFieldChange()" />
+          </div>
+          <div class="field">
+            <label data-t="f_author">Автор</label>
+            <input type="text" id="mod-author" class="inp" placeholder="AuthorName" maxlength="60" oninput="cosm_onFieldChange()" />
+          </div>
+          <div class="field">
+            <label data-t="f_hoi4ver">Версия HoI4 <span class="req">*</span></label>
+            <input type="text" id="hoi4-version" class="inp" value="1.19.*" maxlength="20" oninput="cosm_onFieldChange()" />
+            <div class="hint" data-t="f_hoi4ver_h">Актуальная поддерживаемая версия: 1.19.*</div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px">
+          <label data-t="f_moddesc">Описание мода</label>
+          <textarea id="mod-description" class="inp" rows="2" data-t-ph="f_moddesc_ph" oninput="cosm_onFieldChange()"></textarea>
+        </div>
+      </div>
+
+      <!-- ════════════ SECTION 2: DECISION & TRIGGERS ════════════ -->
+      <div class="section" id="cosm-section-decision">
+        <div class="section-head">
+          <h2 data-t="s2_scope_head">Доступность решения (Для кого)</h2>
+          <p class="section-desc" data-t="s2_scope_desc">Выберите, кто может принять решение о создании страны: одна страна или любая страна мира</p>
+        </div>
+
+        <div class="radio-cards">
+          <label class="radio-card selected" id="card-scope-specific" onclick="cosm_setScope('specific')">
+            <input type="radio" name="decision_scope" value="specific" checked onchange="cosm_setScope('specific')" />
+            <div class="radio-card-content">
+              <strong data-t="scope_specific_t">Выбранные страны (одна или несколько)</strong>
+              <span data-t="scope_specific_d">Решение появится у указанных стран (например: POL или POL, LIT, BLR)</span>
+            </div>
+          </label>
+          <label class="radio-card" id="card-scope-all" onclick="cosm_setScope('all')">
+            <input type="radio" name="decision_scope" value="all" onchange="cosm_setScope('all')" />
+            <div class="radio-card-content">
+              <strong data-t="scope_all_t">У всех стран мира</strong>
+              <span data-t="scope_all_d">Решение доступно любой державе, выполнившей территориальные условия</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field" id="owner-tag-field">
+            <label data-t="f_owner">Теги стран-владельцев (одна или несколько через запятую/пробел) <span class="req">*</span></label>
+            <input type="text" id="owner-tag" class="inp tag-inp" placeholder="POL, LIT, BLR"
+                   oninput="cosm_handleOwnerTagsInput(this.value); cosm_onFieldChange()" />
+            <div id="owner-tags-badges" class="tag-badges-wrap"></div>
+            <div class="hint" data-t="f_owner_h">Укажите 3-буквенные теги стран через запятую или пробел (например: POL или POL, LIT или GEO, ARM, AZR)</div>
+          </div>
+          <div class="field">
+            <label data-t="f_cosmetic">Косметический тег (Новый тег) <span class="req">*</span></label>
+            <input type="text" id="cosmetic-tag" class="inp tag-inp" placeholder="POL_LITHUANIA" maxlength="32"
+                   oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_]/g,''); cosm_onFieldChange()" />
+            <div class="hint" data-t="f_cosmetic_h">Идентификатор косметического тега (например, POL_LITHUANIA, GEO_TRANSCAUCASIA)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Settings -->
+      <div class="section">
+        <div class="section-head">
+          <h2 data-t="s2_cat_head">Категория решений</h2>
+          <p class="section-desc" data-t="s2_cat_desc">Где отобразится решение в интерфейсе решений игры</p>
+        </div>
+
+        <div class="radio-cards">
+          <label class="radio-card selected" id="card-cat-formation" onclick="cosm_setCategoryMode('formation')">
+            <input type="radio" name="category_mode" value="formation" checked onchange="cosm_setCategoryMode('formation')" />
+            <div class="radio-card-content">
+              <strong data-t="cat_form_t">Категория «Создание государств» (По умолчанию)</strong>
+              <span data-t="cat_form_d">Стандартная категория HoI4 (form_country_category) для объединения земель и реставрации империй</span>
+            </div>
+          </label>
+          <label class="radio-card" id="card-cat-custom" onclick="cosm_setCategoryMode('custom')">
+            <input type="radio" name="category_mode" value="custom" onchange="cosm_setCategoryMode('custom')" />
+            <div class="radio-card-content">
+              <strong data-t="cat_custom_t">Создать отдельную новую категорию</strong>
+              <span data-t="cat_custom_d">Выделит решение в персональную категорию с собственным заголовком</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="custom-cat-box" class="form-grid-2" style="display:none; margin-top:12px">
+          <div class="field">
+            <label data-t="f_custom_cat_id">ID новой категории <span class="req">*</span></label>
+            <input type="text" id="custom-cat-id" class="inp" placeholder="my_unique_decisions"
+                   oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,''); cosm_onFieldChange()" />
+          </div>
+          <div class="field">
+            <label data-t="f_custom_cat_name">Название категории (в игре)</label>
+            <input type="text" id="custom-cat-name" class="inp" placeholder="Великие союзы" oninput="cosm_onFieldChange()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision Parameters & Triggers -->
+      <div class="section">
+        <div class="section-head">
+          <h2 data-t="s2_dec_head">Параметры и требования решения</h2>
+          <p class="section-desc" data-t="s2_dec_desc">Название, описание, затраты политической силы и условия</p>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="field">
+            <label data-t="f_cost">Стоимость (PP)</label>
+            <input type="number" id="decision-cost" class="inp" value="50" min="0" max="999" oninput="cosm_onFieldChange()" />
+          </div>
+          <div class="field">
+            <label data-t="f_days">Дней на выполнение (0 = мгновенно)</label>
+            <input type="number" id="decision-days" class="inp" value="0" min="0" max="3650" oninput="cosm_onFieldChange()" />
+          </div>
+          <div class="field">
+            <label data-t="f_removedays">Отменяется через (дней, 0 = нет)</label>
+            <input type="number" id="decision-remove-days" class="inp" value="0" min="0" max="3650" oninput="cosm_onFieldChange()" />
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px">
+          <label data-t="f_decname">Название решения <span class="req">*</span></label>
+          <input type="text" id="decision-name" class="inp" maxlength="120" data-t-ph="f_decname_ph" oninput="cosm_onFieldChange()" />
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label data-t="f_decdesc">Описание решения</label>
+          <textarea id="decision-desc" class="inp" rows="2" data-t-ph="f_decdesc_ph" oninput="cosm_onFieldChange()"></textarea>
+        </div>
+
+        <div style="margin-top:18px">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px" data-t="s2_trig_head">Требования к выполнению (Триггеры)</label>
+          <div id="triggers-list" class="triggers-list"></div>
+          <div class="triggers-actions">
+            <button type="button" class="secondary-btn" onclick="cosm_addTrigger()" data-t="btn_add_trigger">
+              + Добавить условие вручную
+            </button>
+            <button type="button" class="btn-primary" onclick="cosm_openTriggersModal()" data-t="btn_show_cheat">
+              📜 Все доступные требования (справочник HoI4)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rewards & Buffs Upon Enactment -->
+      <div class="section">
+        <div class="section-head">
+          <h2 data-t="s2_rewards_head">Награды и эффекты после выполнения (Баффы)</h2>
+          <p class="section-desc" data-t="s2_rewards_desc">Что произойдет после принятия решения: национализация территорий, перенос столицы, бонусы и эффекты</p>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field">
+            <label data-t="f_core_states">Национальные регионы (Core States IDs)</label>
+            <input type="text" id="core-states" class="inp" placeholder="10, 11, 85, 110, 142"
+                   oninput="cosm_handleCoreStatesInput(this.value); cosm_onFieldChange()" />
+            <div id="core-states-badges" class="tag-badges-wrap"></div>
+            <div class="hint" data-t="f_core_states_h">Укажите ID регионов через запятую или пробел (например: 10, 11, 85, 110, 142). Все они станут нац. территориями (add_core_of = ROOT).</div>
+          </div>
+          <div class="field">
+            <label data-t="f_new_capital">Новая столица (State ID, опционально)</label>
+            <input type="number" id="new-capital" class="inp" placeholder="Например: 110 или 341" min="1" max="99999"
+                   oninput="cosm_onFieldChange()" />
+            <div class="hint" data-t="f_new_capital_h">ID региона, куда перенесется столица (set_capital = { state = ID }). Оставьте пустым, если не нужно.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:8px" data-t="f_quick_buffs_head">Быстрые бонусы и ресурсы</label>
+          <div class="form-grid-4">
+            <div class="field">
+              <label data-t="f_reward_pp">Политическая сила (PP)</label>
+              <input type="number" id="reward-pp" class="inp" placeholder="0 или 100" min="-999" max="999" oninput="cosm_onFieldChange()" />
+              <div class="hint">add_political_power</div>
+            </div>
+            <div class="field">
+              <label data-t="f_reward_stab">Стабильность (+% / -%)</label>
+              <input type="number" id="reward-stability" class="inp" placeholder="Например: 10 (+10%)" min="-100" max="100" step="1" oninput="cosm_onFieldChange()" />
+              <div class="hint">add_stability (+0.10)</div>
+            </div>
+            <div class="field">
+              <label data-t="f_reward_ws">Поддержка войны (+% / -%)</label>
+              <input type="number" id="reward-war-support" class="inp" placeholder="Например: 10 (+10%)" min="-100" max="100" step="1" oninput="cosm_onFieldChange()" />
+              <div class="hint">add_war_support (+0.10)</div>
+            </div>
+            <div class="field">
+              <label data-t="f_reward_mp">Призывники (Manpower)</label>
+              <input type="number" id="reward-manpower" class="inp" placeholder="Например: 50000" min="0" step="1000" oninput="cosm_onFieldChange()" />
+              <div class="hint">add_manpower</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px" data-t="f_custom_eff_head">Дополнительные эффекты и награды</label>
+          <div id="effects-list" class="triggers-list"></div>
+          <div class="triggers-actions">
+            <button type="button" class="secondary-btn" onclick="cosm_addCustomEffect()" data-t="btn_add_effect">
+              + Добавить эффект вручную
+            </button>
+            <button type="button" class="btn-primary" onclick="cosm_openEffectsModal()" data-t="btn_show_cheat_effects">
+              🎁 Все доступные награды и баффы (справочник HoI4)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ SECTION 3: COUNTRY, FLAGS & 4 IDEOLOGIES ════════════ -->
+      <div class="section" id="cosm-section-cosmetic">
+        <div class="section-head">
+          <h2 data-t="s3_color_head">Цвет страны на карте</h2>
+          <p class="section-desc" data-t="s3_color_desc">Цвет границ и территории при принятии косметического тега</p>
+        </div>
+        <div class="color-container">
+          <div class="form-grid-3" style="flex:1">
+            <div class="field">
+              <label data-t="f_r">Красный (0–255)</label>
+              <input type="number" id="color-r" class="inp" min="0" max="255" value="180" oninput="cosm_updateColorPreview(); cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_g">Зелёный (0–255)</label>
+              <input type="number" id="color-g" class="inp" min="0" max="255" value="50" oninput="cosm_updateColorPreview(); cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_b">Синий (0–255)</label>
+              <input type="number" id="color-b" class="inp" min="0" max="255" value="50" oninput="cosm_updateColorPreview(); cosm_onFieldChange()" />
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+            <div id="color-swatch" class="color-swatch-box"></div>
+            <input type="color" id="color-picker" value="#b43232" oninput="cosm_syncColorFromPicker(); cosm_onFieldChange()" class="color-picker-input" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Ideologies & Flags Section (4 canonical ideologies) -->
+      <div class="section">
+        <div class="section-head">
+          <h2 data-t="s3_ideo_head">Названия и флаги по 4 идеологиям HoI4</h2>
+          <p class="section-desc" data-t="s3_ideo_desc">
+            В Hearts of Iron IV строго 4 идеологии: Демократия, Фашизм, Коммунизм и Нейтралитет. Задайте названия и загрузите флаги (PNG/JPG). Сайт автоматически конвертирует их в 32-битный TGA и подгонит под все 3 разрешения: 82×52, 41×26 и 10×7!
+          </p>
+        </div>
+
+        <!-- Ideology tabs (strictly 4) -->
+        <div class="ideology-tabs">
+          <button type="button" class="ideology-tab-btn active" id="btn-tab-democratic" onclick="cosm_showIdeology('democratic')">🗳️ Демократия</button>
+          <button type="button" class="ideology-tab-btn" id="btn-tab-fascism" onclick="cosm_showIdeology('fascism')">🦅 Фашизм</button>
+          <button type="button" class="ideology-tab-btn" id="btn-tab-communism" onclick="cosm_showIdeology('communism')">☭ Коммунизм</button>
+          <button type="button" class="ideology-tab-btn" id="btn-tab-neutrality" onclick="cosm_showIdeology('neutrality')">⚖️ Нейтралитет</button>
+        </div>
+
+        <!-- Democratic Panel -->
+        <div class="ideology-panel active" id="ideo-panel-democratic">
+          <div class="form-grid-2" style="margin-bottom:14px">
+            <div class="field">
+              <label data-t="f_cname_dem">Демократическое название <span class="req">*</span></label>
+              <input type="text" id="name-democratic" class="inp" placeholder="Республика..." oninput="cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_cadj_dem">Демократическое прилагательное</label>
+              <input type="text" id="adj-democratic" class="inp" placeholder="республиканский..." oninput="cosm_onFieldChange()" />
+            </div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-drop-area" onclick="document.getElementById('flag-input-democratic').click()">
+              <input type="file" id="flag-input-democratic" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('democratic', event)" />
+              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <strong data-t="flag_upload_dem">Загрузить флаг демократии (PNG/JPG)</strong>
+              <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
+            </div>
+            <div class="flag-preview-grid" id="flag-previews-democratic" style="display:none">
+              <div class="flag-preview-item">
+                <span>82×52</span>
+                <canvas id="cv-democratic-82" width="82" height="52" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>41×26</span>
+                <canvas id="cv-democratic-41" width="41" height="26" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>10×7</span>
+                <canvas id="cv-democratic-10" width="10" height="7" class="flag-canvas"></canvas>
+              </div>
+              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearFlag('democratic')" data-t="btn_clear_flag">✕ Удалить флаг</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fascism Panel -->
+        <div class="ideology-panel" id="ideo-panel-fascism">
+          <div class="form-grid-2" style="margin-bottom:14px">
+            <div class="field">
+              <label data-t="f_cname_fas">Фашистское название</label>
+              <input type="text" id="name-fascism" class="inp" placeholder="Империя..." oninput="cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_cadj_fas">Фашистское прилагательное</label>
+              <input type="text" id="adj-fascism" class="inp" placeholder="имперский..." oninput="cosm_onFieldChange()" />
+            </div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-drop-area" onclick="document.getElementById('flag-input-fascism').click()">
+              <input type="file" id="flag-input-fascism" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('fascism', event)" />
+              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <strong data-t="flag_upload_fas">Загрузить флаг фашизма (PNG/JPG)</strong>
+              <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
+            </div>
+            <div class="flag-preview-grid" id="flag-previews-fascism" style="display:none">
+              <div class="flag-preview-item">
+                <span>82×52</span>
+                <canvas id="cv-fascism-82" width="82" height="52" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>41×26</span>
+                <canvas id="cv-fascism-41" width="41" height="26" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>10×7</span>
+                <canvas id="cv-fascism-10" width="10" height="7" class="flag-canvas"></canvas>
+              </div>
+              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearFlag('fascism')" data-t="btn_clear_flag">✕ Удалить флаг</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Communism Panel -->
+        <div class="ideology-panel" id="ideo-panel-communism">
+          <div class="form-grid-2" style="margin-bottom:14px">
+            <div class="field">
+              <label data-t="f_cname_com">Коммунистическое название</label>
+              <input type="text" id="name-communism" class="inp" placeholder="Народная Республика..." oninput="cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_cadj_com">Коммунистическое прилагательное</label>
+              <input type="text" id="adj-communism" class="inp" placeholder="социалистический..." oninput="cosm_onFieldChange()" />
+            </div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-drop-area" onclick="document.getElementById('flag-input-communism').click()">
+              <input type="file" id="flag-input-communism" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('communism', event)" />
+              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <strong data-t="flag_upload_com">Загрузить флаг коммунизма (PNG/JPG)</strong>
+              <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
+            </div>
+            <div class="flag-preview-grid" id="flag-previews-communism" style="display:none">
+              <div class="flag-preview-item">
+                <span>82×52</span>
+                <canvas id="cv-communism-82" width="82" height="52" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>41×26</span>
+                <canvas id="cv-communism-41" width="41" height="26" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>10×7</span>
+                <canvas id="cv-communism-10" width="10" height="7" class="flag-canvas"></canvas>
+              </div>
+              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearFlag('communism')" data-t="btn_clear_flag">✕ Удалить флаг</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Neutrality Panel -->
+        <div class="ideology-panel" id="ideo-panel-neutrality">
+          <div class="form-grid-2" style="margin-bottom:14px">
+            <div class="field">
+              <label data-t="f_cname_neu">Нейтральное / монархическое название</label>
+              <input type="text" id="name-neutrality" class="inp" placeholder="Королевство..." oninput="cosm_onFieldChange()" />
+            </div>
+            <div class="field">
+              <label data-t="f_cadj_neu">Нейтральное прилагательное</label>
+              <input type="text" id="adj-neutrality" class="inp" placeholder="королевский..." oninput="cosm_onFieldChange()" />
+            </div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-drop-area" onclick="document.getElementById('flag-input-neutrality').click()">
+              <input type="file" id="flag-input-neutrality" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('neutrality', event)" />
+              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <strong data-t="flag_upload_neu">Загрузить флаг нейтралитета (PNG/JPG)</strong>
+              <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
+            </div>
+            <div class="flag-preview-grid" id="flag-previews-neutrality" style="display:none">
+              <div class="flag-preview-item">
+                <span>82×52</span>
+                <canvas id="cv-neutrality-82" width="82" height="52" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>41×26</span>
+                <canvas id="cv-neutrality-41" width="41" height="26" class="flag-canvas"></canvas>
+              </div>
+              <div class="flag-preview-item">
+                <span>10×7</span>
+                <canvas id="cv-neutrality-10" width="10" height="7" class="flag-canvas"></canvas>
+              </div>
+              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearFlag('neutrality')" data-t="btn_clear_flag">✕ Удалить флаг</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decision Icon Section -->
+        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border-color)">
+          <div class="section-head">
+            <h3 style="font-size:0.92rem; margin-bottom:4px" data-t="s3_pic_head">Иконка решения (Опционально)</h3>
+            <p class="section-desc" data-t="s3_pic_desc">Иконка в меню решений HoI4 (по умолчанию: generic_form_nation)</p>
+          </div>
+          <div class="form-grid-2">
+            <div class="field">
+              <label data-t="f_picname">Имя спрайта или иконки</label>
+              <input type="text" id="decision-picture-name" class="inp" placeholder="generic_form_nation"
+                     oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,''); cosm_onFieldChange()" />
+              <div class="hint" data-t="f_picname_h">По умолчанию: generic_form_nation. При загрузке картинки автоматически создается .gfx регистрация</div>
+            </div>
+            <div class="field">
+              <label data-t="f_picupload">Загрузить картинку иконки (PNG/JPG)</label>
+              <input type="file" id="decision-img-input" accept="image/*,.dds,.tga" class="inp" onchange="cosm_handleDecisionImageUpload(event)" />
+              <div id="decision-img-preview" style="display:none; align-items:center; gap:12px; margin-top:8px">
+                <div style="display:flex; align-items:center; gap:8px">
+                  <span style="font-size:11px; color:var(--text-muted)">HoI4 32×32:</span>
+                  <canvas id="cv-decision-icon" width="32" height="32" style="width:32px; height:32px; border:1px solid var(--border-color); background:#111; image-rendering:pixelated; border-radius:3px"></canvas>
+                </div>
+                <button type="button" class="btn-sm danger-btn" onclick="cosm_clearDecisionImage()" data-t="btn_clear_dec_img">✕ Удалить иконку</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
+      <div class="section" id="cosm-section-preview">
+        <div class="section-head">
+          <h2 data-t="step4_title">Сборка и файлы мода</h2>
+          <p class="section-desc">Сгенерируйте скрипты Paradox, проверьте код во вкладках и скачайте готовый ZIP-архив</p>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap">
+          <button type="button" class="btn-generate" onclick="cosm_generateMod()" data-t="btn_generate">⚡ Сгенерировать файлы мода</button>
+          <button type="button" class="btn-download" id="btn-download" onclick="cosm_downloadMod()" style="display:none" data-t="btn_download">💾 Скачать ZIP-архив с флагами</button>
+        </div>
+
+        <div class="code-tabs-wrapper">
+          <div class="code-tabs-header">
+            <button type="button" class="code-tab-btn active" id="tab-btn-summary" onclick="cosm_showTab('summary')" data-t="tab_summary">📋 Сводка</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-decisions" onclick="cosm_showTab('decisions')">📜 decisions/</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-localisation" onclick="cosm_showTab('localisation')">🌐 localisation/</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-cosmetic" onclick="cosm_showTab('cosmetic')">🎨 countries/cosmetic.txt</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-descriptor" onclick="cosm_showTab('descriptor')">📦 descriptor.mod</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-structure" onclick="cosm_showTab('structure')" data-t="tab_struct">🗃 Структура архива</button>
+          </div>
+
+          <!-- Summary Tab -->
+          <div class="code-panel active" id="panel-summary">
+            <div id="summary-content">
+              <div style="text-align:center; padding:30px; color:var(--text-muted)" data-t="sum_empty">
+                ← Нажмите «Сгенерировать файлы мода», чтобы выполнить сборку и просмотреть код
+              </div>
+            </div>
+          </div>
+
+          <!-- Decisions Tab -->
+          <div class="code-panel" id="panel-decisions">
+            <div class="code-file-bar">
+              <span id="fp-categories">common/decisions/categories/00_categories.txt</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-categories')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-categories"></pre>
+            <div class="code-file-bar" style="margin-top:14px">
+              <span id="fp-decisions">common/decisions/decisions.txt</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-decisions')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-decisions"></pre>
+          </div>
+
+          <!-- Localisation Tab -->
+          <div class="code-panel" id="panel-localisation">
+            <div class="code-file-bar">
+              <span id="fp-loc-ru">localisation/russian/countries_cosmetic_l_russian.yml (UTF-8 BOM)</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-ru')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-loc-ru"></pre>
+            <div class="code-file-bar" style="margin-top:14px">
+              <span id="fp-loc-en">localisation/english/countries_cosmetic_l_english.yml (UTF-8 BOM)</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-en')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-loc-en"></pre>
+          </div>
+
+          <!-- Cosmetic Colors Tab -->
+          <div class="code-panel" id="panel-cosmetic">
+            <div class="code-file-bar">
+              <span>common/countries/cosmetic.txt (Цвета косметического тега)</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-cosmetic')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-cosmetic"></pre>
+          </div>
+
+          <!-- Descriptor Tab -->
+          <div class="code-panel" id="panel-descriptor">
+            <div class="code-file-bar">
+              <span>descriptor.mod / [mod_name].mod</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-descriptor')" data-t="btn_copy">📋 Копировать</button>
+            </div>
+            <pre class="code-display" id="code-descriptor"></pre>
+          </div>
+
+          <!-- Structure Tab -->
+          <div class="code-panel" id="panel-structure">
+            <div id="tree-content" class="file-tree-view"></div>
+          </div>
+        </div>
+      </div>
+
+    
+    </div>
+
     </main>
 
     <!-- Projects Library Modal -->
@@ -301,6 +886,66 @@
             </div>
         </div>
     </div>
+
+    <!-- Modals for Cosmetic Tag Creator -->
+<!-- ════════════ MODAL: HOI4 TRIGGERS CHEAT-SHEET ════════════ -->
+<div class="modal-overlay" id="triggersModal" style="display:none">
+  <div class="modal-backdrop" onclick="cosm_closeTriggersModal()"></div>
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 data-t="cheat_modal_title">📜 Доступные требования (Триггеры HoI4)</h3>
+      <button type="button" class="modal-close-btn" onclick="cosm_closeTriggersModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="triggersCheatBody">
+      <!-- Injected by JS -->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="cosm_closeTriggersModal()" data-t="btn_close">Закрыть</button>
+    </div>
+  </div>
+</div>
+<!-- ════════════ MODAL: HOI4 EFFECTS CHEAT-SHEET ════════════ -->
+<div class="modal-overlay" id="effectsModal" style="display:none">
+  <div class="modal-backdrop" onclick="cosm_closeEffectsModal()"></div>
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 data-t="effects_modal_title">🎁 Доступные награды и эффекты (HoI4 Effects)</h3>
+      <button type="button" class="modal-close-btn" onclick="cosm_closeEffectsModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="effectsCheatBody">
+      <!-- Injected by JS -->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="cosm_closeEffectsModal()" data-t="btn_close">Закрыть</button>
+    </div>
+  </div>
+</div>
+<!-- ════════════ MODAL: PROJECTS LIBRARY ════════════ -->
+<div class="modal-overlay" id="cosm_projectsModal" style="display:none">
+  <div class="modal-backdrop" onclick="cosm_closeProjectsModal()"></div>
+  <div class="modal-window">
+    <div class="modal-header">
+      <div>
+        <h3 data-t="lib_modal_title">📚 Мои сохранённые проекты</h3>
+        <p class="hint" data-t="lib_modal_desc">Локальная библиотека проектов в вашем браузере</p>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="cosm_closeProjectsModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:14px">
+        <button type="button" class="btn-primary" onclick="cosm_saveCurrentToLibrary()" style="width:100%" data-t="btn_save_to_lib">
+          + Сохранить текущий проект в библиотеку
+        </button>
+      </div>
+      <div id="cosm_projectsListContainer" class="projects-list">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="cosm_closeProjectsModal()" data-t="btn_close">Закрыть</button>
+    </div>
+  </div>
+</div>
 
     <!-- Toast Notification -->
     <div id="toastNotification" class="toast-box" role="status" aria-live="polite"></div>
@@ -429,6 +1074,49 @@
                 };
             }
         })();
+
+            // Studio Mode Switcher: 'general' | 'cosmetic'
+            window.switchStudioMode = function(mode) {
+                var isGeneral = (mode === 'general');
+                var viewGen = document.getElementById('view-general-mod');
+                var viewCosm = document.getElementById('view-cosmetic-mod');
+                var navGen = document.getElementById('sub-nav-general');
+                var navCosm = document.getElementById('sub-nav-cosmetic');
+                var btnGen = document.getElementById('btnModeGeneral');
+                var btnCosm = document.getElementById('btnModeCosmetic');
+
+                if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
+                if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
+                if (navGen) navGen.style.display = isGeneral ? 'block' : 'none';
+                if (navCosm) navCosm.style.display = isGeneral ? 'none' : 'block';
+
+                if (btnGen) btnGen.classList.toggle('active', isGeneral);
+                if (btnCosm) btnCosm.classList.toggle('active', !isGeneral);
+
+                try {
+                    localStorage.setItem('hoi4_studio_mode', mode);
+                } catch(e) {}
+
+                if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
+                    window.CosmeticCreator.onActivate();
+                }
+            };
+
+            // Initialize mode on load
+            window.addEventListener('DOMContentLoaded', function() {
+                var savedMode = 'general';
+                try {
+                    savedMode = localStorage.getItem('hoi4_studio_mode') || 'general';
+                } catch(e) {}
+                if (savedMode === 'cosmetic') {
+                    switchStudioMode('cosmetic');
+                }
+                var curLang = window.currentLang === 'english' ? 'en' : 'ru';
+                if (window.CosmeticCreator && typeof window.CosmeticCreator.init === 'function') {
+                    window.CosmeticCreator.init(curLang);
+                }
+            });
+
     </script>
 </body>
 </html>

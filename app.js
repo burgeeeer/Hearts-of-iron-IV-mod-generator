@@ -799,8 +799,19 @@ function applyLang(lang) {
     renderPuppetRules();
     renderStateNameRules();
     renderCityNameRules();
-    renderCoverPreview();
+    if (typeof renderCoverPreview === 'function') renderCoverPreview();
     updateProjectToolbar();
+
+    // Sync mode navigation buttons and notify CosmeticCreator
+    var isRu = (lang !== 'english');
+    var lmg = document.getElementById('labelModeGeneral');
+    if (lmg) lmg.textContent = isRu ? 'Страны и марионетки' : 'Countries & Puppets';
+    var lmc = document.getElementById('labelModeCosmetic');
+    if (lmc) lmc.textContent = isRu ? 'Формируемые нации и решения' : 'Formable Nations & Decisions';
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.applyLang === 'function') {
+        window.CosmeticCreator.applyLang(isRu ? 'ru' : 'en');
+    }
+
     saveData();
 }
 
