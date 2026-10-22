@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,19 +10,19 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     
-    <!-- Clean Grotesque Typography -->
+    <!-- Barlow Typography (HOI4 Military & Modern Studio) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
     
     <!-- Instant theme initializer to prevent flash of wrong theme -->
     <script>
         (function() {
-            var savedTheme = 'light';
+            var savedTheme = 'dark';
             try {
-                savedTheme = localStorage.getItem('hoi4_theme') || 'light';
+                savedTheme = localStorage.getItem('hoi4_theme') || 'dark';
             } catch(e) {}
             document.documentElement.setAttribute('data-theme', savedTheme);
         })();
@@ -37,6 +37,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="anime.min.js"></script>
     <script src="vanilla_cosmetic_data.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
@@ -96,8 +97,8 @@
 
             <div class="header-right">
                 <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Переключить тему (Светлая / Тёмная)" aria-label="Сменить тему">
-                    <span id="themeToggleIcon">☀️</span>
-                    <span id="themeToggleText" class="theme-text">Светлая</span>
+                    <span id="themeToggleIcon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+                    <span id="themeToggleText" class="theme-text">Тёмная</span>
                 </button>
                 <button id="langToggleBtn" class="lang-btn" onclick="toggleLanguage()">RU</button>
             </div>
@@ -186,11 +187,11 @@
                 <div class="summary-file-tree">
                     <span class="tree-caption">Структура создаваемого архива:</span>
                     <div class="tree-body">
-                        <div>📁 <strong id="treeModDirName">MyAwesomeMod</strong>/</div>
-                        <div class="tree-sub">├── 📄 descriptor.mod</div>
-                        <div class="tree-sub">├── 📁 localisation/replace/ <span class="muted-note">(RU + EN)</span></div>
-                        <div class="tree-sub">├── 📁 gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
-                        <div class="tree-sub">└── 📁 common/on_actions/ <span class="muted-note">(марионетки и регионы)</span></div>
+                        <div><span class="tree-dir">/</span> <strong id="treeModDirName">MyAwesomeMod</strong>/</div>
+                        <div class="tree-sub">├── descriptor.mod</div>
+                        <div class="tree-sub">├── localisation/replace/ <span class="muted-note">(RU + EN)</span></div>
+                        <div class="tree-sub">├── gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
+                        <div class="tree-sub">└── common/on_actions/ <span class="muted-note">(марионетки и регионы)</span></div>
                     </div>
                 </div>
             </div>
@@ -220,7 +221,7 @@
                 <div class="section-head" onclick="toggleSection(this)">
                     <div>
                         <h2 id="puppetTitle">Названия марионеток</h2>
-                        <p class="section-head-desc">Правила автономии и кастомные флаги для связки Сюзерен ➔ Марионетка</p>
+                        <p class="section-head-desc">Правила автономии и кастомные флаги для связки Сюзерен → Марионетка</p>
                     </div>
                     <span class="accordion-arrow">▼</span>
                 </div>
@@ -320,13 +321,13 @@
         </div>
         <div class="project-toolbar-actions">
           <button type="button" class="secondary-btn" onclick="cosm_saveProjectToFile()" title="Скачать .json файл проекта">
-            <span data-t="btn_save_proj">💾 Сохранить в файл</span>
+            <span data-t="btn_save_proj">Сохранить в файл</span>
           </button>
           <button type="button" class="secondary-btn" onclick="cosm_triggerLoadProjectFile()" title="Загрузить .json файл">
-            <span data-t="btn_load_proj">📂 Загрузить из файла</span>
+            <span data-t="btn_load_proj">Загрузить из файла</span>
           </button>
           <button type="button" class="secondary-btn" onclick="cosm_openProjectsModal()" title="Библиотека проектов в браузере">
-            <span data-t="btn_lib_proj">📚 Мои проекты</span>
+            <span data-t="btn_lib_proj">Мои проекты</span>
           </button>
           <button type="button" class="secondary-btn danger-btn" onclick="cosm_createNewProject()" title="Начать новый проект">
             <span data-t="btn_new_proj">+ Новый</span>
@@ -484,7 +485,7 @@
               + Добавить условие вручную
             </button>
             <button type="button" class="btn-primary" onclick="cosm_openTriggersModal()" data-t="btn_show_cheat">
-              📜 Все доступные требования (справочник HoI4)
+              Все доступные требования (справочник HoI4)
             </button>
           </div>
         </div>
@@ -547,7 +548,7 @@
               + Добавить эффект вручную
             </button>
             <button type="button" class="btn-primary" onclick="cosm_openEffectsModal()" data-t="btn_show_cheat_effects">
-              🎁 Все доступные награды и баффы (справочник HoI4)
+              Все доступные награды и баффы (справочник HoI4)
             </button>
           </div>
         </div>
@@ -592,8 +593,8 @@
 
         <!-- Ideology tabs (strictly 4) -->
         <div class="ideology-tabs">
-          <button type="button" class="ideology-tab-btn active" id="btn-tab-democratic" onclick="cosm_showIdeology('democratic')">🗳️ Демократия</button>
-          <button type="button" class="ideology-tab-btn" id="btn-tab-fascism" onclick="cosm_showIdeology('fascism')">🦅 Фашизм</button>
+          <button type="button" class="ideology-tab-btn active" id="btn-tab-democratic" onclick="cosm_showIdeology('democratic')">Демократия</button>
+          <button type="button" class="ideology-tab-btn" id="btn-tab-fascism" onclick="cosm_showIdeology('fascism')">Фашизм</button>
           <button type="button" class="ideology-tab-btn" id="btn-tab-communism" onclick="cosm_showIdeology('communism')">☭ Коммунизм</button>
           <button type="button" class="ideology-tab-btn" id="btn-tab-neutrality" onclick="cosm_showIdeology('neutrality')">⚖️ Нейтралитет</button>
         </div>
@@ -613,7 +614,7 @@
           <div class="flag-card">
             <div class="flag-drop-area" onclick="document.getElementById('flag-input-democratic').click()">
               <input type="file" id="flag-input-democratic" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('democratic', event)" />
-              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <div style="font-size:24px; margin-bottom:4px"></div>
               <strong data-t="flag_upload_dem">Загрузить флаг демократии (PNG/JPG)</strong>
               <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
             </div>
@@ -650,7 +651,7 @@
           <div class="flag-card">
             <div class="flag-drop-area" onclick="document.getElementById('flag-input-fascism').click()">
               <input type="file" id="flag-input-fascism" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('fascism', event)" />
-              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <div style="font-size:24px; margin-bottom:4px"></div>
               <strong data-t="flag_upload_fas">Загрузить флаг фашизма (PNG/JPG)</strong>
               <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
             </div>
@@ -687,7 +688,7 @@
           <div class="flag-card">
             <div class="flag-drop-area" onclick="document.getElementById('flag-input-communism').click()">
               <input type="file" id="flag-input-communism" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('communism', event)" />
-              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <div style="font-size:24px; margin-bottom:4px"></div>
               <strong data-t="flag_upload_com">Загрузить флаг коммунизма (PNG/JPG)</strong>
               <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
             </div>
@@ -724,7 +725,7 @@
           <div class="flag-card">
             <div class="flag-drop-area" onclick="document.getElementById('flag-input-neutrality').click()">
               <input type="file" id="flag-input-neutrality" accept="image/*" style="display:none" onchange="cosm_handleFlagUpload('neutrality', event)" />
-              <div style="font-size:24px; margin-bottom:4px">🚩</div>
+              <div style="font-size:24px; margin-bottom:4px"></div>
               <strong data-t="flag_upload_neu">Загрузить флаг нейтралитета (PNG/JPG)</strong>
               <p class="hint" data-t="flag_upload_hint">Автоматически масштабируется и конвертируется в TGA</p>
             </div>
@@ -783,17 +784,17 @@
 
         <div style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap">
           <button type="button" class="btn-generate" onclick="cosm_generateMod()" data-t="btn_generate">⚡ Сгенерировать файлы мода</button>
-          <button type="button" class="btn-download" id="btn-download" onclick="cosm_downloadMod()" style="display:none" data-t="btn_download">💾 Скачать ZIP-архив с флагами</button>
+          <button type="button" class="btn-download" id="btn-download" onclick="cosm_downloadMod()" style="display:none" data-t="btn_download">Скачать ZIP-архив с флагами</button>
         </div>
 
         <div class="code-tabs-wrapper">
           <div class="code-tabs-header">
-            <button type="button" class="code-tab-btn active" id="tab-btn-summary" onclick="cosm_showTab('summary')" data-t="tab_summary">📋 Сводка</button>
-            <button type="button" class="code-tab-btn" id="tab-btn-decisions" onclick="cosm_showTab('decisions')">📜 decisions/</button>
-            <button type="button" class="code-tab-btn" id="tab-btn-localisation" onclick="cosm_showTab('localisation')">🌐 localisation/</button>
-            <button type="button" class="code-tab-btn" id="tab-btn-cosmetic" onclick="cosm_showTab('cosmetic')">🎨 countries/cosmetic.txt</button>
-            <button type="button" class="code-tab-btn" id="tab-btn-descriptor" onclick="cosm_showTab('descriptor')">📦 descriptor.mod</button>
-            <button type="button" class="code-tab-btn" id="tab-btn-structure" onclick="cosm_showTab('structure')" data-t="tab_struct">🗃 Структура архива</button>
+            <button type="button" class="code-tab-btn active" id="tab-btn-summary" onclick="cosm_showTab('summary')" data-t="tab_summary">Сводка</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-decisions" onclick="cosm_showTab('decisions')">decisions/</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-localisation" onclick="cosm_showTab('localisation')">localisation/</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-cosmetic" onclick="cosm_showTab('cosmetic')">countries/cosmetic.txt</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-descriptor" onclick="cosm_showTab('descriptor')">descriptor.mod</button>
+            <button type="button" class="code-tab-btn" id="tab-btn-structure" onclick="cosm_showTab('structure')" data-t="tab_struct">Структура архива</button>
           </div>
 
           <!-- Summary Tab -->
@@ -809,12 +810,12 @@
           <div class="code-panel" id="panel-decisions">
             <div class="code-file-bar">
               <span id="fp-categories">common/decisions/categories/00_categories.txt</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-categories')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-categories')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-categories"></pre>
             <div class="code-file-bar" style="margin-top:14px">
               <span id="fp-decisions">common/decisions/decisions.txt</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-decisions')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-decisions')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-decisions"></pre>
           </div>
@@ -823,12 +824,12 @@
           <div class="code-panel" id="panel-localisation">
             <div class="code-file-bar">
               <span id="fp-loc-ru">localisation/russian/countries_cosmetic_l_russian.yml (UTF-8 BOM)</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-ru')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-ru')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-loc-ru"></pre>
             <div class="code-file-bar" style="margin-top:14px">
               <span id="fp-loc-en">localisation/english/countries_cosmetic_l_english.yml (UTF-8 BOM)</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-en')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-loc-en')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-loc-en"></pre>
           </div>
@@ -837,7 +838,7 @@
           <div class="code-panel" id="panel-cosmetic">
             <div class="code-file-bar">
               <span>common/countries/cosmetic.txt (Цвета косметического тега)</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-cosmetic')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-cosmetic')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-cosmetic"></pre>
           </div>
@@ -846,7 +847,7 @@
           <div class="code-panel" id="panel-descriptor">
             <div class="code-file-bar">
               <span>descriptor.mod / [mod_name].mod</span>
-              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-descriptor')" data-t="btn_copy">📋 Копировать</button>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-descriptor')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-descriptor"></pre>
           </div>
@@ -893,7 +894,7 @@
   <div class="modal-backdrop" onclick="cosm_closeTriggersModal()"></div>
   <div class="modal-window">
     <div class="modal-header">
-      <h3 data-t="cheat_modal_title">📜 Доступные требования (Триггеры HoI4)</h3>
+      <h3 data-t="cheat_modal_title">Доступные требования (Триггеры HoI4)</h3>
       <button type="button" class="modal-close-btn" onclick="cosm_closeTriggersModal()">&times;</button>
     </div>
     <div class="modal-body" id="triggersCheatBody">
@@ -909,7 +910,7 @@
   <div class="modal-backdrop" onclick="cosm_closeEffectsModal()"></div>
   <div class="modal-window">
     <div class="modal-header">
-      <h3 data-t="effects_modal_title">🎁 Доступные награды и эффекты (HoI4 Effects)</h3>
+      <h3 data-t="effects_modal_title">Доступные награды и эффекты (HoI4 Effects)</h3>
       <button type="button" class="modal-close-btn" onclick="cosm_closeEffectsModal()">&times;</button>
     </div>
     <div class="modal-body" id="effectsCheatBody">
@@ -926,7 +927,7 @@
   <div class="modal-window">
     <div class="modal-header">
       <div>
-        <h3 data-t="lib_modal_title">📚 Мои сохранённые проекты</h3>
+        <h3 data-t="lib_modal_title">Мои сохранённые проекты</h3>
         <p class="hint" data-t="lib_modal_desc">Локальная библиотека проектов в вашем браузере</p>
       </div>
       <button type="button" class="modal-close-btn" onclick="cosm_closeProjectsModal()">&times;</button>
@@ -968,6 +969,7 @@
 
     <!-- Core App Engine -->
     <script src="app.js"></script>
+    <script src="animations.js"></script>
 
     <!-- Real-time Metrics & Drag-and-Drop Enhancements -->
     <script>
@@ -986,10 +988,18 @@
                 var elP = document.getElementById('statCountPuppets');
                 var elS = document.getElementById('statCountStates');
                 var elV = document.getElementById('statCountCities');
-                if (elC) elC.textContent = cCount;
-                if (elP) elP.textContent = pCount;
-                if (elS) elS.textContent = sCount;
-                if (elV) elV.textContent = vCount;
+
+                if (window.animateMetricCounter) {
+                    window.animateMetricCounter(elC, cCount);
+                    window.animateMetricCounter(elP, pCount);
+                    window.animateMetricCounter(elS, sCount);
+                    window.animateMetricCounter(elV, vCount);
+                } else {
+                    if (elC) elC.textContent = cCount;
+                    if (elP) elP.textContent = pCount;
+                    if (elS) elS.textContent = sCount;
+                    if (elV) elV.textContent = vCount;
+                }
 
                 var summaryText = document.getElementById('launchSummaryText');
                 if (summaryText) {
@@ -1042,8 +1052,8 @@
 
             // Theme switcher with persistence in localStorage
             window.toggleTheme = function() {
-                var cur = document.documentElement.getAttribute('data-theme') || 'light';
-                var next = cur === 'light' ? 'dark' : 'light';
+                var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+                var next = cur === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
                 try {
                     localStorage.setItem('hoi4_theme', next);
@@ -1055,7 +1065,11 @@
                 var iconEl = document.getElementById('themeToggleIcon');
                 var textEl = document.getElementById('themeToggleText');
                 var isDark = (theme === 'dark');
-                if (iconEl) iconEl.textContent = isDark ? '🌙' : '☀️';
+                if (iconEl) {
+                    iconEl.innerHTML = isDark
+                        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
+                        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+                }
                 if (textEl) {
                     var isRu = (!window.currentLang || window.currentLang === 'russian');
                     textEl.textContent = isDark ? (isRu ? 'Тёмная' : 'Dark') : (isRu ? 'Светлая' : 'Light');
@@ -1063,7 +1077,7 @@
             }
 
             // Sync theme button label on boot
-            updateThemeToggleUI(document.documentElement.getAttribute('data-theme') || 'light');
+            updateThemeToggleUI(document.documentElement.getAttribute('data-theme') || 'dark');
 
             // Also sync when language changes
             var origApplyLang = window.applyLang;
