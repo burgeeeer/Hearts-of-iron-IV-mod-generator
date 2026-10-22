@@ -1,4 +1,4 @@
-﻿/* =============================================
+/* =============================================
    HoI4 Cosmetic Tag Creator — app.js
    Full single-page layout matching burgeeeer/mod-generator:
    - 4 canonical HoI4 ideologies (Democratic, Fascism, Communism, Neutrality)
@@ -258,7 +258,7 @@ const I18N = {
 // ─── TRIGGERS CHEAT-SHEET DATA ────────────────
 const CHEAT_TRIGGERS = [
   {
-    category: { ru: 'Территории и контроль регионов', en: 'Territories & State Control' },
+    category: { ru: '🗺️ Территории и контроль регионов', en: '🗺️ Territories & State Control' },
     items: [
       { code: 'controls_state = 123', desc: { ru: 'Контролирует регион с ID 123', en: 'Controls state with ID 123' } },
       { code: 'owns_state = 123', desc: { ru: 'Владеет регионом с ID 123', en: 'Owns state with ID 123' } },
@@ -303,7 +303,7 @@ const CHEAT_TRIGGERS = [
 // ─── EFFECTS / REWARDS CHEAT-SHEET DATA ───────
 const CHEAT_EFFECTS = [
   {
-    category: { ru: 'Территории, столица и национализация', en: 'Territories, Capital & Coring' },
+    category: { ru: '🗺️ Территории, столица и национализация', en: '🗺️ Territories, Capital & Coring' },
     items: [
       { code: '123 = { add_core_of = ROOT }', desc: { ru: 'Сделать регион 123 национальной территорией (core)', en: 'Make state 123 a core territory of ROOT' } },
       { code: 'set_capital = { state = 123 }', desc: { ru: 'Перенести столицу державы в регион 123', en: 'Relocate the nation capital to state 123' } },
@@ -483,7 +483,7 @@ function handleOwnerTagsInput(val) {
     container.innerHTML = '';
     return;
   }
-  container.innerHTML = tags.map(t => `<span class="tag-badge">${t}</span>`).join('');
+  container.innerHTML = tags.map(t => `<span class="tag-badge">🏷️ ${t}</span>`).join('');
 }
 
 // ─── CORE STATES PARSER & BADGES ──────────────
@@ -509,7 +509,7 @@ function handleCoreStatesInput(val) {
     container.innerHTML = '';
     return;
   }
-  container.innerHTML = states.map(s => `<span class="core-badge">State ${s}</span>`).join('');
+  container.innerHTML = states.map(s => `<span class="core-badge">🗺️ State ${s}</span>`).join('');
 }
 
 // ─── CATEGORY SWITCHER ────────────────────────
