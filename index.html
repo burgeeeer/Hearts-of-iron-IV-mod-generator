@@ -155,6 +155,44 @@
                         <span class="detail-value">UTF-8 with BOM</span>
                     </div>
                 </div>
+
+                <!-- Custom Country Localisation File Configuration -->
+                <div class="loc-config-card">
+                    <div class="mod-header-headline" style="margin-bottom: 8px;">
+                        <label id="locFileNameLabel" for="locFileName" class="field-label" style="margin-bottom: 0;">Файл локализации стран</label>
+                        <span class="dim-badge" id="locBadgePath">localisation/replace/</span>
+                    </div>
+
+                    <div class="loc-config-grid">
+                        <div class="field-wrap" style="margin-bottom: 0;">
+                            <label id="locFileNameRuSubLabel" for="locFileName" style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Основной файл (RU)</label>
+                            <div class="input-prefix-box">
+                                <span class="prefix-label loc-prefix-dynamic" id="locPrefixFolder">replace/</span>
+                                <input type="text" id="locFileName" placeholder="countries_l_russian.yml" oninput="onLocConfigChange()" autocomplete="off" spellcheck="false">
+                            </div>
+                        </div>
+
+                        <div class="field-wrap" style="margin-bottom: 0;">
+                            <label id="locFileNameEnSubLabel" for="locFileNameEn" style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Английский файл (EN)</label>
+                            <div class="input-prefix-box">
+                                <span class="prefix-label loc-prefix-dynamic" id="locPrefixFolderEn">replace/</span>
+                                <input type="text" id="locFileNameEn" placeholder="countries_l_english.yml" oninput="onLocConfigChange(true)" autocomplete="off" spellcheck="false">
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="section-desc" id="locFileNameDesc" style="margin-bottom: 10px;">Полное имя файла (например: <code>strana.yml</code> или <code>mod_l_russian.yml</code>). По умолчанию: <code>countries_l_russian.yml</code>.</p>
+
+                    <div class="loc-replace-box">
+                        <label class="loc-checkbox-label">
+                            <input type="checkbox" id="locUseReplaceFolder" checked onchange="onLocConfigChange()">
+                            <div>
+                                <span class="checkbox-title" id="locUseReplaceLabel" style="font-size: 12px; font-weight: 600; color: var(--text-main);">Поместить в папку replace/ (перезапись ваниллы и модов)</span>
+                                <p class="section-desc" id="locUseReplaceDesc" style="margin-top: 2px; margin-bottom: 0; font-size: 11px; color: var(--text-muted); line-height: 1.4;">В движке Clausewitz папка <code>localisation/replace/</code> даёт наивысший приоритет и гарантирует замену названий стран из ваниллы и других модов. Снимите галочку, если хотите сохранить файл прямо в корень <code>localisation/</code>.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <!-- Right: Live Summary & Telemetry -->
@@ -188,7 +226,7 @@
                     <div class="tree-body">
                         <div>📁 <strong id="treeModDirName">MyAwesomeMod</strong>/</div>
                         <div class="tree-sub">├── 📄 descriptor.mod</div>
-                        <div class="tree-sub">├── 📁 localisation/replace/ <span class="muted-note">(RU + EN)</span></div>
+                        <div class="tree-sub">├── 📁 <span id="treeLocPath">localisation/replace/</span> <span class="muted-note" id="treeLocNote">(countries_l_russian.yml)</span></div>
                         <div class="tree-sub">├── 📁 gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
                         <div class="tree-sub">└── 📁 common/on_actions/ <span class="muted-note">(марионетки и регионы)</span></div>
                     </div>
@@ -364,6 +402,14 @@
         <div class="field" style="margin-top:14px">
           <label data-t="f_moddesc">Описание мода</label>
           <textarea id="mod-description" class="inp" rows="2" data-t-ph="f_moddesc_ph" oninput="cosm_onFieldChange()"></textarea>
+        </div>
+        <div class="field" style="margin-top:14px">
+          <label data-t="f_cosm_loc_filename" class="field-label" id="cosmLocFileNameLabel">Файл локализации решений и косметики</label>
+          <div class="input-prefix-box">
+            <span class="prefix-label">localisation/</span>
+            <input type="text" id="cosm-loc-filename" class="inp" placeholder="mod_l_russian.yml (например: strana.yml)" oninput="cosm_onFieldChange()" />
+          </div>
+          <div class="hint" data-t="f_cosm_loc_filename_h" id="cosmLocFileNameHint">Полное имя файла локализации. По умолчанию: [id_мода]_l_russian.yml.</div>
         </div>
       </div>
 

@@ -34,6 +34,8 @@ const I18N = {
     f_hoi4ver_h: 'Актуальная поддерживаемая версия: 1.19.*',
     f_moddesc: 'Описание мода',
     f_moddesc_ph: 'Краткое описание мода для лаунчера...',
+    f_cosm_loc_filename: 'Файл локализации решений и косметики',
+    f_cosm_loc_filename_h: 'Полное имя файла локализации (например: strana.yml или mod_l_russian.yml). По умолчанию: [id_мода]_l_russian.yml.',
     s2_scope_head: 'Доступность решения (Для кого)',
     s2_scope_desc: 'Выберите, кто может принять решение о создании страны: одна страна, несколько стран или любая страна мира',
     scope_specific_t: 'Выбранные страны (одна или несколько)',
@@ -918,6 +920,7 @@ function collectProjectData() {
     author: val('mod-author'),
     hoi4version: val('hoi4-version') || '1.19.*',
     modDescription: val('mod-description'),
+    customLocFileName: val('cosm-loc-filename'),
 
     scope: currentScope === 'single' ? 'specific' : currentScope,
     ownerTag: val('owner-tag').toUpperCase(),
@@ -990,6 +993,7 @@ function populateFormFromData(d) {
   setVal('mod-author', d.author);
   setVal('hoi4-version', d.hoi4version || '1.19.*');
   setVal('mod-description', d.modDescription);
+  setVal('cosm-loc-filename', d.customLocFileName);
 
   setScope(d.scope === 'single' ? 'specific' : (d.scope || 'specific'));
   const tagVal = d.ownerTag !== undefined && d.ownerTag !== null
@@ -1620,15 +1624,25 @@ path="mod/${modSlug}"
 ${commonDependencies}`;
 
   // 9. Store files for ZIP
+  const customLoc = (data.customLocFileName || '').trim();
+  const locRuFile = customLoc ? (customLoc.endsWith('.yml') || customLoc.endsWith('.yaml') ? customLoc : `${customLoc}.yml`) : `${modSlug}_l_russian.yml`;
+  const locEnFile = customLoc ? (customLoc.includes('_l_russian') ? customLoc.replace('_l_russian', '_l_english') : `${locRuFile.replace(/\.ya?ml$/, '')}_l_english.yml`) : `${modSlug}_l_english.yml`;
+
+  // Update tabs labels
+  const fpLocRuEl = document.getElementById('fp-loc-ru');
+  if (fpLocRuEl) fpLocRuEl.textContent = `localisation/russian/${locRuFile} (UTF-8 BOM)`;
+  const fpLocEnEl = document.getElementById('fp-loc-en');
+  if (fpLocEnEl) fpLocEnEl.textContent = `localisation/english/${locEnFile} (UTF-8 BOM)`;
+
   generatedFiles = {
     text: {
       [`${modSlug}/common/decisions/categories/00_${modSlug}_categories.txt`]: catContent,
       [`${modSlug}/common/decisions/${modSlug}_decisions.txt`]: decContent,
       [`${modSlug}/common/countries/cosmetic.txt`]: cosmeticContent,
-      [`${modSlug}/localisation/${modSlug}_l_russian.yml`]: locRuContent,
-      [`${modSlug}/localisation/${modSlug}_l_english.yml`]: locEnContent,
-      [`${modSlug}/localisation/russian/${modSlug}_l_russian.yml`]: locRuContent,
-      [`${modSlug}/localisation/english/${modSlug}_l_english.yml`]: locEnContent,
+      [`${modSlug}/localisation/${locRuFile}`]: locRuContent,
+      [`${modSlug}/localisation/${locEnFile}`]: locEnContent,
+      [`${modSlug}/localisation/russian/${locRuFile}`]: locRuContent,
+      [`${modSlug}/localisation/english/${locEnFile}`]: locEnContent,
       [`${modSlug}/descriptor.mod`]: internalDescContent,
       [`${modSlug}.mod`]: externalModContent,
       [`${modSlug}/README.md`]: `# ${data.modName}\n\nGenerated with HoI4 Cosmetic Tag Creator for HoI4 ${data.hoi4version}.\n\nInstallation:\n1. Copy the '${modSlug}' folder AND the '${modSlug}.mod' file into:\n   Documents/Paradox Interactive/Hearts of Iron IV/mod/\n2. Enable the mod in the Paradox Launcher 'Playsets' tab.\n`
@@ -1812,12 +1826,12 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
 │   ├── <span class="tree-dir">countries/</span>
 │   │   └── <span class="tree-f">cosmetic.txt</span> <span class="tree-sub">(цвета косметического тега)</span>
 ├── <span class="tree-dir">localisation/</span>
-│   ├── <span class="tree-f">${modSlug}_l_russian.yml</span>
-│   ├── <span class="tree-f">${modSlug}_l_english.yml</span>
+│   ├── <span class="tree-f">${locRuFile}</span>
+│   ├── <span class="tree-f">${locEnFile}</span>
 │   ├── <span class="tree-dir">russian/</span>
-│   │   └── <span class="tree-f">${modSlug}_l_russian.yml</span>
+│   │   └── <span class="tree-f">${locRuFile}</span>
 │   └── <span class="tree-dir">english/</span>
-│       └── <span class="tree-f">${modSlug}_l_english.yml</span>
+│       └── <span class="tree-f">${locEnFile}</span>
 ${gfxEntry}├── <span class="tree-dir">gfx/</span>
 ${decIconEntry}│   └── <span class="tree-dir">flags/</span>
 ${flagEntries || '│       └── (флаги не загружались)\n'}

@@ -4,6 +4,9 @@ var countries = [];
 var puppetRules = [];
 var stateNameRules = [];
 var cityNameRules = [];
+var countryLocFileName = '';
+var countryLocFileNameEn = '';
+var locUseReplaceFolder = true;
 var modCoverData = null;
 var coverBgImageObj = null;
 var coverCurrentTheme = 'iron';
@@ -96,6 +99,14 @@ var i18n = {
         onlineGuests: "Guests:",
         onlineMobile: "Mobile:",
         onlineRobots: "Robots:",
+
+        // Custom Localisation File
+        locFileNameLabel: "Country Localisation File:",
+        locFileNameRuSubLabel: "Main File (RU / Default):",
+        locFileNameEnSubLabel: "English File (EN):",
+        locFileNameDesc: "Full localisation file name (e.g., strana.yml or mod_l_russian.yml). Default: countries_l_russian.yml.",
+        locUseReplaceLabel: "Place in replace/ folder (overrides vanilla & mods)",
+        locUseReplaceDesc: "In Clausewitz, files in localisation/replace/ have highest priority and reliably overwrite vanilla and mod countries. Uncheck to save directly in localisation/.",
 
         // Project Management
         projStatusDraft: "Project:",
@@ -236,6 +247,14 @@ var i18n = {
         onlineGuests: "Гостей:",
         onlineMobile: "Мобильных:",
         onlineRobots: "Роботов:",
+
+        // Пользовательский файл локализации
+        locFileNameLabel: "Файл локализации стран:",
+        locFileNameRuSubLabel: "Основной файл (RU):",
+        locFileNameEnSubLabel: "Английский файл (EN):",
+        locFileNameDesc: "Полное имя файла локализации (например: strana.yml или mod_l_russian.yml). По умолчанию: countries_l_russian.yml.",
+        locUseReplaceLabel: "Поместить в папку replace/ (перезапись ваниллы и модов)",
+        locUseReplaceDesc: "В движке Clausewitz папка localisation/replace/ имеет наивысший приоритет и гарантирует замену названий стран из ваниллы и других модов. Снимите галочку, если хотите сохранить файл прямо в корень localisation/.",
 
         // Управление проектом
         projStatusDraft: "Проект:",
@@ -582,14 +601,101 @@ window.onload = function() {
 
     document.getElementById('app-content').style.display = 'block';
     applyLang(lang);
+    onLocConfigChange();
     if (window.OnlineCounter && typeof window.OnlineCounter.init === 'function') {
         window.OnlineCounter.init();
     }
 };
 
+
+function sanitizeLocFileName(raw, defaultName) {
+    if (!raw || typeof raw !== 'string') return defaultName || 'countries_l_russian.yml';
+    var clean = raw.trim().replace(/\\/g, '/');
+    clean = clean.split('/').pop().trim();
+    clean = clean.replace(/[<>:"|?*]/g, '');
+    if (!clean) return defaultName || 'countries_l_russian.yml';
+    if (!/\.ya?ml$/i.test(clean)) {
+        clean += '.yml';
+    }
+    return clean;
+}
+
+function getEffectiveLocFileNameRu() {
+    var inp = document.getElementById('locFileName');
+    var val = inp ? inp.value.trim() : countryLocFileName;
+    return sanitizeLocFileName(val, 'countries_l_russian.yml');
+}
+
+function getEffectiveLocFileNameEn() {
+    var inp = document.getElementById('locFileNameEn');
+    var val = inp ? inp.value.trim() : countryLocFileNameEn;
+    if (val) {
+        return sanitizeLocFileName(val, 'countries_l_english.yml');
+    }
+    var ru = getEffectiveLocFileNameRu();
+    if (/_l_russian\.ya?ml$/i.test(ru)) {
+        return ru.replace(/_l_russian\.ya?ml$/i, '_l_english.yml');
+    }
+    if (ru === 'countries_l_russian.yml') {
+        return 'countries_l_english.yml';
+    }
+    var base = ru.replace(/\.ya?ml$/i, '');
+    return base + '_l_english.yml';
+}
+
+function onLocConfigChange(isManualEnEdit) {
+    var fnInp = document.getElementById('locFileName');
+    var fnEnInp = document.getElementById('locFileNameEn');
+    var chk = document.getElementById('locUseReplaceFolder');
+
+    countryLocFileName = fnInp ? fnInp.value.trim() : '';
+    if (isManualEnEdit && fnEnInp) {
+        countryLocFileNameEn = fnEnInp.value.trim();
+    } else if (!isManualEnEdit && fnEnInp) {
+        if (countryLocFileName) {
+            fnEnInp.placeholder = getEffectiveLocFileNameEn();
+        } else {
+            fnEnInp.placeholder = 'countries_l_english.yml';
+        }
+    }
+    locUseReplaceFolder = chk ? chk.checked : true;
+
+    var folderText = locUseReplaceFolder ? 'localisation/replace/' : 'localisation/';
+    var prefixText = locUseReplaceFolder ? 'replace/' : 'localisation/';
+
+    var badgeEl = document.getElementById('locBadgePath');
+    if (badgeEl) badgeEl.textContent = folderText;
+    var pfxEl = document.getElementById('locPrefixFolder');
+    if (pfxEl) pfxEl.textContent = prefixText;
+    var pfxEnEl = document.getElementById('locPrefixFolderEn');
+    if (pfxEnEl) pfxEnEl.textContent = prefixText;
+
+    var treeLocPath = document.getElementById('treeLocPath');
+    if (treeLocPath) treeLocPath.textContent = folderText;
+    var treeLocNote = document.getElementById('treeLocNote');
+    if (treeLocNote) {
+        var effRu = getEffectiveLocFileNameRu();
+        treeLocNote.textContent = '(' + effRu + ')';
+    }
+
+    saveData();
+}
+
 function loadSaved(d) {
     document.getElementById('modName').value = d.modName || '';
     modCoverData = d.cover || null;
+
+    countryLocFileName = d.countryLocFileName || '';
+    countryLocFileNameEn = d.countryLocFileNameEn || '';
+    locUseReplaceFolder = (d.locUseReplaceFolder !== undefined) ? !!d.locUseReplaceFolder : true;
+
+    var locInp = document.getElementById('locFileName');
+    if (locInp) locInp.value = countryLocFileName;
+    var locInpEn = document.getElementById('locFileNameEn');
+    if (locInpEn) locInpEn.value = countryLocFileNameEn;
+    var locChk = document.getElementById('locUseReplaceFolder');
+    if (locChk) locChk.checked = locUseReplaceFolder;
+    onLocConfigChange();
 
     if (d.countries && d.countries.length) {
         countries = [];
@@ -705,6 +811,19 @@ function applyLang(lang) {
 
     var npBtn = document.getElementById('btnNewProjText');
     if (npBtn) npBtn.innerText = t.newProjectBtn;
+    // Custom Localisation File UI
+    var lfnLabel = document.getElementById('locFileNameLabel');
+    if (lfnLabel) lfnLabel.innerText = t.locFileNameLabel;
+    var lfnRuSub = document.getElementById('locFileNameRuSubLabel');
+    if (lfnRuSub) lfnRuSub.innerText = t.locFileNameRuSubLabel;
+    var lfnEnSub = document.getElementById('locFileNameEnSubLabel');
+    if (lfnEnSub) lfnEnSub.innerText = t.locFileNameEnSubLabel;
+    var lfnDesc = document.getElementById('locFileNameDesc');
+    if (lfnDesc) lfnDesc.innerHTML = t.locFileNameDesc;
+    var lurLabel = document.getElementById('locUseReplaceLabel');
+    if (lurLabel) lurLabel.innerHTML = t.locUseReplaceLabel;
+    var lurDesc = document.getElementById('locUseReplaceDesc');
+    if (lurDesc) lurDesc.innerHTML = t.locUseReplaceDesc;
 
     // Cover Creator Modal
     var cmt = document.getElementById('coverModalTitle');
@@ -1353,6 +1472,9 @@ function saveData() {
     var out = {
         lang: currentLang,
         modName: (document.getElementById('modName') || {}).value || '',
+        countryLocFileName: countryLocFileName,
+        countryLocFileNameEn: countryLocFileNameEn,
+        locUseReplaceFolder: locUseReplaceFolder,
         cover: modCoverData || null,
         countries: [],
         puppetRules: [],
@@ -2039,6 +2161,9 @@ function saveProjectToFile() {
         savedAt: new Date().toISOString(),
         lang: currentLang,
         modName: modName,
+        countryLocFileName: countryLocFileName,
+        countryLocFileNameEn: countryLocFileNameEn,
+        locUseReplaceFolder: locUseReplaceFolder,
         cover: modCoverData || null,
         countries: countries,
         puppetRules: puppetRules,
@@ -2109,6 +2234,9 @@ async function importModZip(zip) {
     var recovered = {
         lang: currentLang,
         modName: 'ImportedMod',
+        countryLocFileName: '',
+        countryLocFileNameEn: '',
+        locUseReplaceFolder: true,
         cover: null,
         countries: [],
         puppetRules: [],
@@ -2228,6 +2356,17 @@ async function importModZip(zip) {
         var isCosmeticFile = lfName.indexOf('cosmetic') !== -1;
         var isStateFile = lfName.indexOf('states_names') !== -1 || lfName.indexOf('state') !== -1;
         var isCityFile = lfName.indexOf('victory_points') !== -1 || lfName.indexOf('city') !== -1;
+
+        if (!isCosmeticFile && !isStateFile && !isCityFile) {
+            var rawBase = lf.name.split('/').pop();
+            var inReplace = (lf.name.indexOf('/replace/') !== -1 || lf.name.startsWith('replace/') || lf.name.indexOf('localisation/replace') !== -1);
+            if (lfName.indexOf('_l_english') !== -1) {
+                if (!recovered.countryLocFileNameEn) recovered.countryLocFileNameEn = rawBase;
+            } else {
+                if (!recovered.countryLocFileName) recovered.countryLocFileName = rawBase;
+            }
+            recovered.locUseReplaceFolder = inReplace;
+        }
 
         for (var lineIdx = 0; lineIdx < lLines.length; lineIdx++) {
             var line = lLines[lineIdx].trim();
@@ -2561,6 +2700,16 @@ function createNewProject() {
     if (!confirm(i18n[currentLang].confirmNewProject)) return;
     document.getElementById('modName').value = '';
     modCoverData = null;
+    countryLocFileName = '';
+    countryLocFileNameEn = '';
+    locUseReplaceFolder = true;
+    var locInp = document.getElementById('locFileName');
+    if (locInp) locInp.value = '';
+    var locInpEn = document.getElementById('locFileNameEn');
+    if (locInpEn) locInpEn.value = '';
+    var locChk = document.getElementById('locUseReplaceFolder');
+    if (locChk) locChk.checked = true;
+    onLocConfigChange();
     countries = [mkEmptyCountry()];
     puppetRules = [mkEmptyPuppet()];
     stateNameRules = [mkEmptyState()];
@@ -2935,8 +3084,11 @@ async function generateMod() {
     var fMed = modFolder.folder('gfx/flags/medium');
     var fSmall = modFolder.folder('gfx/flags/small');
 
-    // In HoI4, files in localisation/replace must be located DIRECTLY inside localisation/replace without language subdirectories
-    var replaceFolder = modFolder.folder('localisation/replace');
+    // Target localisation folder (replace/ folder gives highest priority to overwrite vanilla or other mods)
+    var locFolder = locUseReplaceFolder ? modFolder.folder('localisation/replace') : modFolder.folder('localisation');
+    var replaceFolder = locFolder;
+    var fnRu = getEffectiveLocFileNameRu();
+    var fnEn = getEffectiveLocFileNameEn();
 
     var normalLocRu = ['l_russian:'];
     var normalLocEn = ['l_english:'];
@@ -3115,10 +3267,10 @@ async function generateMod() {
         }
     }
 
-    // Save localisation files directly into localisation/replace/ with both languages
+    // Save localisation files directly into target localisation folder with both languages
     if (hasNormal) {
-        replaceFolder.file('countries_l_russian.yml', '\uFEFF' + normalLocRu.join('\n') + '\n');
-        replaceFolder.file('countries_l_english.yml', '\uFEFF' + normalLocEn.join('\n') + '\n');
+        locFolder.file(fnRu, '\uFEFF' + normalLocRu.join('\n') + '\n');
+        locFolder.file(fnEn, '\uFEFF' + normalLocEn.join('\n') + '\n');
     }
     if (hasCosmetic) {
         replaceFolder.file('countries_cosmetic_l_russian.yml', '\uFEFF' + cosmeticLocRu.join('\n') + '\n');
@@ -3193,6 +3345,9 @@ async function generateMod() {
         savedAt: new Date().toISOString(),
         lang: currentLang,
         modName: modName,
+        countryLocFileName: countryLocFileName,
+        countryLocFileNameEn: countryLocFileNameEn,
+        locUseReplaceFolder: locUseReplaceFolder,
         countries: countries,
         puppetRules: puppetRules,
         stateNameRules: stateNameRules,
