@@ -1028,14 +1028,10 @@
                 var sCount = (window.stateNameRules && window.stateNameRules.length) || 0;
                 var vCount = (window.cityNameRules && window.cityNameRules.length) || 0;
 
-                var elC = document.getElementById('statCountCountries');
-                var elP = document.getElementById('statCountPuppets');
-                var elS = document.getElementById('statCountStates');
-                var elV = document.getElementById('statCountCities');
-                if (elC) elC.textContent = cCount;
-                if (elP) elP.textContent = pCount;
-                if (elS) elS.textContent = sCount;
-                if (elV) elV.textContent = vCount;
+                [['statCountCountries', cCount], ['statCountPuppets', pCount], ['statCountStates', sCount], ['statCountCities', vCount]].forEach(function(p) {
+                    var el = document.getElementById(p[0]);
+                    if (el) el.textContent = p[1];
+                });
 
                 var summaryText = document.getElementById('launchSummaryText');
                 if (summaryText) {

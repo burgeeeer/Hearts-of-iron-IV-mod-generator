@@ -555,20 +555,17 @@ var OnlineCounter = {
 
     updateLanguage: function(t) {
         if (!t) return;
-        var titleEl = document.getElementById('onlineCounterTitle');
-        if (titleEl && t.onlineNow) titleEl.textContent = t.onlineNow;
-
-        var uLabel = document.getElementById('onlineLabelUsers');
-        if (uLabel && t.onlineUsers) uLabel.textContent = t.onlineUsers;
-
-        var gLabel = document.getElementById('onlineLabelGuests');
-        if (gLabel && t.onlineGuests) gLabel.textContent = t.onlineGuests;
-
-        var mLabel = document.getElementById('onlineLabelMobile');
-        if (mLabel && t.onlineMobile) mLabel.textContent = t.onlineMobile;
-
-        var rLabel = document.getElementById('onlineLabelRobots');
-        if (rLabel && t.onlineRobots) rLabel.textContent = t.onlineRobots;
+        var map = {
+            onlineCounterTitle: t.onlineNow,
+            onlineLabelUsers: t.onlineUsers,
+            onlineLabelGuests: t.onlineGuests,
+            onlineLabelMobile: t.onlineMobile,
+            onlineLabelRobots: t.onlineRobots
+        };
+        for (var id in map) {
+            var el = document.getElementById(id);
+            if (el && map[id]) el.textContent = map[id];
+        }
     }
 };
 
@@ -775,140 +772,95 @@ function applyLang(lang) {
     if (tb) tb.innerText = lang === 'english' ? 'RU' : 'EN';
 
     var t = i18n[lang];
-    document.getElementById('titleText').innerText = t.title;
-    document.getElementById('modNameLabel').innerText = t.modName;
+    if (!t) return;
 
-    var nmDesc = document.getElementById('modNameDesc');
-    if (nmDesc) nmDesc.innerText = t.modNameDesc;
+    var textMap = [
+        ['titleText', t.title],
+        ['modNameLabel', t.modName],
+        ['modNameDesc', t.modNameDesc],
+        ['modCoverLabel', t.modCoverLabel],
+        ['noCoverLabel', t.noCoverLabel],
+        ['btnUploadCoverText', t.uploadCoverBtn],
+        ['btnMakeCoverText', modCoverData ? t.editCoverBtn : t.makeCoverBtn],
+        ['btnDownloadCover', t.downloadCoverBtn],
+        ['btnRemoveCover', t.removeCoverBtn],
+        ['btnSaveProjFileText', t.saveProjectBtn],
+        ['btnLoadProjFileText', t.loadProjectBtn],
+        ['btnMyProjectsText', t.myProjectsBtn],
+        ['btnNewProjText', t.newProjectBtn],
+        ['locFileNameLabel', t.locFileNameLabel],
+        ['locFileNameRuSubLabel', t.locFileNameRuSubLabel],
+        ['locFileNameEnSubLabel', t.locFileNameEnSubLabel],
+        ['coverModalTitle', t.coverModalTitle],
+        ['coverModalDesc', t.coverModalDesc],
+        ['coverTabTitleHead', t.coverTabTitleHead],
+        ['coverTitleInputLabel', t.coverTitleInputLabel],
+        ['coverSubtitleInputLabel', t.coverSubtitleInputLabel],
+        ['coverFontLabel', t.coverFontLabel],
+        ['coverTitleSizeLabel', t.coverTitleSizeLabel],
+        ['coverTitleColorLabel', t.coverTitleColorLabel],
+        ['coverSubtitleColorLabel', t.coverSubtitleColorLabel],
+        ['coverTextShadowLabel', t.coverTextShadowLabel],
+        ['coverTabBgHead', t.coverTabBgHead],
+        ['coverThemePresetsLabel', t.coverThemePresetsLabel],
+        ['coverUploadBgImgLabel', t.coverUploadBgImgLabel],
+        ['coverBgDarknessLabel', t.coverBgDarknessLabel],
+        ['coverBgBlurLabel', t.coverBgBlurLabel],
+        ['coverTabFlagHead', t.coverTabFlagHead],
+        ['coverEnableFlagLabel', t.coverEnableFlagLabel],
+        ['coverSelectFlagLabel', t.coverSelectFlagLabel],
+        ['coverFlagStyleLabel', t.coverFlagStyleLabel],
+        ['coverFlagPosLabel', t.coverFlagPosLabel],
+        ['coverFlagSizeLabel', t.coverFlagSizeLabel],
+        ['coverTabEffectsHead', t.coverTabEffectsHead],
+        ['coverHoI4BadgeLabel', t.coverHoI4BadgeLabel],
+        ['coverFrameLabel', t.coverFrameLabel],
+        ['coverVignetteLabel', t.coverVignetteLabel],
+        ['coverGrungeLabel', t.coverGrungeLabel],
+        ['coverUploadReadyLabel', t.coverUploadReadyLabel],
+        ['coverApplyBtn', t.coverApplyBtn],
+        ['coverDownloadBtn', t.coverDownloadBtn],
+        ['projectsModalTitle', t.projectsModalTitle],
+        ['projectsModalDesc', t.projectsModalDesc],
+        ['saveCurrentToLibBtnText', t.saveCurrentToLibBtnText],
+        ['puppetTitle', t.puppetTitle],
+        ['puppetDesc', t.puppetDesc],
+        ['stateTitle', t.stateTitle],
+        ['stateDesc', t.stateDesc],
+        ['stateDefaultNote', t.defaultStateName],
+        ['cityTitle', t.cityTitle],
+        ['cityDesc', t.cityDesc],
+        ['generateBtn', t.genBtn]
+    ];
+    for (var i = 0; i < textMap.length; i++) {
+        var el = document.getElementById(textMap[i][0]);
+        if (el && textMap[i][1] !== undefined) el.innerText = textMap[i][1];
+    }
 
-    var mcLabel = document.getElementById('modCoverLabel');
-    if (mcLabel) mcLabel.innerText = t.modCoverLabel;
+    var htmlMap = [
+        ['locFileNameDesc', t.locFileNameDesc],
+        ['locUseReplaceLabel', t.locUseReplaceLabel],
+        ['locUseReplaceDesc', t.locUseReplaceDesc]
+    ];
+    for (var i = 0; i < htmlMap.length; i++) {
+        var el = document.getElementById(htmlMap[i][0]);
+        if (el && htmlMap[i][1] !== undefined) el.innerHTML = htmlMap[i][1];
+    }
 
-    var ncLabel = document.getElementById('noCoverLabel');
-    if (ncLabel) ncLabel.innerText = t.noCoverLabel;
-
-    var buc = document.getElementById('btnUploadCoverText');
-    if (buc) buc.innerText = t.uploadCoverBtn;
-
-    var bmc = document.getElementById('btnMakeCoverText');
-    if (bmc) bmc.innerText = modCoverData ? t.editCoverBtn : t.makeCoverBtn;
-
-    var bdc = document.getElementById('btnDownloadCover');
-    if (bdc) bdc.innerText = t.downloadCoverBtn;
-
-    var brc = document.getElementById('btnRemoveCover');
-    if (brc) brc.innerText = t.removeCoverBtn;
-
-    // Project toolbar
-    var spBtn = document.getElementById('btnSaveProjFileText');
-    if (spBtn) spBtn.innerText = t.saveProjectBtn;
-
-    var lpBtn = document.getElementById('btnLoadProjFileText');
-    if (lpBtn) lpBtn.innerText = t.loadProjectBtn;
-
-    var mpBtn = document.getElementById('btnMyProjectsText');
-    if (mpBtn) mpBtn.innerText = t.myProjectsBtn;
-
-    var npBtn = document.getElementById('btnNewProjText');
-    if (npBtn) npBtn.innerText = t.newProjectBtn;
-    // Custom Localisation File UI
-    var lfnLabel = document.getElementById('locFileNameLabel');
-    if (lfnLabel) lfnLabel.innerText = t.locFileNameLabel;
-    var lfnRuSub = document.getElementById('locFileNameRuSubLabel');
-    if (lfnRuSub) lfnRuSub.innerText = t.locFileNameRuSubLabel;
-    var lfnEnSub = document.getElementById('locFileNameEnSubLabel');
-    if (lfnEnSub) lfnEnSub.innerText = t.locFileNameEnSubLabel;
-    var lfnDesc = document.getElementById('locFileNameDesc');
-    if (lfnDesc) lfnDesc.innerHTML = t.locFileNameDesc;
-    var lurLabel = document.getElementById('locUseReplaceLabel');
-    if (lurLabel) lurLabel.innerHTML = t.locUseReplaceLabel;
-    var lurDesc = document.getElementById('locUseReplaceDesc');
-    if (lurDesc) lurDesc.innerHTML = t.locUseReplaceDesc;
-
-    // Cover Creator Modal
-    var cmt = document.getElementById('coverModalTitle');
-    if (cmt) cmt.innerText = t.coverModalTitle;
-    var cmd = document.getElementById('coverModalDesc');
-    if (cmd) cmd.innerText = t.coverModalDesc;
-    var cth = document.getElementById('coverTabTitleHead');
-    if (cth) cth.innerText = t.coverTabTitleHead;
-    var cti = document.getElementById('coverTitleInputLabel');
-    if (cti) cti.innerText = t.coverTitleInputLabel;
-    var csi = document.getElementById('coverSubtitleInputLabel');
-    if (csi) csi.innerText = t.coverSubtitleInputLabel;
-    var cfl = document.getElementById('coverFontLabel');
-    if (cfl) cfl.innerText = t.coverFontLabel;
-    var cts = document.getElementById('coverTitleSizeLabel');
-    if (cts) cts.innerText = t.coverTitleSizeLabel;
-    var ctc = document.getElementById('coverTitleColorLabel');
-    if (ctc) ctc.innerText = t.coverTitleColorLabel;
-    var csc = document.getElementById('coverSubtitleColorLabel');
-    if (csc) csc.innerText = t.coverSubtitleColorLabel;
-    var cst = document.getElementById('coverTextShadowLabel');
-    if (cst) cst.innerText = t.coverTextShadowLabel;
-    var ctb = document.getElementById('coverTabBgHead');
-    if (ctb) ctb.innerText = t.coverTabBgHead;
-    var ctp = document.getElementById('coverThemePresetsLabel');
-    if (ctp) ctp.innerText = t.coverThemePresetsLabel;
-    var cub = document.getElementById('coverUploadBgImgLabel');
-    if (cub) cub.innerText = t.coverUploadBgImgLabel;
-    var cbd = document.getElementById('coverBgDarknessLabel');
-    if (cbd) cbd.innerText = t.coverBgDarknessLabel;
-    var cbb = document.getElementById('coverBgBlurLabel');
-    if (cbb) cbb.innerText = t.coverBgBlurLabel;
-    var ctf = document.getElementById('coverTabFlagHead');
-    if (ctf) ctf.innerText = t.coverTabFlagHead;
-    var cef = document.getElementById('coverEnableFlagLabel');
-    if (cef) cef.innerText = t.coverEnableFlagLabel;
-    var csf = document.getElementById('coverSelectFlagLabel');
-    if (csf) csf.innerText = t.coverSelectFlagLabel;
-    var cfs = document.getElementById('coverFlagStyleLabel');
-    if (cfs) cfs.innerText = t.coverFlagStyleLabel;
-    var cfp = document.getElementById('coverFlagPosLabel');
-    if (cfp) cfp.innerText = t.coverFlagPosLabel;
-    var cfz = document.getElementById('coverFlagSizeLabel');
-    if (cfz) cfz.innerText = t.coverFlagSizeLabel;
-    var cte = document.getElementById('coverTabEffectsHead');
-    if (cte) cte.innerText = t.coverTabEffectsHead;
-    var chb = document.getElementById('coverHoI4BadgeLabel');
-    if (chb) chb.innerText = t.coverHoI4BadgeLabel;
-    var cfb = document.getElementById('coverFrameLabel');
-    if (cfb) cfb.innerText = t.coverFrameLabel;
-    var cvl = document.getElementById('coverVignetteLabel');
-    if (cvl) cvl.innerText = t.coverVignetteLabel;
-    var cgl = document.getElementById('coverGrungeLabel');
-    if (cgl) cgl.innerText = t.coverGrungeLabel;
-    var cur = document.getElementById('coverUploadReadyLabel');
-    if (cur) cur.innerText = t.coverUploadReadyLabel;
-    var cab = document.getElementById('coverApplyBtn');
-    if (cab) cab.innerText = t.coverApplyBtn;
-    var cdb = document.getElementById('coverDownloadBtn');
-    if (cdb) cdb.innerText = t.coverDownloadBtn;
-
-    // Projects Modal
-    var pmt = document.getElementById('projectsModalTitle');
-    if (pmt) pmt.innerText = t.projectsModalTitle;
-    var pmd = document.getElementById('projectsModalDesc');
-    if (pmd) pmd.innerText = t.projectsModalDesc;
-    var scl = document.getElementById('saveCurrentToLibBtnText');
-    if (scl) scl.innerText = t.saveCurrentToLibBtnText;
-
-    document.getElementById('puppetTitle').innerText = t.puppetTitle;
-    document.getElementById('puppetDesc').innerText = t.puppetDesc;
-    document.getElementById('puppetAddBtn').innerText = '＋ ' + t.addPuppet;
-    document.getElementById('stateTitle').innerText = t.stateTitle;
-    document.getElementById('stateDesc').innerText = t.stateDesc;
-    document.getElementById('stateAddBtn').innerText = '＋ ' + t.addStateRule;
-    document.getElementById('stateDefaultNote').innerText = t.defaultStateName;
-    document.getElementById('cityTitle').innerText = t.cityTitle;
-    document.getElementById('cityDesc').innerText = t.cityDesc;
-    document.getElementById('cityAddBtn').innerText = '＋ ' + t.addCityRule;
-    document.getElementById('generateBtn').innerText = t.genBtn;
+    var btnMap = [
+        ['puppetAddBtn', '＋ ' + t.addPuppet],
+        ['stateAddBtn', '＋ ' + t.addStateRule],
+        ['cityAddBtn', '＋ ' + t.addCityRule]
+    ];
+    for (var i = 0; i < btnMap.length; i++) {
+        var el = document.getElementById(btnMap[i][0]);
+        if (el) el.innerText = btnMap[i][1];
+    }
 
     var fwl = document.getElementById('footerWorkshopLink');
+    if (fwl && t.footerWorkshop) fwl.textContent = t.footerWorkshop;
     var fsl = document.getElementById('footerSourceLink');
-    if (fwl) fwl.textContent = t.footerWorkshop;
-    if (fsl) fsl.textContent = t.footerSource;
+    if (fsl && t.footerSource) fsl.textContent = t.footerSource;
 
     if (window.OnlineCounter && typeof window.OnlineCounter.updateLanguage === 'function') {
         window.OnlineCounter.updateLanguage(t);
@@ -921,7 +873,6 @@ function applyLang(lang) {
     if (typeof renderCoverPreview === 'function') renderCoverPreview();
     updateProjectToolbar();
 
-    // Sync mode navigation buttons and notify CosmeticCreator
     var isRu = (lang !== 'english');
     var lmg = document.getElementById('labelModeGeneral');
     if (lmg) lmg.textContent = isRu ? 'Страны и марионетки' : 'Countries & Puppets';
@@ -933,7 +884,6 @@ function applyLang(lang) {
 
     saveData();
 }
-
 function renderCountries() {
     var box = document.getElementById('countries-container');
     box.innerHTML = '';
@@ -2596,78 +2546,33 @@ function saveCurrentToLibrary() {
 function renderProjectsList() {
     var container = document.getElementById('projectsListContainer');
     if (!container) return;
-    container.innerHTML = '';
     var list = getStoredProjectsList();
+    var t = i18n[currentLang];
 
     if (!list.length) {
-        container.innerHTML = '<div class="project-empty-msg">' + (i18n[currentLang].noProjectsInLib || 'No saved projects yet.') + '</div>';
+        container.innerHTML = '<div class="project-empty-msg">' + (t.noProjectsInLib || 'No saved projects yet.') + '</div>';
         return;
     }
 
-    var t = i18n[currentLang];
-    for (var i = 0; i < list.length; i++) {
-        (function(item) {
-            var card = document.createElement('div');
-            card.className = 'project-card';
-
-            var info = document.createElement('div');
-            info.className = 'project-card-info';
-
-            var thumb = document.createElement('div');
-            thumb.className = 'project-card-thumb';
-            if (item.cover) {
-                var im = document.createElement('img');
-                im.src = item.cover;
-                thumb.appendChild(im);
-            } else {
-                thumb.textContent = '🗺️';
-            }
-
-            var meta = document.createElement('div');
-            meta.className = 'project-card-meta';
-            var h4 = document.createElement('h4');
-            h4.textContent = item.name || 'CustomMod';
-            var sp = document.createElement('span');
-            sp.textContent = (item.savedAt || '') + ' • ' + (item.countryCount || 0) + ' ' + (t.projCardCountries || 'стран') + ', ' + (item.puppetCount || 0) + ' ' + (t.projCardPuppets || 'марионеток');
-            meta.appendChild(h4);
-            meta.appendChild(sp);
-
-            info.appendChild(thumb);
-            info.appendChild(meta);
-
-            var btns = document.createElement('div');
-            btns.className = 'project-card-btns';
-
-            var loadBtn = document.createElement('button');
-            loadBtn.type = 'button';
-            loadBtn.className = 'secondary-btn';
-            loadBtn.textContent = '📂 ' + (t.projCardLoadBtn || 'Загрузить');
-            loadBtn.onclick = function() { loadProjectFromLibrary(item.id); };
-
-            var expBtn = document.createElement('button');
-            expBtn.type = 'button';
-            expBtn.className = 'secondary-btn';
-            expBtn.textContent = '💾 ' + (t.projCardExportBtn || 'JSON');
-            expBtn.onclick = function() { exportProjectFromLibrary(item.id); };
-
-            var delBtn = document.createElement('button');
-            delBtn.type = 'button';
-            delBtn.className = 'secondary-btn danger-btn';
-            delBtn.textContent = '🗑️';
-            delBtn.title = t.projCardDeleteBtn || 'Удалить';
-            delBtn.onclick = function() { deleteProjectFromLibrary(item.id); };
-
-            btns.appendChild(loadBtn);
-            btns.appendChild(expBtn);
-            btns.appendChild(delBtn);
-
-            card.appendChild(info);
-            card.appendChild(btns);
-            container.appendChild(card);
-        })(list[i]);
-    }
+    container.innerHTML = list.map(function(item) {
+        var thumbHtml = item.cover ? '<img src="' + esc(item.cover) + '">' : '🗺️';
+        var metaText = esc(item.savedAt || '') + ' • ' + (item.countryCount || 0) + ' ' + (t.projCardCountries || 'стран') + ', ' + (item.puppetCount || 0) + ' ' + (t.projCardPuppets || 'марионеток');
+        return '<div class="project-card">' +
+            '<div class="project-card-info">' +
+                '<div class="project-card-thumb">' + thumbHtml + '</div>' +
+                '<div class="project-card-meta">' +
+                    '<h4>' + esc(item.name || 'CustomMod') + '</h4>' +
+                    '<span>' + metaText + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="project-card-btns">' +
+                '<button type="button" class="secondary-btn" onclick="loadProjectFromLibrary(\'' + item.id + '\')">📂 ' + (t.projCardLoadBtn || 'Загрузить') + '</button>' +
+                '<button type="button" class="secondary-btn" onclick="exportProjectFromLibrary(\'' + item.id + '\')">💾 ' + (t.projCardExportBtn || 'JSON') + '</button>' +
+                '<button type="button" class="secondary-btn danger-btn" onclick="deleteProjectFromLibrary(\'' + item.id + '\')" title="' + (t.projCardDeleteBtn || 'Удалить') + '">🗑️</button>' +
+            '</div>' +
+        '</div>';
+    }).join('');
 }
-
 function loadProjectFromLibrary(id) {
     if (!confirm(i18n[currentLang].confirmNewProject)) return;
     var list = getStoredProjectsList();
@@ -2776,14 +2681,12 @@ function buildPuppetOnActions(pRules) {
             validRules.push({ tag: tg, overlord: ov, cosTag: key });
         }
     }
-
     if (!validRules.length) return '';
 
     function getOverlordCond(ov) {
         var tags = [ov];
-        if (ov === 'EUR' && tags.indexOf('EUR_UNIFIED') === -1) tags.push('EUR_UNIFIED');
-        if (ov === 'EUR_UNIFIED' && tags.indexOf('EUR') === -1) tags.push('EUR');
-
+        if (ov === 'EUR') tags.push('EUR_UNIFIED');
+        if (ov === 'EUR_UNIFIED') tags.push('EUR');
         var conds = [];
         for (var t = 0; t < tags.length; t++) {
             conds.push('tag = ' + tags[t]);
@@ -2793,86 +2696,59 @@ function buildPuppetOnActions(pRules) {
         return conds;
     }
 
+    function buildRootLimitBlock(indent) {
+        var res = [];
+        for (var i = 0; i < validRules.length; i++) {
+            var vr = validRules[i];
+            var ovConds = getOverlordCond(vr.overlord);
+            res.push(indent + 'if = {');
+            res.push(indent + '    limit = {');
+            res.push(indent + '        ROOT = {');
+            res.push(indent + '            OR = {');
+            res.push(indent + '                tag = ' + vr.tag);
+            res.push(indent + '                original_tag = ' + vr.tag);
+            res.push(indent + '                has_cosmetic_tag = ' + vr.tag);
+            res.push(indent + '            }');
+            res.push(indent + '        }');
+            res.push(indent + '        FROM = {');
+            res.push(indent + '            OR = {');
+            for (var c = 0; c < ovConds.length; c++) res.push(indent + '                ' + ovConds[c]);
+            res.push(indent + '            }');
+            res.push(indent + '        }');
+            res.push(indent + '    }');
+            res.push(indent + '    ROOT = { set_cosmetic_tag = ' + vr.cosTag + ' }');
+            res.push(indent + '}');
+        }
+        return res.join('\n');
+    }
+
     var lines = [
         'on_actions = {',
         '    # Automatic cosmetic tag application when puppeted (supports normal and cosmetic overlords)',
         '    on_puppet = {',
+        '        effect = {',
+        buildRootLimitBlock('            '),
+        '        }',
+        '    }',
+        '    on_release_as_puppet = {',
+        '        effect = {',
+        buildRootLimitBlock('            '),
+        '        }',
+        '    }',
+        '    on_startup = {',
         '        effect = {'
     ];
 
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
         var ovConds = getOverlordCond(vr.overlord);
-
-        lines.push('            if = {');
-        lines.push('                limit = {');
-        lines.push('                    ROOT = {');
-        lines.push('                        OR = {');
-        lines.push('                            tag = ' + vr.tag);
-        lines.push('                            original_tag = ' + vr.tag);
-        lines.push('                            has_cosmetic_tag = ' + vr.tag);
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                    FROM = {');
-        lines.push('                        OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                            ' + ovConds[c]);
-        }
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                }');
-        lines.push('                ROOT = { set_cosmetic_tag = ' + vr.cosTag + ' }');
-        lines.push('            }');
-    }
-
-    lines.push('        }');
-    lines.push('    }');
-    lines.push('    on_release_as_puppet = {');
-    lines.push('        effect = {');
-
-    for (var i = 0; i < validRules.length; i++) {
-        var vr = validRules[i];
-        var ovConds = getOverlordCond(vr.overlord);
-
-        lines.push('            if = {');
-        lines.push('                limit = {');
-        lines.push('                    ROOT = {');
-        lines.push('                        OR = {');
-        lines.push('                            tag = ' + vr.tag);
-        lines.push('                            original_tag = ' + vr.tag);
-        lines.push('                            has_cosmetic_tag = ' + vr.tag);
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                    FROM = {');
-        lines.push('                        OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                            ' + ovConds[c]);
-        }
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                }');
-        lines.push('                ROOT = { set_cosmetic_tag = ' + vr.cosTag + ' }');
-        lines.push('            }');
-    }
-
-    lines.push('        }');
-    lines.push('    }');
-    lines.push('    on_startup = {');
-    lines.push('        effect = {');
-
-    for (var i = 0; i < validRules.length; i++) {
-        var vr = validRules[i];
-        var ovConds = getOverlordCond(vr.overlord);
-
         lines.push('            if = {');
         lines.push('                limit = {');
         lines.push('                    ' + vr.tag + ' = {');
         lines.push('                        is_subject = yes');
         lines.push('                        OVERLORD = {');
         lines.push('                            OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                                ' + ovConds[c]);
-        }
+        for (var c = 0; c < ovConds.length; c++) lines.push('                                ' + ovConds[c]);
         lines.push('                            }');
         lines.push('                        }');
         lines.push('                    }');
@@ -2880,15 +2756,11 @@ function buildPuppetOnActions(pRules) {
         lines.push('                ' + vr.tag + ' = { set_cosmetic_tag = ' + vr.cosTag + ' }');
         lines.push('            }');
     }
+    lines.push('        }\n    }');
 
-    lines.push('        }');
-    lines.push('    }');
-
-    // Country-specific daily check for immediate response
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
         var ovConds = getOverlordCond(vr.overlord);
-
         lines.push('    on_daily_' + vr.tag + ' = {');
         lines.push('        effect = {');
         lines.push('            if = {');
@@ -2896,9 +2768,7 @@ function buildPuppetOnActions(pRules) {
         lines.push('                    is_subject = yes');
         lines.push('                    OVERLORD = {');
         lines.push('                        OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                            ' + ovConds[c]);
-        }
+        for (var c = 0; c < ovConds.length; c++) lines.push('                            ' + ovConds[c]);
         lines.push('                        }');
         lines.push('                    }');
         lines.push('                    NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
@@ -2913,9 +2783,7 @@ function buildPuppetOnActions(pRules) {
         lines.push('                        NOT = {');
         lines.push('                            OVERLORD = {');
         lines.push('                                OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                                    ' + ovConds[c]);
-        }
+        for (var c = 0; c < ovConds.length; c++) lines.push('                                    ' + ovConds[c]);
         lines.push('                                }');
         lines.push('                            }');
         lines.push('                        }');
@@ -2927,13 +2795,10 @@ function buildPuppetOnActions(pRules) {
         lines.push('    }');
     }
 
-    // Weekly global fallback
-    lines.push('    on_weekly = {');
-    lines.push('        effect = {');
+    lines.push('    on_weekly = {\n        effect = {');
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
         var ovConds = getOverlordCond(vr.overlord);
-
         lines.push('            # ' + vr.tag + ' as puppet of ' + vr.overlord);
         lines.push('            if = {');
         lines.push('                limit = {');
@@ -2941,9 +2806,7 @@ function buildPuppetOnActions(pRules) {
         lines.push('                        is_subject = yes');
         lines.push('                        OVERLORD = {');
         lines.push('                            OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                                ' + ovConds[c]);
-        }
+        for (var c = 0; c < ovConds.length; c++) lines.push('                                ' + ovConds[c]);
         lines.push('                            }');
         lines.push('                        }');
         lines.push('                        NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
@@ -2960,9 +2823,7 @@ function buildPuppetOnActions(pRules) {
         lines.push('                            NOT = {');
         lines.push('                                OVERLORD = {');
         lines.push('                                    OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                                        ' + ovConds[c]);
-        }
+        for (var c = 0; c < ovConds.length; c++) lines.push('                                        ' + ovConds[c]);
         lines.push('                                    }');
         lines.push('                                }');
         lines.push('                            }');
@@ -2972,9 +2833,7 @@ function buildPuppetOnActions(pRules) {
         lines.push('                ' + vr.tag + ' = { drop_cosmetic_tag = yes }');
         lines.push('            }');
     }
-    lines.push('        }');
-    lines.push('    }');
-    lines.push('}');
+    lines.push('        }\n    }\n}');
     return lines.join('\n');
 }
 
@@ -3005,6 +2864,17 @@ function buildOnActions(sRules, cRules) {
 
     if (!Object.keys(sg).length && !Object.keys(cg).length) return '';
 
+    function getTagConds(tag, indent) {
+        var conds = [
+            indent + '    tag = ' + tag,
+            indent + '    original_tag = ' + tag,
+            indent + '    has_cosmetic_tag = ' + tag
+        ];
+        if (tag === 'EUR') conds.push(indent + '    has_cosmetic_tag = EUR_UNIFIED');
+        if (tag === 'EUR_UNIFIED') conds.push(indent + '    has_cosmetic_tag = EUR');
+        return conds.join('\n');
+    }
+
     var lines = [
         'on_actions = {',
         '    on_state_control_changed = {',
@@ -3019,15 +2889,10 @@ function buildOnActions(sRules, cRules) {
         lines.push('                limit = { FROM.FROM = { state = ' + sid2 + ' } }');
         lines.push('                FROM.FROM = { reset_state_name = yes }');
         for (var ri = 0; ri < sg[sid2].length; ri++) {
-            var cTag = sg[sid2][ri].tag;
             lines.push('                if = {');
             lines.push('                    limit = {');
             lines.push('                        OR = {');
-            lines.push('                            tag = ' + cTag);
-            lines.push('                            original_tag = ' + cTag);
-            lines.push('                            has_cosmetic_tag = ' + cTag);
-            if (cTag === 'EUR') lines.push('                            has_cosmetic_tag = EUR_UNIFIED');
-            if (cTag === 'EUR_UNIFIED') lines.push('                            has_cosmetic_tag = EUR');
+            lines.push(getTagConds(sg[sid2][ri].tag, '                        '));
             lines.push('                        }');
             lines.push('                    }');
             lines.push('                    FROM.FROM = { set_state_name = ' + sg[sid2][ri].loc + ' }');
@@ -3046,15 +2911,10 @@ function buildOnActions(sRules, cRules) {
             lines.push('                FROM.FROM = { reset_province_name = ' + cg[cid][k].pid + ' }');
         }
         for (var m = 0; m < cg[cid].length; m++) {
-            var cpTag = cg[cid][m].tag;
             lines.push('                if = {');
             lines.push('                    limit = {');
             lines.push('                        OR = {');
-            lines.push('                            tag = ' + cpTag);
-            lines.push('                            original_tag = ' + cpTag);
-            lines.push('                            has_cosmetic_tag = ' + cpTag);
-            if (cpTag === 'EUR') lines.push('                            has_cosmetic_tag = EUR_UNIFIED');
-            if (cpTag === 'EUR_UNIFIED') lines.push('                            has_cosmetic_tag = EUR');
+            lines.push(getTagConds(cg[cid][m].tag, '                        '));
             lines.push('                        }');
             lines.push('                    }');
             lines.push('                    FROM.FROM = { set_province_name = { id = ' + cg[cid][m].pid + ' name = ' + cg[cid][m].loc + ' } }');
@@ -3068,7 +2928,6 @@ function buildOnActions(sRules, cRules) {
     lines.push('}');
     return lines.join('\n');
 }
-
 function addLoc(arrRu, arrEn, key, val) {
     addLocLine(arrRu, key, val);
     addLocLine(arrEn, key, val);
