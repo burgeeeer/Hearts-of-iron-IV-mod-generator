@@ -2,6 +2,7 @@ var ideologies = ['fascism', 'democratic', 'communism', 'neutrality'];
 var currentLang = 'english';
 var countries = [];
 var puppetRules = [];
+var overlordPuppetRules = [];
 var stateNameRules = [];
 var cityNameRules = [];
 var countryLocFileName = '';
@@ -48,6 +49,19 @@ var i18n = {
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
         footerCoverBtn: "🎨 Make Cover",
+        overlordPuppetNav: "3. Overlord Templates",
+        overlordPuppetTitle: "Universal Overlord Puppet Names",
+        overlordPuppetSub: "Custom puppet naming templates for any country under this overlord",
+        overlordPuppetDesc: "Specify the overlord tag and custom names for 4 ideologies. Any country puppeted by this overlord (e.g. New Zealand, Italy) will get this name instead of 'Swiss New Zealand'.",
+        overlordTagLabel: "OVERLORD TAG",
+        overlordTagPlaceholder: "e.g. SWI, GER, ENG",
+        overlordFascism: "FASCISM",
+        overlordCommunism: "COMMUNISM",
+        overlordDemocratic: "DEMOCRACY",
+        overlordNeutrality: "NEUTRALITY",
+        overlordPuppetHint: "Tip: Use {COUNTRY} to position the country name (e.g. 'Alpine Protectorate {COUNTRY}'). If omitted, the country name is appended automatically.",
+        addOverlordPuppet: "Add Overlord Template",
+        statLabelOverlordPuppets: "Templates",
         puppetTitle: "Puppet Names & Flags",
         puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
@@ -196,6 +210,19 @@ var i18n = {
         uploadFlag: "Загрузить флаг (PNG):",
         genBtn: "Сгенерировать мод",
         footerCoverBtn: "🎨 Сделать обложку",
+        overlordPuppetNav: "3. Шаблоны сюзерена",
+        overlordPuppetTitle: "Имена всех марионеток сюзерена",
+        overlordPuppetSub: "Уникальные названия марионеток для сюзерена по 4 идеологиям",
+        overlordPuppetDesc: "Укажи тег сюзерена и уникальные названия по 4 идеологиям. Любая страна, которую этот сюзерен делает марионеткой (напр. Новая Зеландия, Италия), получит это название вместо «Швейцарская Новая Зеландия».",
+        overlordTagLabel: "ТЭГ СЮЗЕРЕНА",
+        overlordTagPlaceholder: "напр. SWI, GER, RUS",
+        overlordFascism: "ФАШИЗМ",
+        overlordCommunism: "КОММУНИЗМ",
+        overlordDemocratic: "ДЕМОКРАТИЯ",
+        overlordNeutrality: "НЕЙТРАЛИТЕТ",
+        overlordPuppetHint: "Подсказка: используйте {COUNTRY} для подстановки названия страны (например: «Альпийский протекторат {COUNTRY}»). Если не указывать {COUNTRY}, название страны добавится в конец автоматически.",
+        addOverlordPuppet: "Добавить шаблон сюзерена",
+        statLabelOverlordPuppets: "Шаблонов",
         puppetTitle: "Названия и флаги марионеток",
         puppetDesc: "Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
@@ -332,6 +359,10 @@ function mkEmptyCountry() {
         c.ideologies[ideologies[i]] = { base: '', def: '', adj: '', img: null };
     }
     return c;
+}
+
+function mkEmptyOverlordPuppet() {
+    return { overlord: '', fascism: '', communism: '', democratic: '', neutrality: '' };
 }
 
 function mkEmptyPuppet() {
@@ -592,6 +623,8 @@ window.onload = function() {
     } else {
         countries = [mkEmptyCountry()];
         puppetRules = [mkEmptyPuppet()];
+    overlordPuppetRules = [mkEmptyOverlordPuppet()];
+        overlordPuppetRules = [mkEmptyOverlordPuppet()];
         stateNameRules = [mkEmptyState()];
         cityNameRules = [mkEmptyCity()];
     }
@@ -748,6 +781,21 @@ function loadSaved(d) {
         }
     } else {
         puppetRules = [mkEmptyPuppet()];
+    overlordPuppetRules = [mkEmptyOverlordPuppet()];
+    }
+
+    if (d.overlordPuppetRules && d.overlordPuppetRules.length) {
+        overlordPuppetRules = d.overlordPuppetRules.map(function(r) {
+            return {
+                overlord: r.overlord || '',
+                fascism: r.fascism || '',
+                communism: r.communism || '',
+                democratic: r.democratic || '',
+                neutrality: r.neutrality || ''
+            };
+        });
+    } else {
+        overlordPuppetRules = [mkEmptyOverlordPuppet()];
     }
 
     stateNameRules = (d.stateNameRules && d.stateNameRules.length) ? d.stateNameRules : [mkEmptyState()];
@@ -823,6 +871,11 @@ function applyLang(lang) {
         ['projectsModalTitle', t.projectsModalTitle],
         ['projectsModalDesc', t.projectsModalDesc],
         ['saveCurrentToLibBtnText', t.saveCurrentToLibBtnText],
+        ['overlordPuppetTitle', t.overlordPuppetTitle],
+        ['overlordPuppetSub', t.overlordPuppetSub],
+        ['overlordPuppetDesc', t.overlordPuppetDesc],
+        ['navOverlordPuppets', t.overlordPuppetNav],
+        ['statLabelOverlordPuppets', t.statLabelOverlordPuppets],
         ['puppetTitle', t.puppetTitle],
         ['puppetDesc', t.puppetDesc],
         ['stateTitle', t.stateTitle],
@@ -848,6 +901,7 @@ function applyLang(lang) {
     }
 
     var btnMap = [
+        ['overlordPuppetAddBtn', '＋ ' + t.addOverlordPuppet],
         ['puppetAddBtn', '＋ ' + t.addPuppet],
         ['stateAddBtn', '＋ ' + t.addStateRule],
         ['cityAddBtn', '＋ ' + t.addCityRule]
@@ -868,6 +922,7 @@ function applyLang(lang) {
 
     renderCountries();
     renderPuppetRules();
+    renderOverlordPuppetRules();
     renderStateNameRules();
     renderCityNameRules();
     if (typeof renderCoverPreview === 'function') renderCoverPreview();
@@ -1265,6 +1320,114 @@ function mkGrp(label, val, cb, placeholder) {
     return g;
 }
 
+
+function renderOverlordPuppetRules() {
+    var box = document.getElementById('overlord-puppet-rules-container');
+    if (!box) return;
+    box.innerHTML = '';
+    var t = i18n[currentLang] || {};
+
+    for (var i = 0; i < overlordPuppetRules.length; i++) {
+        (function(idx) {
+            var r = overlordPuppetRules[idx];
+            var card = document.createElement('div');
+            card.className = 'dynamic-card';
+
+            var hdr = document.createElement('div');
+            hdr.className = 'dynamic-card-header';
+            var st = document.createElement('strong');
+            st.textContent = (currentLang === 'english' ? 'Overlord Rule #' : 'Шаблон сюзерена №') + (idx + 1);
+            hdr.appendChild(st);
+
+            if (overlordPuppetRules.length > 1) {
+                var rb = document.createElement('button');
+                rb.type = 'button';
+                rb.className = 'secondary-btn danger-btn';
+                rb.textContent = t.remove || 'Удалить';
+                rb.onclick = function() { removeOverlordPuppetRule(idx); };
+                hdr.appendChild(rb);
+            }
+            card.appendChild(hdr);
+
+            // 1. OVERLORD TAG (Green Box from drawing)
+            var ovGrp = document.createElement('div');
+            ovGrp.className = 'input-group';
+            ovGrp.style.marginBottom = '16px';
+            var ovLabel = document.createElement('label');
+            ovLabel.className = 'overlord-label-green';
+            ovLabel.textContent = t.overlordTagLabel || 'ТЭГ СЮЗЕРЕНА';
+            var ovInp = document.createElement('input');
+            ovInp.type = 'text';
+            ovInp.className = 'inp overlord-tag-input';
+            ovInp.value = r.overlord || '';
+            ovInp.placeholder = t.overlordTagPlaceholder || 'напр. SWI, GER, EUR';
+            ovInp.oninput = function() {
+                overlordPuppetRules[idx].overlord = this.value.toUpperCase();
+                saveData();
+            };
+            ovGrp.appendChild(ovLabel);
+            ovGrp.appendChild(ovInp);
+            card.appendChild(ovGrp);
+
+            // 2. The 4 Ideologies (Red Boxes from drawing)
+            var ideoList = [
+                { id: 'fascism', label: t.overlordFascism || 'ФАШИЗМ' },
+                { id: 'communism', label: t.overlordCommunism || 'КОММУНИЗМ' },
+                { id: 'democratic', label: t.overlordDemocratic || 'ДЕМОКРАТИЯ' },
+                { id: 'neutrality', label: t.overlordNeutrality || 'НЕЙТРАЛИТЕТ' }
+            ];
+
+            for (var j = 0; j < ideoList.length; j++) {
+                (function(item) {
+                    var grp = document.createElement('div');
+                    grp.className = 'input-group';
+                    grp.style.marginBottom = '14px';
+
+                    var lbl = document.createElement('label');
+                    lbl.className = 'overlord-label-red';
+                    lbl.textContent = item.label;
+
+                    var inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.className = 'inp overlord-ideo-input';
+                    inp.value = r[item.id] || '';
+                    inp.placeholder = (currentLang === 'english' ? 'e.g. Alpine Protectorate {COUNTRY}' : 'напр. Альпийский протекторат {COUNTRY}');
+                    inp.oninput = function() {
+                        overlordPuppetRules[idx][item.id] = this.value;
+                        saveData();
+                    };
+
+                    grp.appendChild(lbl);
+                    grp.appendChild(inp);
+                    card.appendChild(grp);
+                })(ideoList[j]);
+            }
+
+            // Hint banner
+            var hint = document.createElement('div');
+            hint.className = 'puppet-template-banner';
+            hint.style.marginTop = '10px';
+            hint.textContent = t.overlordPuppetHint || 'Подсказка: используйте {COUNTRY} для подстановки названия страны. Если не указывать {COUNTRY}, название страны добавится в конец автоматически.';
+            card.appendChild(hint);
+
+            box.appendChild(card);
+        })(i);
+    }
+}
+
+function addOverlordPuppetRule() {
+    overlordPuppetRules.push(mkEmptyOverlordPuppet());
+    saveData();
+    renderOverlordPuppetRules();
+}
+
+function removeOverlordPuppetRule(idx) {
+    if (overlordPuppetRules.length <= 1) return;
+    overlordPuppetRules.splice(idx, 1);
+    saveData();
+    renderOverlordPuppetRules();
+}
+
 function addPuppetRule() {
     puppetRules.push(mkEmptyPuppet());
     renderPuppetRules();
@@ -1428,6 +1591,7 @@ function saveData() {
         cover: modCoverData || null,
         countries: [],
         puppetRules: [],
+        overlordPuppetRules: overlordPuppetRules,
         stateNameRules: [],
         cityNameRules: []
     };
@@ -2117,6 +2281,7 @@ function saveProjectToFile() {
         cover: modCoverData || null,
         countries: countries,
         puppetRules: puppetRules,
+        overlordPuppetRules: overlordPuppetRules,
         stateNameRules: stateNameRules,
         cityNameRules: cityNameRules
     };
@@ -2190,6 +2355,7 @@ async function importModZip(zip) {
         cover: null,
         countries: [],
         puppetRules: [],
+        overlordPuppetRules: overlordPuppetRules,
         stateNameRules: [],
         cityNameRules: []
     };
@@ -2533,6 +2699,7 @@ function saveCurrentToLibrary() {
             cover: modCoverData || null,
             countries: countries,
             puppetRules: puppetRules,
+            overlordPuppetRules: overlordPuppetRules,
             stateNameRules: stateNameRules,
             cityNameRules: cityNameRules
         }
@@ -2617,6 +2784,7 @@ function createNewProject() {
     onLocConfigChange();
     countries = [mkEmptyCountry()];
     puppetRules = [mkEmptyPuppet()];
+    overlordPuppetRules = [mkEmptyOverlordPuppet()];
     stateNameRules = [mkEmptyState()];
     cityNameRules = [mkEmptyCity()];
     applyLang(currentLang);
@@ -2928,9 +3096,9 @@ function buildOnActions(sRules, cRules) {
     lines.push('}');
     return lines.join('\n');
 }
-function addLoc(arrRu, arrEn, key, val) {
+function addLoc(arrRu, arrEn, key, val, valEn) {
     addLocLine(arrRu, key, val);
-    addLocLine(arrEn, key, val);
+    addLocLine(arrEn, key, (valEn !== undefined ? valEn : val));
 }
 
 async function generateMod() {
@@ -3018,6 +3186,113 @@ async function generateMod() {
             if (firstBase) addLoc(targetRu, targetEn, cTag3, firstBase);
             if (firstDef || firstBase) addLoc(targetRu, targetEn, cTag3 + '_DEF', firstDef || firstBase);
             if (firstAdj) addLoc(targetRu, targetEn, cTag3 + '_ADJ', firstAdj);
+        }
+    }
+
+    // 2.1 Overlord Puppet Templates (Dynamic all tags AAA-ZZZ + D01-D99 with Clausewitz $NONIDEOLOGY$)
+    function getAllPossibleHoI4Tags() {
+        var tags = [];
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 0; i < 26; i++) {
+            for (var j = 0; j < 26; j++) {
+                for (var k = 0; k < 26; k++) {
+                    tags.push(chars[i] + chars[j] + chars[k]);
+                }
+            }
+        }
+        for (var d = 1; d <= 99; d++) {
+            tags.push('D' + (d < 10 ? '0' + d : d));
+        }
+        return tags;
+    }
+
+    function formatOverlordPuppetName(tpl, isDef) {
+        var str = String(tpl || '').trim();
+        if (!str) return '';
+        var placeholder = isDef ? '$NONIDEOLOGYDEF$' : '$NONIDEOLOGY$';
+        if (/\{COUNTRY\}|\{СТРАНА\}|\[COUNTRY\]|\[СТРАНА\]/i.test(str)) {
+            return str.replace(/\{COUNTRY\}|\{СТРАНА\}|\[COUNTRY\]|\[СТРАНА\]/gi, placeholder);
+        }
+        if (str.indexOf('$NONIDEOLOGY') !== -1) {
+            if (isDef && str.indexOf('$NONIDEOLOGYDEF$') === -1) {
+                return str.replace(/\$NONIDEOLOGY\$/g, '$NONIDEOLOGYDEF$');
+            }
+            return str;
+        }
+        return str + ' ' + placeholder;
+    }
+
+    if (overlordPuppetRules && overlordPuppetRules.length) {
+        var allTags = getAllPossibleHoI4Tags();
+        for (var ci = 0; ci < countries.length; ci++) {
+            var ctag = String(countries[ci].tag || '').toUpperCase().trim();
+            if (ctag && allTags.indexOf(ctag) === -1) allTags.push(ctag);
+        }
+
+        for (var oi = 0; oi < overlordPuppetRules.length; oi++) {
+            var or = overlordPuppetRules[oi];
+            var oOv = String(or.overlord || '').toUpperCase().trim();
+            if (!oOv) continue;
+
+            var hasAny = (or.fascism || or.communism || or.democratic || or.neutrality);
+            if (!hasAny) continue;
+
+            hasCosmetic = true;
+            var ovVariants = [oOv];
+            if (oOv === 'EUR' && ovVariants.indexOf('EUR_UNIFIED') === -1) ovVariants.push('EUR_UNIFIED');
+            if (oOv === 'EUR_UNIFIED' && ovVariants.indexOf('EUR') === -1) ovVariants.push('EUR');
+
+            var ideoKeys = ['fascism', 'communism', 'democratic', 'neutrality'];
+            var ideoNames = {};
+            var defaultName = '';
+            var defaultNameDef = '';
+
+            for (var ik = 0; ik < ideoKeys.length; ik++) {
+                var ideo = ideoKeys[ik];
+                var rawTpl = or[ideo];
+                if (rawTpl) {
+                    var n = formatOverlordPuppetName(rawTpl, false);
+                    var nDef = formatOverlordPuppetName(rawTpl, true);
+                    ideoNames[ideo] = { name: n, def: nDef };
+                    if (!defaultName) {
+                        defaultName = n;
+                        defaultNameDef = nDef;
+                    }
+                }
+            }
+
+            if (!defaultName) {
+                var fallbackTpl = or.neutrality || or.fascism || or.democratic || or.communism || '';
+                if (fallbackTpl) {
+                    defaultName = formatOverlordPuppetName(fallbackTpl, false);
+                    defaultNameDef = formatOverlordPuppetName(fallbackTpl, true);
+                }
+            }
+
+            if (!defaultName) continue;
+
+            for (var ti = 0; ti < allTags.length; ti++) {
+                var oTg = allTags[ti];
+                if (!oTg || oTg === oOv) continue;
+
+                for (var ik = 0; ik < ideoKeys.length; ik++) {
+                    var ideo = ideoKeys[ik];
+                    var entry = ideoNames[ideo];
+                    if (!entry) continue;
+
+                    for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                        var oTag = ovVariants[ovi];
+                        addLoc(cosmeticLocRu, cosmeticLocEn, oTg + '_' + oTag + '_' + ideo, entry.name, entry.name);
+                        addLoc(cosmeticLocRu, cosmeticLocEn, oTg + '_' + oTag + '_' + ideo + '_DEF', entry.def, entry.def);
+                    }
+                }
+
+                for (var ovi = 0; ovi < ovVariants.length; ovi++) {
+                    var oTag = ovVariants[ovi];
+                    addLoc(cosmeticLocRu, cosmeticLocEn, oTg + '_' + oTag, defaultName, defaultName);
+                    addLoc(cosmeticLocRu, cosmeticLocEn, oTg + '_' + oTag + '_DEF', defaultNameDef, defaultNameDef);
+                }
+            }
         }
     }
 
@@ -3209,6 +3484,7 @@ async function generateMod() {
         locUseReplaceFolder: locUseReplaceFolder,
         countries: countries,
         puppetRules: puppetRules,
+        overlordPuppetRules: overlordPuppetRules,
         stateNameRules: stateNameRules,
         cityNameRules: cityNameRules
     };

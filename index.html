@@ -109,8 +109,9 @@
         <div class="sub-nav-container">
             <a href="#countries-section" class="sub-nav-link active">1. Страны и флаги</a>
             <a href="#puppet-section" class="sub-nav-link">2. Марионетки</a>
-            <a href="#state-name-section" class="sub-nav-link">3. Регионы</a>
-            <a href="#city-name-section" class="sub-nav-link">4. Города</a>
+            <a href="#overlord-puppet-section" class="sub-nav-link" id="navOverlordPuppets">3. Шаблоны сюзерена</a>
+            <a href="#state-name-section" class="sub-nav-link">4. Регионы</a>
+            <a href="#city-name-section" class="sub-nav-link">5. Города</a>
         </div>
     </nav>
     <nav class="sub-nav-bar" id="sub-nav-cosmetic" aria-label="Быстрый переход (Формируемые нации)" style="display: none;">
@@ -212,6 +213,10 @@
                         <span class="metric-label">Марионеток</span>
                     </div>
                     <div class="metric-item">
+                        <span class="metric-val" id="statCountOverlordPuppets">1</span>
+                        <span class="metric-label" id="statLabelOverlordPuppets">Шаблонов</span>
+                    </div>
+                    <div class="metric-item">
                         <span class="metric-val" id="statCountStates">1</span>
                         <span class="metric-label">Регионов</span>
                     </div>
@@ -274,7 +279,29 @@
             </div>
         </section>
 
-        <!-- SECTION 03: State Names by Controller -->
+        <!-- SECTION 03: Universal Overlord Puppet Names -->
+        <section class="section-group" id="overlord-puppet-section-wrap">
+            <div class="section collapsible" id="overlord-puppet-section">
+                <div class="section-head" onclick="toggleSection(this)">
+                    <div>
+                        <h2 id="overlordPuppetTitle">Шаблоны марионеток сюзерена</h2>
+                        <p class="section-head-desc" id="overlordPuppetSub">Уникальные названия марионеток для сюзерена по 4 идеологиям</p>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="section-body">
+                    <p class="section-desc" id="overlordPuppetDesc">Укажи тег сюзерена и названия по 4 идеологиям. Любая страна, которую этот сюзерен делает марионеткой (напр. Новая Зеландия, Италия), получит это название вместо «Швейцарская Новая Зеландия».</p>
+                    
+                    <div id="overlord-puppet-rules-container" class="rules-list"></div>
+                    
+                    <button type="button" class="btn-add" id="overlordPuppetAddBtn" onclick="addOverlordPuppetRule()">
+                        ＋ Добавить шаблон сюзерена
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 04: State Names by Controller -->
         <section class="section-group" id="state-section-wrap">
             <div class="section collapsible" id="state-name-section">
                 <div class="section-head" onclick="toggleSection(this)">
@@ -298,7 +325,7 @@
             </div>
         </section>
 
-        <!-- SECTION 04: City Names by Controller -->
+        <!-- SECTION 05: City Names by Controller -->
         <section class="section-group" id="city-section-wrap">
             <div class="section collapsible" id="city-name-section">
                 <div class="section-head" onclick="toggleSection(this)">
@@ -1025,10 +1052,11 @@
 
                 var cCount = (window.countries && window.countries.length) || 0;
                 var pCount = (window.puppetRules && window.puppetRules.length) || 0;
+                var opCount = (window.overlordPuppetRules && window.overlordPuppetRules.length) || 0;
                 var sCount = (window.stateNameRules && window.stateNameRules.length) || 0;
                 var vCount = (window.cityNameRules && window.cityNameRules.length) || 0;
 
-                [['statCountCountries', cCount], ['statCountPuppets', pCount], ['statCountStates', sCount], ['statCountCities', vCount]].forEach(function(p) {
+                [['statCountCountries', cCount], ['statCountPuppets', pCount], ['statCountOverlordPuppets', opCount], ['statCountStates', sCount], ['statCountCities', vCount]].forEach(function(p) {
                     var el = document.getElementById(p[0]);
                     if (el) el.textContent = p[1];
                 });
