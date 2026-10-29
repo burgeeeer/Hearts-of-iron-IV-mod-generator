@@ -1384,7 +1384,7 @@ function collectProjectData() {
     categoryTitle: val('category-title'),
     categoryDesc: val('category-desc'),
     categoryIcon: val('category-icon-select'),
-    categoryPicPreset: val('category-pic-preset'),
+    categoryPicPreset: categoryPicCustomTga ? 'custom_upload' : (categoryPicPreset || 'GFX_decision_cat_generic_commonwealth'),
     categoryPicCustomUrl: categoryPicCustomUrl,
     categoryPicCustomTga: categoryPicCustomTga,
     categoryPicFileName: categoryPicFileName,
@@ -1467,14 +1467,11 @@ function populateFormFromData(d) {
   setVal('category-title', d.categoryTitle || d.customCatName || '');
   setVal('category-desc', d.categoryDesc || '');
   setVal('category-icon-select', d.categoryIcon || 'generic_formable_nations');
-  setVal('category-pic-preset', d.categoryPicPreset || 'GFX_decision_cat_generic_commonwealth');
-  const picUploadBox = document.getElementById('cat-pic-upload-box');
-  if (picUploadBox) {
-    picUploadBox.style.display = (d.categoryPicPreset === 'custom_upload') ? 'block' : 'none';
-  }
+  categoryPicPreset = d.categoryPicPreset || 'GFX_decision_cat_generic_commonwealth';
   categoryPicCustomUrl = d.categoryPicCustomUrl || null;
   categoryPicCustomTga = d.categoryPicCustomTga || null;
   categoryPicFileName = d.categoryPicFileName || null;
+  updateCategoryPicThumbnail();
 
   setVal('decision-cost', d.cost !== undefined ? d.cost : 50);
   setVal('decision-days', d.days !== undefined ? d.days : 0);
@@ -1606,7 +1603,7 @@ function updateHoi4Preview() {
     if (categoryPicCustomUrl) {
       catBannerImg.src = categoryPicCustomUrl;
     } else {
-      const presetKey = d.categoryPicPreset || 'GFX_decision_cat_generic_commonwealth';
+      const presetKey = d.categoryPicPreset || categoryPicPreset || 'GFX_decision_cat_generic_commonwealth';
       let assetKey = 'cat_commonwealth';
       if (presetKey.includes('austria_hungary')) assetKey = 'cat_austria_hungary';
       else if (presetKey.includes('turan')) assetKey = 'cat_turan';
@@ -1620,6 +1617,7 @@ function updateHoi4Preview() {
       }
     }
   }
+  updateCategoryPicThumbnail();
 
   // Decision Name
   const decName = d.decisionName || (currentLang === 'ru' ? `Провозгласить ${firstIdeo}` : `Proclaim ${firstIdeo}`);
@@ -1635,20 +1633,35 @@ function updateHoi4Preview() {
   }
 }
 
-function onCategoryPicPresetChange() {
-  const sel = document.getElementById('category-pic-preset');
-  const uploadBox = document.getElementById('cat-pic-upload-box');
-  if (!sel) return;
-  const val = sel.value;
-  if (uploadBox) {
-    uploadBox.style.display = val === 'custom_upload' ? 'block' : 'none';
+function updateCategoryPicThumbnail() {
+  const thumb = document.getElementById('catPicThumbnail');
+  const status = document.getElementById('catPicStatusLabel');
+  const btnReset = document.getElementById('btnResetCatPic');
+  const assets = window.HOI4_DECISION_ASSETS || {};
+
+  if (!thumb) return;
+
+  if (categoryPicCustomUrl) {
+    thumb.src = categoryPicCustomUrl;
+    if (status) status.textContent = '✓ Загружена своя карта (114×101 TGA)';
+    if (btnReset) btnReset.style.display = 'inline-block';
+  } else {
+    let assetKey = 'cat_commonwealth';
+    let label = 'Карта: Речь Посполитая';
+    const preset = categoryPicPreset || '';
+    if (preset.includes('austria_hungary')) { assetKey = 'cat_austria_hungary'; label = 'Карта: Австро-Венгрия'; }
+    else if (preset.includes('turan')) { assetKey = 'cat_turan'; label = 'Карта: Туран'; }
+    else if (preset.includes('mountainous')) { assetKey = 'cat_mountainous_republic'; label = 'Карта: Горская республика'; }
+    else if (preset.includes('transcaucas')) { assetKey = 'cat_transcaucasia'; label = 'Карта: Закавказье'; }
+    else if (preset.includes('commonwealth')) { assetKey = 'cat_commonwealth'; label = 'Карта: Речь Посполитая'; }
+    else { assetKey = 'cat_generic'; label = 'Карта: Общая формируемая нация'; }
+
+    if (assets[assetKey]) {
+      thumb.src = assets[assetKey];
+    }
+    if (status) status.textContent = label;
+    if (btnReset) btnReset.style.display = 'none';
   }
-  if (val !== 'custom_upload') {
-    categoryPicCustomTga = null;
-    categoryPicCustomUrl = null;
-    categoryPicFileName = null;
-  }
-  onFieldChange();
 }
 
 function onCategoryIconChange() {
@@ -1676,11 +1689,7 @@ function handleCategoryPicUpload(event) {
       categoryPicCustomUrl = cv.toDataURL('image/png');
       categoryPicFileName = `decision_cat_${file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_]/g, '') || 'custom'}.tga`;
 
-      const sel = document.getElementById('category-pic-preset');
-      if (sel) sel.value = 'custom_upload';
-      const uploadBox = document.getElementById('cat-pic-upload-box');
-      if (uploadBox) uploadBox.style.display = 'block';
-
+      updateCategoryPicThumbnail();
       onFieldChange();
     };
     img.src = e.target.result;
@@ -1694,10 +1703,7 @@ function clearCategoryPic() {
   categoryPicFileName = null;
   const input = document.getElementById('category-pic-upload');
   if (input) input.value = '';
-  const sel = document.getElementById('category-pic-preset');
-  if (sel) sel.value = 'GFX_decision_cat_generic_commonwealth';
-  const uploadBox = document.getElementById('cat-pic-upload-box');
-  if (uploadBox) uploadBox.style.display = 'none';
+  updateCategoryPicThumbnail();
   onFieldChange();
 }
 
@@ -2767,7 +2773,7 @@ function cosm_applyPreset(key) {
 }
 window.cosm_applyPreset = cosm_applyPreset;
 window.cosm_updateHoi4Preview = updateHoi4Preview;
-window.cosm_onCategoryPicPresetChange = onCategoryPicPresetChange;
+window.cosm_updateCategoryPicThumbnail = updateCategoryPicThumbnail;
 window.cosm_onCategoryIconChange = onCategoryIconChange;
 window.cosm_handleCategoryPicUpload = handleCategoryPicUpload;
 window.cosm_clearCategoryPic = clearCategoryPic;

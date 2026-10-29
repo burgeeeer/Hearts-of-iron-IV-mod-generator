@@ -560,29 +560,25 @@
           <div class="hint">Этот текст появляется в игре рядом с иллюстрацией карты при открытии категории решений</div>
         </div>
 
-        <div class="form-grid-2" style="margin-top:14px">
-          <div class="field">
-            <label data-t="f_cat_pic">Иллюстрация / Карта категории (114×101 px)</label>
-            <select id="category-pic-preset" class="inp" onchange="cosm_onCategoryPicPresetChange()">
-              <option value="GFX_decision_cat_generic_commonwealth" selected>🗺️ Речь Посполитая (GFX_decision_cat_generic_commonwealth)</option>
-              <option value="GFX_decision_cat_generic_austria_hungary">🗺️ Австро-Венгрия (GFX_decision_cat_generic_austria_hungary)</option>
-              <option value="GFX_decision_cat_picture_form_turan">🗺️ Тюркская нация / Туран (GFX_decision_cat_picture_form_turan)</option>
-              <option value="GFX_decision_cat_picture_form_mountainous_republic">🗺️ Горская республика Северный Кавказ (GFX_decision_cat_picture_form_mountainous_republic)</option>
-              <option value="GFX_decision_cat_picture_form_transcaucasian_republic">🗺️ Транскавказская республика (GFX_decision_cat_picture_form_transcaucasian_republic)</option>
-              <option value="GFX_decision_cat_generic_formable_nations">🗺️ Единая Европа / Общая (GFX_decision_cat_generic_formable_nations)</option>
-              <option value="GFX_decision_cat_generic_scandinavia">🗺️ Скандинавия (GFX_decision_cat_generic_scandinavia)</option>
-              <option value="GFX_decision_cat_generic_roman_empire">🗺️ Римская империя (GFX_decision_cat_generic_roman_empire)</option>
-              <option value="GFX_decision_cat_generic_gran_colombia">🗺️ Великая Колумбия (GFX_decision_cat_generic_gran_colombia)</option>
-              <option value="GFX_decision_cat_generic_arabia">🗺️ Аравийская федерация (GFX_decision_cat_generic_arabia)</option>
-              <option value="custom_upload">📁 Загрузить свою картинку (PNG/JPG 114×101 TGA)</option>
-            </select>
-          </div>
-          <div class="field" id="cat-pic-upload-box" style="display:none">
-            <label>Загрузка своей карты (масштабируется в 114×101)</label>
-            <input type="file" id="category-pic-upload" accept="image/*,.dds,.tga" class="inp" onchange="cosm_handleCategoryPicUpload(event)" />
-            <div id="cat-pic-preview-actions" style="display:flex; align-items:center; gap:8px; margin-top:6px">
-              <canvas id="cv-category-pic" width="114" height="101" style="width:57px; height:50px; border:1px solid var(--border-color); border-radius:2px"></canvas>
-              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearCategoryPic()">✕ Сбросить</button>
+        <div class="field" style="margin-top:14px">
+          <label data-t="f_cat_pic">Иллюстрация / Карта категории (114×101 px)</label>
+          <div class="cat-pic-clean-card">
+            <div class="cat-pic-thumb-wrap">
+              <img id="catPicThumbnail" src="" alt="Карта категории 114x101" class="cat-pic-thumb" />
+              <canvas id="cv-category-pic" width="114" height="101" style="display:none"></canvas>
+            </div>
+            <div class="cat-pic-info-actions">
+              <div class="cat-pic-title" id="catPicStatusLabel">Карта категории (из шаблона)</div>
+              <div class="cat-pic-hint">Размер в игре 114×101 px (формат 32-bit TGA). При выборе готового шаблона сверху карта подставляется автоматически.</div>
+              <div class="cat-pic-btn-group">
+                <label class="btn-secondary btn-sm" style="cursor:pointer; margin:0">
+                  📁 Загрузить свою карту
+                  <input type="file" id="category-pic-upload" accept="image/*,.dds,.tga" style="display:none" onchange="cosm_handleCategoryPicUpload(event)" />
+                </label>
+                <button type="button" id="btnResetCatPic" class="btn-secondary btn-sm danger-btn" onclick="cosm_clearCategoryPic()" style="display:none">
+                  ✕ Сбросить к стандартной
+                </button>
+              </div>
             </div>
           </div>
         </div>
