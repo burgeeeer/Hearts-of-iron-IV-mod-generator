@@ -38,6 +38,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="vanilla_cosmetic_data.js"></script>
+    <script src="decisions_assets.js"></script>
+    <script src="hoi4_states_data.js"></script>
+    <script src="hoi4_effects_data.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
 <body>
@@ -400,6 +403,54 @@
         <input type="file" id="cosm_projectFileInput" accept=".json" style="display:none" onchange="cosm_handleProjectFileUpload(event)" />
       </div>
 
+      <!-- ════════════ QUICK PRESETS (FROM HOI4) ════════════ -->
+      <div class="cosm-presets-card">
+        <div class="cosm-presets-head">
+          <div>
+            <div class="cosm-presets-title">⚡ Готовые решения формируемых наций (из Hearts of Iron IV)</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px">Нажмите на любой исторический шаблон, чтобы загрузить карту, лор и оформление как в игре:</div>
+          </div>
+        </div>
+        <div class="cosm-presets-buttons">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('pol_lithuania')">
+            <span class="preset-flag">🇵🇱</span>
+            <div>
+              <strong>Речь Посполитая</strong>
+              <div style="font-size:11px; color:var(--text-muted)">Реформировать Содружество</div>
+            </div>
+          </button>
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('austria_hungary')">
+            <span class="preset-flag">🇦🇹</span>
+            <div>
+              <strong>Австро-Венгрия</strong>
+              <div style="font-size:11px; color:var(--text-muted)">Восстановить империю</div>
+            </div>
+          </button>
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('turan')">
+            <span class="preset-flag">🇹🇷</span>
+            <div>
+              <strong>Тюркская нация</strong>
+              <div style="font-size:11px; color:var(--text-muted)">Объединить тюрков</div>
+            </div>
+          </button>
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('mountainous_republic')">
+            <span class="preset-flag">⛰️</span>
+            <div>
+              <strong>Горская республика</strong>
+              <div style="font-size:11px; color:var(--text-muted)">Северный Кавказ</div>
+            </div>
+          </button>
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('geo_transcaucasia')">
+            <span class="preset-flag">🇬🇪</span>
+            <div>
+              <strong>Транскавказия</strong>
+              <div style="font-size:11px; color:var(--text-muted)">Закавказская Федерация</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
       <div class="section" id="cosm-section-info">
         <div class="section-head">
@@ -481,42 +532,127 @@
         </div>
       </div>
 
-      <!-- Category Settings -->
+            <!-- Category Settings & Visuals -->
       <div class="section">
         <div class="section-head">
-          <h2 data-t="s2_cat_head">Категория решений</h2>
-          <p class="section-desc" data-t="s2_cat_desc">Где отобразится решение в интерфейсе решений игры</p>
+          <h2 data-t="s2_cat_head">Категория решений и оформление в HoI4</h2>
+          <p class="section-desc" data-t="s2_cat_desc">Задайте заголовок категории, исторический лор и карту 114×101 для окна решений в Hearts of Iron IV</p>
         </div>
 
-        <div class="radio-cards">
-          <label class="radio-card selected" id="card-cat-formation" onclick="cosm_setCategoryMode('formation')">
-            <input type="radio" name="category_mode" value="formation" checked onchange="cosm_setCategoryMode('formation')" />
-            <div class="radio-card-content">
-              <strong data-t="cat_form_t">Категория «Создание государств» (По умолчанию)</strong>
-              <span data-t="cat_form_d">Стандартная категория HoI4 (form_country_category) для объединения земель и реставрации империй</span>
-            </div>
-          </label>
-          <label class="radio-card" id="card-cat-custom" onclick="cosm_setCategoryMode('custom')">
-            <input type="radio" name="category_mode" value="custom" onchange="cosm_setCategoryMode('custom')" />
-            <div class="radio-card-content">
-              <strong data-t="cat_custom_t">Создать отдельную новую категорию</strong>
-              <span data-t="cat_custom_d">Выделит решение в персональную категорию с собственным заголовком</span>
-            </div>
-          </label>
-        </div>
-
-        <div id="custom-cat-box" class="form-grid-2" style="display:none; margin-top:12px">
+        <div class="form-grid-2">
           <div class="field">
-            <label data-t="f_custom_cat_id">ID новой категории <span class="req">*</span></label>
-            <input type="text" id="custom-cat-id" class="inp" placeholder="my_unique_decisions"
-                   oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,''); cosm_onFieldChange()" />
+            <label data-t="f_cat_title">Название категории (в игре) <span class="req">*</span></label>
+            <input type="text" id="category-title" class="inp" placeholder="Реформировать Содружество" maxlength="120" oninput="cosm_onFieldChange()" />
+            <div class="hint">Отображается в верхней плашке категории решений</div>
           </div>
           <div class="field">
-            <label data-t="f_custom_cat_name">Название категории (в игре)</label>
-            <input type="text" id="custom-cat-name" class="inp" placeholder="Великие союзы" oninput="cosm_onFieldChange()" />
+            <label data-t="f_cat_icon">Иконка категории (слева от названия)</label>
+            <select id="category-icon-select" class="inp" onchange="cosm_onCategoryIconChange()">
+              <option value="generic_formable_nations" selected>⭐ generic_formable_nations (Стандартный синий щит со звёздами)</option>
+              <option value="GFX_decision_cat_generic_austria_hungary_icon">🦅 GFX_decision_cat_generic_austria_hungary_icon (Австро-венгерский герб)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:12px">
+          <label data-t="f_cat_desc">Описание и лор категории (текст справа от карты) <span class="req">*</span></label>
+          <textarea id="category-desc" class="inp" rows="3" placeholder="У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое." oninput="cosm_onFieldChange()"></textarea>
+          <div class="hint">Этот текст появляется в игре рядом с иллюстрацией карты при открытии категории решений</div>
+        </div>
+
+        <div class="form-grid-2" style="margin-top:14px">
+          <div class="field">
+            <label data-t="f_cat_pic">Иллюстрация / Карта категории (114×101 px)</label>
+            <select id="category-pic-preset" class="inp" onchange="cosm_onCategoryPicPresetChange()">
+              <option value="GFX_decision_cat_generic_commonwealth" selected>🗺️ Речь Посполитая (GFX_decision_cat_generic_commonwealth)</option>
+              <option value="GFX_decision_cat_generic_austria_hungary">🗺️ Австро-Венгрия (GFX_decision_cat_generic_austria_hungary)</option>
+              <option value="GFX_decision_cat_picture_form_turan">🗺️ Тюркская нация / Туран (GFX_decision_cat_picture_form_turan)</option>
+              <option value="GFX_decision_cat_picture_form_mountainous_republic">🗺️ Горская республика Северный Кавказ (GFX_decision_cat_picture_form_mountainous_republic)</option>
+              <option value="GFX_decision_cat_picture_form_transcaucasian_republic">🗺️ Транскавказская республика (GFX_decision_cat_picture_form_transcaucasian_republic)</option>
+              <option value="GFX_decision_cat_generic_formable_nations">🗺️ Единая Европа / Общая (GFX_decision_cat_generic_formable_nations)</option>
+              <option value="GFX_decision_cat_generic_scandinavia">🗺️ Скандинавия (GFX_decision_cat_generic_scandinavia)</option>
+              <option value="GFX_decision_cat_generic_roman_empire">🗺️ Римская империя (GFX_decision_cat_generic_roman_empire)</option>
+              <option value="GFX_decision_cat_generic_gran_colombia">🗺️ Великая Колумбия (GFX_decision_cat_generic_gran_colombia)</option>
+              <option value="GFX_decision_cat_generic_arabia">🗺️ Аравийская федерация (GFX_decision_cat_generic_arabia)</option>
+              <option value="custom_upload">📁 Загрузить свою картинку (PNG/JPG 114×101 TGA)</option>
+            </select>
+          </div>
+          <div class="field" id="cat-pic-upload-box" style="display:none">
+            <label>Загрузка своей карты (масштабируется в 114×101)</label>
+            <input type="file" id="category-pic-upload" accept="image/*,.dds,.tga" class="inp" onchange="cosm_handleCategoryPicUpload(event)" />
+            <div id="cat-pic-preview-actions" style="display:flex; align-items:center; gap:8px; margin-top:6px">
+              <canvas id="cv-category-pic" width="114" height="101" style="width:57px; height:50px; border:1px solid var(--border-color); border-radius:2px"></canvas>
+              <button type="button" class="btn-sm danger-btn" onclick="cosm_clearCategoryPic()">✕ Сбросить</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <details style="font-size:12px; color:var(--text-muted)">
+            <summary style="cursor:pointer; font-weight:600">⚙️ Дополнительно: Кастомный ID категории в коде</summary>
+            <div style="margin-top:8px">
+              <input type="text" id="custom-cat-id" class="inp" placeholder="Оставьте пустым для авто (form_[тег]_category)"
+                     oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,''); cosm_onFieldChange()" />
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- ════════════ LIVE HOI4 DECISION PREVIEW ════════════ -->
+      <div class="section hoi4-preview-section">
+        <div class="section-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">
+          <div>
+            <h2 style="display:flex; align-items:center; gap:8px">
+              <span>🎮 Внешний вид в игре (HoI4 Decision GUI)</span>
+              <span class="live-pill">Live Preview</span>
+            </h2>
+            <p class="section-desc">Точное отображение в интерфейсе решений Hearts of Iron IV — как на скриншотах</p>
+          </div>
+        </div>
+
+        <div class="hoi4-gui-window">
+          <!-- Category Header Bar -->
+          <div class="hoi4-gui-header">
+            <div class="hoi4-gui-icon-bracket">
+              <img id="prev-cat-icon-img" src="" alt="icon" class="hoi4-gui-cat-icon" />
+            </div>
+            <div class="hoi4-gui-title-plate">
+              <span id="prev-cat-title-text">Реформировать Содружество</span>
+            </div>
+            <div class="hoi4-gui-header-controls">
+              <div class="hoi4-gui-orb"></div>
+              <div class="hoi4-gui-chevron">▲</div>
+            </div>
+          </div>
+
+          <!-- Category Inner Content Box -->
+          <div class="hoi4-gui-body">
+            <div class="hoi4-gui-banner-frame">
+              <img id="prev-cat-banner-img" src="" alt="Banner Map" class="hoi4-gui-banner-img" />
+            </div>
+            <div class="hoi4-gui-lore-frame">
+              <p id="prev-cat-desc-text">У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.</p>
+            </div>
+          </div>
+
+          <!-- Decision Item Row -->
+          <div class="hoi4-gui-decision-row">
+            <div class="hoi4-gui-dec-left">
+              <div class="hoi4-gui-dec-icon-slot">
+                <img id="prev-dec-icon-img" src="" alt="Flag" class="hoi4-gui-dec-icon" />
+              </div>
+              <span id="prev-dec-title-text" class="hoi4-gui-dec-name">Реформировать Унию</span>
+            </div>
+            <div class="hoi4-gui-dec-right">
+              <div class="hoi4-gui-orb"></div>
+              <div class="hoi4-gui-take-btn" title="Принять решение">
+                <span class="hoi4-gui-envelope-icon">✉<span class="hoi4-gui-check-badge">✓</span></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
 
       <!-- Decision Parameters & Triggers -->
       <div class="section">
@@ -559,6 +695,9 @@
             <button type="button" class="btn-primary" onclick="cosm_openTriggersModal()" data-t="btn_show_cheat">
               📜 Все доступные требования (справочник HoI4)
             </button>
+            <button type="button" class="btn-map-launch" onclick="cosm_openStatesMap('trigger')">
+              🗺️ Выбрать регионы для контроля на карте
+            </button>
           </div>
         </div>
       </div>
@@ -572,7 +711,12 @@
 
         <div class="form-grid-2">
           <div class="field">
-            <label data-t="f_core_states">Национальные регионы (Core States IDs)</label>
+            <div class="field-header-row">
+              <label data-t="f_core_states" style="margin:0">Национальные регионы (Core States IDs)</label>
+              <button type="button" class="btn-map-launch" onclick="cosm_openStatesMap('core')">
+                🗺️ Выбрать на карте регионов
+              </button>
+            </div>
             <input type="text" id="core-states" class="inp" placeholder="10, 11, 85, 110, 142"
                    oninput="cosm_handleCoreStatesInput(this.value); cosm_onFieldChange()" />
             <div id="core-states-badges" class="tag-badges-wrap"></div>
@@ -980,16 +1124,170 @@
 <!-- ════════════ MODAL: HOI4 EFFECTS CHEAT-SHEET ════════════ -->
 <div class="modal-overlay" id="effectsModal" style="display:none">
   <div class="modal-backdrop" onclick="cosm_closeEffectsModal()"></div>
-  <div class="modal-window">
+  <div class="modal-window modal-xl">
     <div class="modal-header">
-      <h3 data-t="effects_modal_title">🎁 Доступные награды и эффекты (HoI4 Effects)</h3>
+      <div>
+        <h3 data-t="effects_modal_title">🎁 Полный справочник наград, баффов и дебаффов HoI4</h3>
+        <p class="modal-subtitle">150+ модификаторов из движка Clausewitz и файлов HoI4 • Быстрый поиск и вставка в 1 клик</p>
+      </div>
       <button type="button" class="modal-close-btn" onclick="cosm_closeEffectsModal()">&times;</button>
+    </div>
+    <div class="effects-filter-container">
+      <div class="effects-search-row">
+        <input type="text" id="effectsSearchInput" class="inp" placeholder="🔍 Быстрый поиск по всем эффектам, баффам и командам (например: stability, manpower, factory, армия)..." oninput="cosm_filterEffectsCheat(this.value)" />
+        <button type="button" class="btn-secondary btn-sm" onclick="cosm_clearEffectsSearch()">Очистить</button>
+      </div>
+      <div class="effects-cat-bar" id="effectsCategoryPills">
+        <!-- Injected by JS -->
+      </div>
     </div>
     <div class="modal-body" id="effectsCheatBody">
       <!-- Injected by JS -->
     </div>
     <div class="modal-footer">
+      <span class="effects-stat-hint" id="effectsCountDisplay">Всего эффектов: 150+</span>
       <button type="button" class="btn-secondary" onclick="cosm_closeEffectsModal()" data-t="btn_close">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ MODAL: INTERACTIVE HOI4 STATES MAP (1081 REGIONS) ════════════ -->
+<div class="modal-overlay" id="statesMapModal" style="display:none">
+  <div class="modal-backdrop" onclick="cosm_closeStatesMap()"></div>
+  <div class="modal-window modal-map-layout">
+    <div class="modal-header">
+      <div class="map-header-meta">
+        <span class="map-header-badge">🗺️ HoI4 State Selector</span>
+        <div>
+          <h3 id="statesMapTitle">Интерактивная карта регионов Hearts of Iron IV</h3>
+          <p class="modal-subtitle" id="statesMapSub">Кликайте по регионам для выбора • Автоматический сбор State ID для national cores или триггеров</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="cosm_closeStatesMap()">&times;</button>
+    </div>
+
+    <!-- Map Filter Bar -->
+    <div class="map-filter-bar">
+      <div class="map-filter-top">
+        <div class="map-search-input-wrap">
+          <input type="text" id="mapStateSearchInput" class="inp" placeholder="🔍 Поиск региона: название, ID или тег (например: Варшава, 10, POL, Москва, 219, Berlin, 64)..." oninput="cosm_filterStatesMap()" />
+          <button type="button" class="btn-clear-search" onclick="cosm_clearStateSearch()" title="Очистить поиск">✕</button>
+        </div>
+        <div class="map-country-filter-wrap">
+          <label class="map-label-inline">Страна (1936):</label>
+          <select id="mapCountrySelect" class="inp select-sm" onchange="cosm_onMapCountryChange(this.value)">
+            <option value="">Все страны мира (1081 регион)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Macro Region / Continent Tabs -->
+      <div class="map-region-tabs" id="mapRegionPills">
+        <button type="button" class="region-tab active" onclick="cosm_selectMapRegion('ALL')">🌍 Весь мир (<span id="countAllStates">1081</span>)</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('EUROPE')">🇪🇺 Европа</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('SOVIET')">🇷🇺 СССР и Восток</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('ASIA')">🌏 Азия</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AMERICA')">🇺🇸 Америка</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AFRICA')">🌍 Африка</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('MIDDLE_EAST')">🕌 Ближний Восток</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('OCEANIA')">🏝️ Океания</button>
+      </div>
+    </div>
+
+    <!-- Map Workspace: Interactive Vector Minimap + States Grid -->
+    <div class="map-body-workspace">
+      <!-- Interactive SVG Geopolitical Theatres Map -->
+      <div class="map-vector-card">
+        <div class="map-vector-header">
+          <span class="map-vector-title">Театры военных действий (клик фильтрует список)</span>
+          <span class="map-vector-current" id="mapCurrentTheatreLabel">Весь мир</span>
+        </div>
+        <div class="map-svg-wrap" id="mapSvgWrap">
+          <!-- Interactive Vector World Map -->
+          <svg viewBox="0 0 1000 500" class="hoi4-vector-world-map" id="hoi4WorldSvg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mapOceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--bg-subtle)" stop-opacity="0.6" />
+                <stop offset="100%" stop-color="var(--bg-card)" stop-opacity="0.9" />
+              </linearGradient>
+            </defs>
+            <rect width="1000" height="500" rx="10" fill="url(#mapOceanGrad)" stroke="var(--border-subtle)" stroke-width="1" />
+            <!-- Continents & Theatres Paths -->
+            <!-- North America -->
+            <path id="geo_NAM" class="map-theatre-path" d="M 80,60 L 260,50 L 330,100 L 280,190 L 230,230 L 180,250 L 120,160 Z" onclick="cosm_selectMapRegion('AMERICA')" />
+            <text x="180" y="140" class="map-theatre-text" onclick="cosm_selectMapRegion('AMERICA')">Северная Америка</text>
+
+            <!-- South America -->
+            <path id="geo_SAM" class="map-theatre-path" d="M 250,260 L 360,270 L 390,330 L 340,430 L 280,460 L 250,340 Z" onclick="cosm_selectMapRegion('AMERICA')" />
+            <text x="310" y="360" class="map-theatre-text" onclick="cosm_selectMapRegion('AMERICA')">Южная Америка</text>
+
+            <!-- Europe -->
+            <path id="geo_EUROPE" class="map-theatre-path" d="M 450,80 L 570,70 L 580,170 L 540,210 L 450,200 L 430,150 Z" onclick="cosm_selectMapRegion('EUROPE')" />
+            <text x="500" y="140" class="map-theatre-text" onclick="cosm_selectMapRegion('EUROPE')">Европа</text>
+
+            <!-- USSR & North Eurasia -->
+            <path id="geo_SOVIET" class="map-theatre-path" d="M 580,50 L 910,50 L 890,150 L 740,180 L 590,160 Z" onclick="cosm_selectMapRegion('SOVIET')" />
+            <text x="710" y="100" class="map-theatre-text" onclick="cosm_selectMapRegion('SOVIET')">СССР / Евразия</text>
+
+            <!-- Middle East -->
+            <path id="geo_MIDDLE_EAST" class="map-theatre-path" d="M 580,190 L 680,180 L 670,250 L 600,260 Z" onclick="cosm_selectMapRegion('MIDDLE_EAST')" />
+            <text x="630" y="225" class="map-theatre-text" onclick="cosm_selectMapRegion('MIDDLE_EAST')">Бл. Восток</text>
+
+            <!-- Africa -->
+            <path id="geo_AFRICA" class="map-theatre-path" d="M 460,220 L 590,220 L 620,310 L 570,440 L 490,410 L 450,270 Z" onclick="cosm_selectMapRegion('AFRICA')" />
+            <text x="530" y="320" class="map-theatre-text" onclick="cosm_selectMapRegion('AFRICA')">Африка</text>
+
+            <!-- Asia -->
+            <path id="geo_ASIA" class="map-theatre-path" d="M 680,180 L 880,160 L 910,280 L 790,330 L 690,270 Z" onclick="cosm_selectMapRegion('ASIA')" />
+            <text x="790" y="240" class="map-theatre-text" onclick="cosm_selectMapRegion('ASIA')">Азия</text>
+
+            <!-- Oceania & Australia -->
+            <path id="geo_OCEANIA" class="map-theatre-path" d="M 790,350 L 940,340 L 930,450 L 810,450 Z" onclick="cosm_selectMapRegion('OCEANIA')" />
+            <text x="860" y="400" class="map-theatre-text" onclick="cosm_selectMapRegion('OCEANIA')">Океания</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- States Cards List & Multi-Select View -->
+      <div class="map-cards-card">
+        <div class="map-cards-header">
+          <div class="map-cards-count-info">
+            <span class="map-count-badge" id="mapFilteredCount">1081 регион</span>
+            <span class="map-count-hint">Нажмите для выбора/снятия</span>
+          </div>
+          <div class="map-bulk-btns">
+            <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()">➕ Выбрать показанные</button>
+            <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()">➖ Снять показанные</button>
+          </div>
+        </div>
+        <div class="map-states-scroll" id="mapStatesGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Dock with Selection Summary & Actions -->
+    <div class="map-bottom-dock">
+      <div class="dock-selection-summary">
+        <div class="dock-pill">
+          <span class="dock-pill-count" id="dockSelectedCount">0</span>
+          <span class="dock-pill-label">выбрано</span>
+        </div>
+        <div class="dock-chips-preview" id="dockTagsPreview">
+          <span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>
+        </div>
+      </div>
+      <div class="dock-action-buttons">
+        <button type="button" class="btn-secondary btn-sm" onclick="cosm_clearSelectedStates()" title="Очистить выборку">
+          🧹 Сбросить
+        </button>
+        <button type="button" class="btn-secondary" onclick="cosm_copySelectedStateIds()" title="Скопировать список ID в буфер обмена">
+          📋 Копировать IDs
+        </button>
+        <button type="button" class="btn-primary" id="btnApplyStatesToTarget" onclick="cosm_applySelectedStatesToTarget()">
+          ✅ Применить в решение
+        </button>
+      </div>
     </div>
   </div>
 </div>

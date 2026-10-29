@@ -8,111 +8,154 @@
    -------------------------------------------------------------------------- */
 :root,
 html[data-theme="light"] {
-  /* Warm Linen / Sand / Editorial Paper Base */
-  --bg-body: #f3efe6;            /* Тёплый бумажный фон (вместо резкого #ffffff) */
-  --bg-card: #fbf9f5;            /* Тёплый цвет слоновой кости для карточек */
-  --bg-subtle: #eae4d7;          /* Тёплый бежевый тон для плашек и разделителей */
-  --bg-input: #ffffff;           /* Чистый фон полей ввода */
-  --bg-hover: #e4ddd0;           /* Ховер для списков и кнопок */
+  /* ─── EXACT PALETTE FROM светл.png ─── */
+  --teal-primary: #32887F;       /* Основной акцентный бирюзово-хвойный тон */
+  --teal-dark: #105951;          /* Глубокий оттенок для ховеров и акцентов */
+  --teal-deep: #356661;          /* Контрастный тёмный */
+  --teal-light: #65C3B9;         /* Мягкий светлый акцент */
+  --teal-soft: #7EC3BB;          /* Пастельный бирюзовый */
+  --teal-subtle: #edf7f6;        /* Фоновая деликатная подложка */
 
-  /* Hairline Warm Stone Borders */
-  --border-color: #ddd6c8;       /* Тёплая деликатная граница */
-  --border-subtle: #eae5dc;      /* Едва заметная разделительная линия */
-  --border-hover: #c4baa7;       /* Граница при наведении */
-  --border-focus: #26221f;       /* Контрастный фокус */
+  --green-accent: #3DA750;       /* Органический зелёный */
+  --green-hover: #146E24;
+  --green-soft: #6ED27F;
 
-  /* Editorial Typography */
-  --text-main: #23201d;          /* Глубокий тёплый эспрессо/графит */
-  --text-muted: #6e675f;         /* Тёплый приглушённый цвет подписей */
-  --text-dim: #999084;           /* Вспомогательный цвет */
+  --coral-accent: #DB5A50;       /* Тёплый кораллово-красный */
+  --coral-hover: #8F231B;
+  --coral-soft: #ED847B;
+
+  --ochre-accent: #DB8B50;       /* Золотисто-охристый */
+  --ochre-hover: #8F4C1B;
+  --ochre-soft: #EDAB7B;
+
+  /* Surfaces & Backgrounds */
+  --bg-body: #f4f7f6;            /* Чистый светлый фон со скандинавским оттенком */
+  --bg-card: #ffffff;            /* Белоснежные карточки */
+  --bg-subtle: #ebf2f1;          /* Тонкая подложка */
+  --bg-input: #ffffff;           /* Фон инпутов */
+  --bg-hover: #e1ecea;           /* Плавный ховер */
+
+  /* Borders */
+  --border-color: #d1dedc;       /* Деликатная граница */
+  --border-subtle: #e2ecea;
+  --border-hover: #8ab8b4;
+  --border-focus: #32887F;
+
+  /* Typography */
+  --text-main: #182624;          /* Глубокий угольный с хвойным отливом */
+  --text-muted: #4e6361;         /* Читаемый второстепенный текст */
+  --text-dim: #7d9694;
   --text-white: #ffffff;
 
   /* Primary Accent & Buttons */
-  --primary: #26221f;            /* Благородный графитовый акцент */
-  --primary-hover: #3d3732;
-  --primary-text: #fdfbf8;
+  --primary: #32887F;            /* Истинный акцент из светл.png */
+  --primary-hover: #105951;
+  --primary-text: #ffffff;
   
-  --accent: #2563eb;
-  --accent-light: #edf3fd;
+  --accent: #32887F;
+  --accent-light: #edf7f6;
   
-  --danger: #c92a2a;
-  --danger-light: #fdf2f2;
-  --danger-border: #f8c8c8;
+  --danger: #DB5A50;
+  --danger-light: #fdf2f1;
+  --danger-border: #f8c8c5;
 
-  --success: #2b8a3e;
-  --success-light: #edf9ee;
+  --success: #3DA750;
+  --success-light: #edf9ef;
 
-  /* Soft Organic Ideology Tints */
-  --ideo-fascism-bg: #fceeed;
-  --ideo-fascism-text: #962220;
-  --ideo-fascism-border: #f5c7c5;
+  /* Ideology Tints based on Palette */
+  --ideo-fascism-bg: #fdf2f1;
+  --ideo-fascism-text: #8F231B;
+  --ideo-fascism-border: #f8c8c5;
 
-  --ideo-demo-bg: #ebf3fb;
-  --ideo-demo-text: #1e4b85;
-  --ideo-demo-border: #c2daf3;
+  --ideo-demo-bg: #edf7f6;
+  --ideo-demo-text: #105951;
+  --ideo-demo-border: #7EC3BB;
 
-  --ideo-comm-bg: #faebee;
-  --ideo-comm-text: #9e1c31;
-  --ideo-comm-border: #f5c1ca;
+  --ideo-comm-bg: #faeaeb;
+  --ideo-comm-text: #962220;
+  --ideo-comm-border: #f5c1c8;
 
-  --ideo-neutral-bg: #f7f4e8;
-  --ideo-neutral-text: #7a6217;
-  --ideo-neutral-border: #e8deaf;
+  --ideo-neutral-bg: #fbf3ed;
+  --ideo-neutral-text: #8F4C1B;
+  --ideo-neutral-border: #EDAB7B;
 
-  --shadow-xs: 0 1px 2px rgba(60, 50, 40, 0.04);
-  --shadow-sm: 0 1px 3px rgba(60, 50, 40, 0.06), 0 1px 2px rgba(60, 50, 40, 0.03);
-  --shadow-md: 0 4px 12px rgba(60, 50, 40, 0.07);
-  --shadow-lg: 0 14px 34px rgba(60, 50, 40, 0.1);
-  --backdrop-modal: rgba(40, 35, 30, 0.4);
+  --shadow-xs: 0 1px 2px rgba(25, 45, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(25, 45, 42, 0.06), 0 1px 2px rgba(25, 45, 42, 0.03);
+  --shadow-md: 0 4px 14px rgba(25, 45, 42, 0.08);
+  --shadow-lg: 0 14px 34px rgba(25, 45, 42, 0.12);
+  --backdrop-modal: rgba(18, 30, 28, 0.45);
 }
 
 /* --------------------------------------------------------------------------
-   MINIMALIST DARK THEME (Лаконичная тёмная тема без неонового ИИ-свечения)
+   MINIMALIST DARK THEME — EXACT PALETTE FROM тёмн.png
    -------------------------------------------------------------------------- */
 html[data-theme="dark"] {
-  --bg-body: #121316;            /* Глубокий матовый тёмный фон */
-  --bg-card: #1a1b20;            /* Спокойный графит для карточек */
-  --bg-subtle: #23252c;          /* Тёмно-серая подложка */
-  --bg-input: #101114;           /* Поля ввода */
-  --bg-hover: #292c34;
+  /* ─── EXACT PALETTE FROM тёмн.png ─── */
+  --teal-glow: #50AFA5;          /* Светящийся бирюзовый акцент тёмной темы */
+  --teal-container: #1B6159;     /* Глубокий изумрудно-бирюзовый контейнер */
+  --teal-deep: #093F3A;          /* Тёмный глубокий базис */
+  --teal-border: #214945;        /* Рамки и разделители */
+  --teal-light: #69AFA7;         /* Ховер для акцента */
 
-  --border-color: #2b2d36;       /* Тонкие тёмные рамки */
-  --border-subtle: #21232a;
-  --border-hover: #3e424f;
-  --border-focus: #f0f2f5;
+  --green-accent: #55BA67;       /* Живой зелёный */
+  --green-container: #217730;
+  --green-deep: #0B4E17;
 
-  --text-main: #f0f2f5;          /* Чистый светлый текст */
-  --text-muted: #959aa7;         /* Мягкий серый для описаний */
-  --text-dim: #5c6270;
+  --crimson-accent: #CD655D;     /* Сдержанный малиново-красный */
+  --crimson-container: #9C332B;
+  --crimson-deep: #66150E;
+
+  --bronze-accent: #CD8D5D;      /* Бронзово-янтарный */
+  --bronze-container: #9C5B2B;
+  --bronze-deep: #66340E;
+
+  /* Surfaces & Backgrounds */
+  --bg-body: #0d1212;            /* Глубокий бархатный тёмный фон */
+  --bg-card: #141c1b;            /* Карточки с намёком на хвою */
+  --bg-subtle: #1c2625;          /* Подложки */
+  --bg-input: #0f1615;           /* Поля ввода */
+  --bg-hover: #233130;           /* Ховер */
+
+  /* Borders */
+  --border-color: #233331;       /* Матовая аккуратная рамка */
+  --border-subtle: #182423;
+  --border-hover: #3b5451;
+  --border-focus: #50AFA5;
+
+  /* Typography */
+  --text-main: #e8f2f1;          /* Кристальный матовый светлый */
+  --text-muted: #95aba9;         /* Мягкий серо-хвойный текст */
+  --text-dim: #5c7472;
   --text-white: #ffffff;
 
-  --primary: #f0f2f5;            /* Контрастная светлая кнопка */
-  --primary-hover: #ffffff;
-  --primary-text: #121316;
+  /* Primary Accent & Buttons */
+  --primary: #50AFA5;            /* Акцент из тёмн.png */
+  --primary-hover: #69AFA7;
+  --primary-text: #092320;
   
-  --accent: #60a5fa;
-  --accent-light: rgba(96, 165, 250, 0.12);
+  --accent: #50AFA5;
+  --accent-light: rgba(80, 175, 165, 0.14);
   
-  --danger: #f87171;
-  --danger-light: rgba(239, 68, 68, 0.12);
-  --danger-border: rgba(239, 68, 68, 0.3);
+  --danger: #CD655D;
+  --danger-light: rgba(205, 101, 93, 0.15);
+  --danger-border: rgba(205, 101, 93, 0.35);
 
-  --success: #4ade80;
-  --success-light: rgba(74, 222, 128, 0.12);
+  --success: #55BA67;
+  --success-light: rgba(85, 186, 103, 0.15);
 
-  --ideo-fascism-bg: rgba(185, 28, 28, 0.16);
-  --ideo-fascism-text: #fca5a5;
-  --ideo-fascism-border: rgba(185, 28, 28, 0.35);
+  --ideo-fascism-bg: rgba(156, 51, 43, 0.18);
+  --ideo-fascism-text: #CD655D;
+  --ideo-fascism-border: rgba(156, 51, 43, 0.4);
 
-  --ideo-demo-bg: rgba(37, 99, 235, 0.16);
-  --ideo-demo-text: #93c5fd;
-  --ideo-demo-border: rgba(37, 99, 235, 0.35);
+  --ideo-demo-bg: rgba(27, 97, 89, 0.2);
+  --ideo-demo-text: #50AFA5;
+  --ideo-demo-border: rgba(80, 175, 165, 0.35);
 
-  --ideo-comm-bg: rgba(225, 29, 72, 0.16);
-  --ideo-comm-text: #fda4af;
-  --ideo-comm-border: rgba(225, 29, 72, 0.35);
+  --ideo-comm-bg: rgba(205, 101, 93, 0.16);
+  --ideo-comm-text: #CD807A;
+  --ideo-comm-border: rgba(205, 101, 93, 0.35);
 
-  --ideo-neutral-bg: rgba(202, 138, 4, 0.16);
+  --ideo-neutral-bg: rgba(156, 91, 43, 0.18);
   --ideo-neutral-text: #fde047;
   --ideo-neutral-border: rgba(202, 138, 4, 0.35);
 
@@ -2275,4 +2318,962 @@ textarea:focus {
   font-size: 11.5px;
   color: var(--text-main);
   line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   HOI4 IN-GAME DECISION GUI PREVIEW (MATCHING SCREENSHOTS)
+   ========================================================================== */
+.hoi4-preview-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.hoi4-gui-window {
+  width: 100%;
+  max-width: 580px;
+  margin: 12px auto 6px auto;
+  background: #140f0c;
+  border: 2px solid #0a0705;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 1px 1px 0 #3a2e26;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  user-select: none;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Header bar */
+.hoi4-gui-header {
+  height: 48px;
+  background: linear-gradient(180deg, #382c23 0%, #261c16 45%, #18110d 100%);
+  border-bottom: 2px solid #0d0a08;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.hoi4-gui-icon-bracket {
+  width: 52px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.hoi4-gui-cat-icon {
+  max-width: 52px;
+  max-height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+}
+
+.hoi4-gui-title-plate {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #3d3027;
+  border-radius: 2px;
+  padding: 5px 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hoi4-gui-title-plate span {
+  color: #f0ece1;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-shadow: 1px 1px 2px #000, 0 0 3px rgba(0, 0, 0, 0.9);
+}
+
+.hoi4-gui-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.hoi4-gui-orb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #88ff88 0%, #2db32d 55%, #0e520e 100%);
+  border: 1px solid #000;
+  box-shadow: 0 0 4px rgba(45, 220, 45, 0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.hoi4-gui-chevron {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(180deg, #3d3027 0%, #1e1510 100%);
+  border: 1px solid #0a0705;
+  box-shadow: inset 1px 1px 0 #544438;
+  color: #b0a597;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+/* Category Inner Body */
+.hoi4-gui-body {
+  background: #110d0a;
+  border: 1px solid #231b15;
+  margin: 4px;
+  padding: 8px;
+  display: flex;
+  gap: 12px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.hoi4-gui-banner-frame {
+  width: 114px;
+  height: 101px;
+  flex-shrink: 0;
+  border: 1px solid #362a22;
+  background: #080605;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hoi4-gui-banner-img {
+  width: 114px;
+  height: 101px;
+  object-fit: cover;
+  image-rendering: auto;
+  display: block;
+}
+
+.hoi4-gui-lore-frame {
+  flex: 1;
+  padding: 2px 4px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.hoi4-gui-lore-frame p {
+  margin: 0;
+  color: #ded9cd;
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 500;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.9);
+  max-height: 98px;
+  overflow-y: auto;
+}
+
+/* Decision Item Row */
+.hoi4-gui-decision-row {
+  margin: 4px;
+  background: linear-gradient(180deg, #241c17 0%, #17110e 100%);
+  border: 1px solid #2a2019;
+  border-top: 1px solid #382c23;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.hoi4-gui-dec-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.hoi4-gui-dec-icon-slot {
+  width: 33px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hoi4-gui-dec-icon {
+  max-width: 33px;
+  max-height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.7));
+}
+
+.hoi4-gui-dec-name {
+  color: #e5ded2;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hoi4-gui-dec-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hoi4-gui-take-btn {
+  width: 28px;
+  height: 24px;
+  background: linear-gradient(180deg, #382c23 0%, #1f1712 100%);
+  border: 1px solid #0a0705;
+  box-shadow: inset 1px 1px 0 #524235, 0 1px 2px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.hoi4-gui-take-btn:hover {
+  background: linear-gradient(180deg, #44362b 0%, #281e18 100%);
+}
+
+.hoi4-gui-envelope-icon {
+  font-size: 13px;
+  color: #9c9081;
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.hoi4-gui-check-badge {
+  position: absolute;
+  right: -5px;
+  bottom: -3px;
+  font-size: 11px;
+  color: #4ade80;
+  font-weight: 900;
+  text-shadow: 0 0 2px #000;
+}
+
+/* ==========================================================================
+   MOTION DESIGN & SPRING MICRO-INTERACTIONS
+   Smooth cubic-bezier curves, interactive spring feedback, no AI slop
+   ========================================================================== */
+*, *::before, *::after {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button, .btn-primary, .btn-secondary, .btn-sm, .mode-tab-btn, .region-tab, .cat-pill {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.18s ease,
+              border-color 0.18s ease,
+              box-shadow 0.18s ease,
+              color 0.18s ease;
+}
+
+button:active, .btn-primary:active, .btn-secondary:active, .mode-tab-btn:active {
+  transform: scale(0.975);
+}
+
+.card, .section, .preset-card {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s ease;
+}
+
+.preset-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Modal Spring In */
+.modal-overlay {
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-window {
+  animation: modalPopIn 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Field Header Row */
+.field-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+/* Map Launch Button */
+.btn-map-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-map-launch:hover {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+/* ==========================================================================
+   EFFECTS CHEAT SHEET MODAL (ENHANCED SEARCH & TABS)
+   ========================================================================== */
+.modal-xl {
+  width: 92vw;
+  max-width: 960px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.effects-filter-container {
+  padding: 12px 20px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.effects-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.effects-cat-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.cat-pill {
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cat-pill:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+.cat-pill.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+.cheat-cat-counter {
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+.cheat-item-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.cheat-empty-msg {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.effects-stat-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: auto;
+}
+
+/* ==========================================================================
+   INTERACTIVE HOI4 STATES MAP MODAL (1081 STATES)
+   ========================================================================== */
+.modal-map-layout {
+  width: 95vw;
+  max-width: 1240px;
+  height: 90vh;
+  max-height: 900px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 12px;
+}
+
+.map-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.map-header-badge {
+  padding: 4px 10px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Map Filter Bar */
+.map-filter-bar {
+  padding: 10px 18px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.map-filter-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.map-search-input-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+}
+
+.btn-clear-search:hover {
+  color: var(--text-main);
+}
+
+.map-country-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.map-label-inline {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.select-sm {
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  min-width: 200px;
+}
+
+.map-region-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.region-tab {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.region-tab:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+.region-tab.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+/* Workspace: Vector Minimap + States Cards */
+.map-body-workspace {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+/* Vector Card */
+.map-vector-card {
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.map-vector-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.map-vector-title {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.map-vector-current {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.map-svg-wrap {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hoi4-vector-world-map {
+  width: 100%;
+  max-height: 280px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-theatre-path {
+  fill: var(--bg-hover);
+  stroke: var(--border-hover);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.map-theatre-path:hover {
+  fill: var(--accent-light);
+  stroke: var(--accent);
+  stroke-width: 2.2;
+}
+
+.map-theatre-path.active {
+  fill: var(--primary);
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 2px 6px rgba(50, 136, 127, 0.4));
+}
+
+.map-theatre-text {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--text-main);
+  text-anchor: middle;
+  cursor: pointer;
+  pointer-events: all;
+  user-select: none;
+}
+
+/* States Cards List */
+.map-cards-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.map-cards-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-subtle);
+  flex-shrink: 0;
+}
+
+.map-cards-count-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-count-badge {
+  padding: 3px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.map-count-hint {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.map-bulk-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.map-states-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+
+/* State Card Component */
+.state-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.state-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.state-card:active {
+  transform: scale(0.97);
+}
+
+.state-card.selected {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.state-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+}
+
+.state-card-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.state-card-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  background: var(--bg-subtle);
+  border-radius: 4px;
+  color: var(--text-dim);
+}
+
+.state-card.selected .state-card-tag {
+  background: var(--bg-card);
+  color: var(--accent);
+}
+
+.state-card-name-ru {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.state-card-name-en {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.1;
+}
+
+.state-card-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 900;
+  background: var(--bg-subtle);
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+}
+
+.state-card.selected .state-card-check {
+  background: var(--accent);
+  color: #fff;
+}
+
+.map-no-results {
+  grid-column: 1 / -1;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+/* Sticky Bottom Dock */
+.map-bottom-dock {
+  padding: 10px 18px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.dock-selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.dock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.dock-pill-count {
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.dock-pill-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.dock-chips-preview {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 2px 0;
+}
+
+.dock-placeholder {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.dock-chip {
+  padding: 3px 8px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.dock-chip:hover {
+  background: var(--danger-light);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.dock-chip-more {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.dock-action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS & CLEAN ADAPTIVE LAYOUT
+   ========================================================================== */
+@media (max-width: 900px) {
+  .map-body-workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: 200px 1fr;
+  }
+  .map-vector-card {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .hoi4-vector-world-map {
+    max-height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 8px 12px;
+  }
+  .header-mode-nav {
+    display: flex;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .project-toolbar {
+    display: none;
+  }
+  .form-grid-2, .form-grid-3, .form-grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .modal-window {
+    width: 98vw !important;
+    height: 94vh !important;
+    max-height: 94vh !important;
+    margin: 3vh 1vw !important;
+    border-radius: 8px;
+  }
+  .modal-map-layout {
+    width: 99vw !important;
+    height: 96vh !important;
+    max-height: 96vh !important;
+  }
+  .map-filter-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .select-sm {
+    min-width: 100%;
+  }
+  .map-bottom-dock {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .dock-action-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+  }
+  .state-card {
+    min-height: 48px;
+    padding: 8px;
+  }
+  button, .btn-primary, .btn-secondary, .region-tab, .cat-pill {
+    min-height: 40px;
+  }
 }

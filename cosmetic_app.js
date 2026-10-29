@@ -377,6 +377,12 @@ const flagsData = {
 let decisionImageData = null;
 let decisionImageTga = null;
 let decisionImagePreviewUrl = null;
+// Category Banner & Icon State
+let categoryPicPreset = 'GFX_decision_cat_generic_commonwealth';
+let categoryPicCustomTga = null;
+let categoryPicCustomUrl = null;
+let categoryPicFileName = null;
+
 let generatedFiles = null;
 let autoSaveTimer = null;
 
@@ -642,46 +648,491 @@ function getCustomEffects() {
     .filter(v => v.length > 0);
 }
 
+// ─── EFFECTS & BUFFS ADVANCED SEARCH & CHEAT-SHEET ─────
+let effectsActiveCategory = 'ALL';
+let effectsSearchQuery = '';
+
 function openEffectsModal() {
+  effectsActiveCategory = 'ALL';
+  effectsSearchQuery = '';
+  const searchInp = document.getElementById('effectsSearchInput');
+  if (searchInp) searchInp.value = '';
+  renderEffectsCategories();
   renderEffectsCheat();
-  document.getElementById('effectsModal').style.display = 'flex';
+  const modal = document.getElementById('effectsModal');
+  if (modal) modal.style.display = 'flex';
 }
 
 function closeEffectsModal() {
-  document.getElementById('effectsModal').style.display = 'none';
+  const modal = document.getElementById('effectsModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function renderEffectsCategories() {
+  const catBar = document.getElementById('effectsCategoryPills');
+  if (!catBar) return;
+  const dataset = (window.HOI4_ALL_EFFECTS && window.HOI4_ALL_EFFECTS.length) ? window.HOI4_ALL_EFFECTS : CHEAT_EFFECTS;
+
+  let totalItems = 0;
+  dataset.forEach(cat => { totalItems += (cat.items ? cat.items.length : 0); });
+
+  let html = `<button type="button" class="cat-pill ${effectsActiveCategory === 'ALL' ? 'active' : ''}" onclick="cosm_selectEffectsCategory('ALL')">Все эффекты (${totalItems})</button>`;
+  dataset.forEach((cat, idx) => {
+    const title = (cat.category && (cat.category[currentLang] || cat.category.ru)) || `Категория ${idx+1}`;
+    const count = cat.items ? cat.items.length : 0;
+    const catKey = 'CAT_' + idx;
+    html += `<button type="button" class="cat-pill ${effectsActiveCategory === catKey ? 'active' : ''}" onclick="cosm_selectEffectsCategory('${catKey}')">${title} (${count})</button>`;
+  });
+  catBar.innerHTML = html;
+}
+
+function selectEffectsCategory(catKey) {
+  effectsActiveCategory = catKey;
+  renderEffectsCategories();
+  renderEffectsCheat();
+}
+
+function filterEffectsCheat(query) {
+  effectsSearchQuery = (query || '').toLowerCase().trim();
+  renderEffectsCheat();
+}
+
+function clearEffectsSearch() {
+  effectsSearchQuery = '';
+  const searchInp = document.getElementById('effectsSearchInput');
+  if (searchInp) searchInp.value = '';
+  renderEffectsCheat();
 }
 
 function renderEffectsCheat() {
   const container = document.getElementById('effectsCheatBody');
   if (!container) return;
 
+  const dataset = (window.HOI4_ALL_EFFECTS && window.HOI4_ALL_EFFECTS.length) ? window.HOI4_ALL_EFFECTS : CHEAT_EFFECTS;
   let html = '';
-  CHEAT_EFFECTS.forEach(cat => {
-    const title = cat.category[currentLang] || cat.category.ru;
-    html += `<div class="cheat-category">`;
-    html += `<div class="cheat-category-title">${title}</div>`;
-    cat.items.forEach(item => {
-      const desc = item.desc[currentLang] || item.desc.ru;
-      html += `
-        <div class="cheat-item">
-          <div class="cheat-info">
-            <div class="cheat-code">${item.code}</div>
-            <div class="cheat-desc">${desc}</div>
-          </div>
-          <button type="button" class="btn-sm" onclick="insertEffectFromCheat('${item.code.replace(/'/g, "\\'")}')">
-            + Вставить
-          </button>
-        </div>
-      `;
+  let matchCount = 0;
+
+  dataset.forEach((cat, idx) => {
+    const catKey = 'CAT_' + idx;
+    if (effectsActiveCategory !== 'ALL' && effectsActiveCategory !== catKey) return;
+
+    const catTitle = (cat.category && (cat.category[currentLang] || cat.category.ru)) || 'Эффекты';
+    const items = cat.items || [];
+    const filteredItems = items.filter(item => {
+      if (!effectsSearchQuery) return true;
+      const codeMatch = item.code && item.code.toLowerCase().includes(effectsSearchQuery);
+      const descRu = (item.desc && item.desc.ru) ? item.desc.ru.toLowerCase() : '';
+      const descEn = (item.desc && item.desc.en) ? item.desc.en.toLowerCase() : '';
+      return codeMatch || descRu.includes(effectsSearchQuery) || descEn.includes(effectsSearchQuery);
     });
-    html += `</div>`;
+
+    if (filteredItems.length > 0) {
+      matchCount += filteredItems.length;
+      html += `<div class="cheat-category">`;
+      html += `<div class="cheat-category-title">${catTitle} <span class="cheat-cat-counter">(${filteredItems.length})</span></div>`;
+      filteredItems.forEach(item => {
+        const desc = (item.desc && (item.desc[currentLang] || item.desc.ru)) || '';
+        const escapedCode = item.code.replace(/'/g, "\'");
+        html += `
+          <div class="cheat-item">
+            <div class="cheat-info">
+              <div class="cheat-code">${item.code}</div>
+              <div class="cheat-desc">${desc}</div>
+            </div>
+            <div class="cheat-item-actions">
+              <button type="button" class="btn-sm btn-secondary" onclick="cosm_copyEffectCode('${escapedCode}')" title="Копировать код">
+                📋
+              </button>
+              <button type="button" class="btn-sm btn-primary" onclick="cosm_insertEffectFromCheat('${escapedCode}')">
+                + Вставить
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
   });
+
+  if (matchCount === 0) {
+    html = `<div class="cheat-empty-msg">Ничего не найдено по запросу "${effectsSearchQuery}". Попробуйте изменить ключевое слово.</div>`;
+  }
+
+  const statDisplay = document.getElementById('effectsCountDisplay');
+  if (statDisplay) {
+    statDisplay.textContent = `Показано эффектов: ${matchCount}`;
+  }
+
   container.innerHTML = html;
 }
 
 function insertEffectFromCheat(code) {
   addCustomEffect(code);
-  showToast('✓ ' + code);
+  showToast('✓ Добавлен эффект: ' + code);
+}
+
+function copyEffectCode(code) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(() => {
+      showToast('📋 Скопировано: ' + code);
+    }).catch(() => {
+      showToast('✓ ' + code);
+    });
+  } else {
+    showToast('✓ ' + code);
+  }
+}
+
+// ─── INTERACTIVE HOI4 STATES MAP (1081 STATES) ──────────
+const REGION_COUNTRY_TAGS = {
+  EUROPE: new Set(['GER','FRA','ENG','ITA','POL','CZE','ROM','YUG','HUN','SWE','NOR','FIN','DEN','HOL','BEL','LUX','SPR','POR','GRE','BUL','ALB','LIT','LAT','EST','IRE','SWI','AUS','ICE']),
+  SOVIET: new Set(['SOV','TAN','MON']),
+  ASIA: new Set(['JAP','CHI','PRC','MAN','MEN','XSM','SIK','GXC','YUN','SHX','TIB','NEP','BHU','SIA','PHI','INS','MAL','RAJ','AFG','PER']),
+  AMERICA: new Set(['USA','CAN','MEX','CUB','HAI','DOM','GUA','HON','ELS','NIC','COS','PAN','COL','VEN','ECU','PRU','BOL','PAR','CHL','ARG','URU','BRA']),
+  AFRICA: new Set(['ETH','LIB','SAF']),
+  MIDDLE_EAST: new Set(['TUR','IRQ','SAU','YEM','OMA','PAL','JOR','SYR','LEB']),
+  OCEANIA: new Set(['AST','NZL'])
+};
+
+const COUNTRY_NAMES_RU = {
+  SOV: 'СССР (SOV)', GER: 'Германия (GER)', FRA: 'Франция (FRA)', ENG: 'Великобритания (ENG)',
+  ITA: 'Италия (ITA)', USA: 'США (USA)', JAP: 'Япония (JAP)', POL: 'Польша (POL)',
+  CZE: 'Чехословакия (CZE)', ROM: 'Румыния (ROM)', YUG: 'Югославия (YUG)', HUN: 'Венгрия (HUN)',
+  TUR: 'Турция (TUR)', SWE: 'Швеция (SWE)', FIN: 'Финляндия (FIN)', NOR: 'Норвегия (NOR)',
+  DEN: 'Дания (DEN)', HOL: 'Нидерланды (HOL)', BEL: 'Бельгия (BEL)', LUX: 'Люксембург (LUX)',
+  SPR: 'Испания (SPR)', POR: 'Португалия (POR)', GRE: 'Греция (GRE)', BUL: 'Болгария (BUL)',
+  ALB: 'Албания (ALB)', LIT: 'Литва (LIT)', LAT: 'Латвия (LAT)', EST: 'Эстония (EST)',
+  IRE: 'Ирландия (IRE)', SWI: 'Швейцария (SWI)', AUS: 'Австрия (AUS)', CAN: 'Канада (CAN)',
+  MEX: 'Мексика (MEX)', BRA: 'Бразилия (BRA)', ARG: 'Аргентина (ARG)', CHL: 'Чили (CHL)',
+  COL: 'Колумбия (COL)', VEN: 'Венесуэла (VEN)', PER: 'Перу (PRU)', BOL: 'Боливия (BOL)',
+  AST: 'Австралия (AST)', NZL: 'Новая Зеландия (NZL)', RAJ: 'Брит. Индия (RAJ)',
+  CHI: 'Китай (CHI)', PRC: 'КНР (PRC)', MAN: 'Маньчжоу-го (MAN)', MEN: 'Мэнцзян (MEN)',
+  SIK: 'Синьцзян (SIK)', TIB: 'Тибет (TIB)', SAF: 'ЮАС (SAF)', ETH: 'Эфиопия (ETH)',
+  IRQ: 'Ирак (IRQ)', IRN: 'Иран/Персия (PER)', PER: 'Персия (PER)', SAU: 'Сауд. Аравия (SAU)'
+};
+
+let mapTargetType = 'core'; // 'core' | 'trigger'
+let selectedMapStateIds = new Set();
+let mapActiveRegion = 'ALL';
+let mapActiveCountry = '';
+let mapSearchText = '';
+
+function openStatesMap(target = 'core') {
+  mapTargetType = target;
+  mapActiveRegion = 'ALL';
+  mapActiveCountry = '';
+  mapSearchText = '';
+
+  const searchInp = document.getElementById('mapStateSearchInput');
+  if (searchInp) searchInp.value = '';
+
+  // Pre-load currently selected IDs if target is core states
+  selectedMapStateIds.clear();
+  if (target === 'core') {
+    const curVal = (document.getElementById('core-states') || {}).value || '';
+    curVal.split(/[,\s]+/).forEach(v => {
+      const id = parseInt(v.trim(), 10);
+      if (!isNaN(id) && id > 0) selectedMapStateIds.add(id);
+    });
+  }
+
+  // Update header text based on target
+  const titleEl = document.getElementById('statesMapTitle');
+  const subEl = document.getElementById('statesMapSub');
+  const btnApply = document.getElementById('btnApplyStatesToTarget');
+
+  if (target === 'core') {
+    if (titleEl) titleEl.textContent = 'Интерактивная карта — Национальные регионы (Core States)';
+    if (subEl) subEl.textContent = 'Кликайте по регионам для выбора. Список автоматически обновит национальные регионы (add_core_of = ROOT)';
+    if (btnApply) btnApply.textContent = '✅ Применить в Core States';
+  } else {
+    if (titleEl) titleEl.textContent = 'Интерактивная карта — Контроль регионов (controls_state)';
+    if (subEl) subEl.textContent = 'Выберите необходимые регионы для победы или создания государства. Они добавятся в список условий (controls_state)';
+    if (btnApply) btnApply.textContent = '✅ Добавить в Условия (controls_state)';
+  }
+
+  populateCountrySelect();
+  updateRegionPillsUI();
+  updateSvgMapHighlight();
+  renderStatesGrid();
+  updateDockUI();
+
+  const modal = document.getElementById('statesMapModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeStatesMap() {
+  const modal = document.getElementById('statesMapModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function populateCountrySelect() {
+  const select = document.getElementById('mapCountrySelect');
+  if (!select) return;
+
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  const tagCounts = {};
+  dataset.forEach(s => {
+    if (s.tag) tagCounts[s.tag] = (tagCounts[s.tag] || 0) + 1;
+  });
+
+  const sortedTags = Object.keys(tagCounts).sort((a,b) => (COUNTRY_NAMES_RU[a] || a).localeCompare(COUNTRY_NAMES_RU[b] || b, 'ru'));
+
+  let html = `<option value="">Все страны мира (${dataset.length} регионов)</option>`;
+  sortedTags.forEach(tag => {
+    const label = COUNTRY_NAMES_RU[tag] || tag;
+    const count = tagCounts[tag];
+    html += `<option value="${tag}">${label} [${count}]</option>`;
+  });
+  select.innerHTML = html;
+  select.value = mapActiveCountry;
+}
+
+function selectMapRegion(regionKey) {
+  mapActiveRegion = regionKey;
+  updateRegionPillsUI();
+  updateSvgMapHighlight();
+  renderStatesGrid();
+}
+
+function updateRegionPillsUI() {
+  const pills = document.querySelectorAll('#mapRegionPills .region-tab');
+  pills.forEach(pill => {
+    const onclickAttr = pill.getAttribute('onclick') || '';
+    pill.classList.toggle('active', onclickAttr.includes("'" + mapActiveRegion + "'"));
+  });
+}
+
+function updateSvgMapHighlight() {
+  const label = document.getElementById('mapCurrentTheatreLabel');
+  const regionNames = {
+    ALL: 'Весь мир',
+    EUROPE: 'Европа',
+    SOVIET: 'СССР и Восточная Евразия',
+    ASIA: 'Азия и Дальний Восток',
+    AMERICA: 'Северная и Южная Америка',
+    AFRICA: 'Африканский континент',
+    MIDDLE_EAST: 'Ближний Восток',
+    OCEANIA: 'Океания и Тихий океан'
+  };
+  if (label) label.textContent = regionNames[mapActiveRegion] || mapActiveRegion;
+
+  // Highlight corresponding SVG path
+  document.querySelectorAll('.map-theatre-path').forEach(p => p.classList.remove('active'));
+  const svgMap = {
+    EUROPE: 'geo_EUROPE',
+    SOVIET: 'geo_SOVIET',
+    ASIA: 'geo_ASIA',
+    AMERICA: 'geo_SAM',
+    AFRICA: 'geo_AFRICA',
+    MIDDLE_EAST: 'geo_MIDDLE_EAST',
+    OCEANIA: 'geo_OCEANIA'
+  };
+  if (svgMap[mapActiveRegion]) {
+    const el = document.getElementById(svgMap[mapActiveRegion]);
+    if (el) el.classList.add('active');
+  }
+}
+
+function onMapCountryChange(tag) {
+  mapActiveCountry = tag || '';
+  renderStatesGrid();
+}
+
+function filterStatesMap() {
+  const inp = document.getElementById('mapStateSearchInput');
+  mapSearchText = (inp ? inp.value : '').toLowerCase().trim();
+  renderStatesGrid();
+}
+
+function clearStateSearch() {
+  mapSearchText = '';
+  const inp = document.getElementById('mapStateSearchInput');
+  if (inp) inp.value = '';
+  renderStatesGrid();
+}
+
+function getFilteredStates() {
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  return dataset.filter(state => {
+    // 1. Country filter
+    if (mapActiveCountry && state.tag !== mapActiveCountry) return false;
+
+    // 2. Region filter
+    if (mapActiveRegion !== 'ALL') {
+      const allowedTags = REGION_COUNTRY_TAGS[mapActiveRegion];
+      if (allowedTags && !allowedTags.has(state.tag)) return false;
+    }
+
+    // 3. Text search
+    if (mapSearchText) {
+      const idStr = String(state.id);
+      const tagStr = (state.tag || '').toLowerCase();
+      const ruStr = (state.ru || '').toLowerCase();
+      const enStr = (state.en || '').toLowerCase();
+      return idStr === mapSearchText || idStr.includes(mapSearchText) ||
+             tagStr.includes(mapSearchText) ||
+             ruStr.includes(mapSearchText) ||
+             enStr.includes(mapSearchText);
+    }
+    return true;
+  });
+}
+
+function renderStatesGrid() {
+  const container = document.getElementById('mapStatesGrid');
+  if (!container) return;
+
+  const filtered = getFilteredStates();
+  const counterEl = document.getElementById('mapFilteredCount');
+  if (counterEl) {
+    counterEl.textContent = `Показано ${filtered.length} регионов`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="map-no-results">По вашему запросу регионы не найдены. Попробуйте сбросить фильтры.</div>`;
+    return;
+  }
+
+  // Render cards (fast DOM batching)
+  let html = '';
+  filtered.forEach(state => {
+    const isSelected = selectedMapStateIds.has(state.id);
+    html += `
+      <div class="state-card ${isSelected ? 'selected' : ''}" onclick="cosm_toggleState(${state.id})" id="stateCard_${state.id}" title="#${state.id} ${state.ru} (${state.en})">
+        <div class="state-card-top">
+          <span class="state-card-id">#${state.id}</span>
+          <span class="state-card-tag">${state.tag || '???'}</span>
+        </div>
+        <div class="state-card-name-ru">${state.ru || 'Безымянный регион'}</div>
+        <div class="state-card-name-en">${state.en || ''}</div>
+        <div class="state-card-check">${isSelected ? '✓' : '+'}</div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function toggleState(id) {
+  if (selectedMapStateIds.has(id)) {
+    selectedMapStateIds.delete(id);
+  } else {
+    selectedMapStateIds.add(id);
+  }
+
+  // Quick DOM toggle without full redraw for 60fps responsiveness
+  const card = document.getElementById('stateCard_' + id);
+  if (card) {
+    const isSelected = selectedMapStateIds.has(id);
+    card.classList.toggle('selected', isSelected);
+    const checkEl = card.querySelector('.state-card-check');
+    if (checkEl) checkEl.textContent = isSelected ? '✓' : '+';
+  }
+
+  updateDockUI();
+}
+
+function selectAllFilteredStates() {
+  const filtered = getFilteredStates();
+  filtered.forEach(s => selectedMapStateIds.add(s.id));
+  renderStatesGrid();
+  updateDockUI();
+  showToast(`✓ Добавлено ${filtered.length} регионов в выборку`);
+}
+
+function deselectAllFilteredStates() {
+  const filtered = getFilteredStates();
+  filtered.forEach(s => selectedMapStateIds.delete(s.id));
+  renderStatesGrid();
+  updateDockUI();
+  showToast('Снято выделение с показанных регионов');
+}
+
+function clearSelectedStates() {
+  selectedMapStateIds.clear();
+  renderStatesGrid();
+  updateDockUI();
+  showToast('Выборка очищена');
+}
+
+function updateDockUI() {
+  const countEl = document.getElementById('dockSelectedCount');
+  const previewEl = document.getElementById('dockTagsPreview');
+  const size = selectedMapStateIds.size;
+
+  if (countEl) countEl.textContent = size;
+
+  if (!previewEl) return;
+  if (size === 0) {
+    previewEl.innerHTML = `<span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>`;
+    return;
+  }
+
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  const stateMap = {};
+  dataset.forEach(s => { stateMap[s.id] = s; });
+
+  let chipsHtml = '';
+  // Show up to first 30 chips
+  sortedIds.slice(0, 30).forEach(id => {
+    const s = stateMap[id];
+    const name = s ? s.ru : ('ID ' + id);
+    chipsHtml += `
+      <span class="dock-chip" onclick="cosm_toggleState(${id})" title="Нажмите, чтобы удалить из выборки">
+        #${id} ${name} &times;
+      </span>
+    `;
+  });
+
+  if (sortedIds.length > 30) {
+    chipsHtml += `<span class="dock-chip-more">+ еще ${sortedIds.length - 30}...</span>`;
+  }
+
+  previewEl.innerHTML = chipsHtml;
+}
+
+function copySelectedStateIds() {
+  if (selectedMapStateIds.size === 0) {
+    showToast('Сначала выберите хотя бы один регион!');
+    return;
+  }
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+  const text = sortedIds.join(', ');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`📋 Скопировано ${sortedIds.length} ID: ` + text);
+    });
+  } else {
+    showToast(`✓ IDs: ` + text);
+  }
+}
+
+function applySelectedStatesToTarget() {
+  if (selectedMapStateIds.size === 0) {
+    showToast('Сначала выберите хотя бы один регион!');
+    return;
+  }
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+
+  if (mapTargetType === 'core') {
+    const coreInp = document.getElementById('core-states');
+    if (coreInp) {
+      coreInp.value = sortedIds.join(', ');
+      handleCoreStatesInput(coreInp.value);
+      onFieldChange();
+    }
+    showToast(`✓ Назначено ${sortedIds.length} национальных регионов!`);
+  } else {
+    // Add controls_state triggers
+    sortedIds.forEach(id => {
+      addTrigger(`controls_state = ${id}`);
+    });
+    onFieldChange();
+    showToast(`✓ Добавлено ${sortedIds.length} условий controls_state!`);
+  }
+
+  closeStatesMap();
 }
 
 // ─── 4 IDEOLOGIES TABS ────────────────────────
@@ -930,6 +1381,13 @@ function collectProjectData() {
     categoryMode: currentCategoryMode,
     customCatId: val('custom-cat-id'),
     customCatName: val('custom-cat-name'),
+    categoryTitle: val('category-title'),
+    categoryDesc: val('category-desc'),
+    categoryIcon: val('category-icon-select'),
+    categoryPicPreset: val('category-pic-preset'),
+    categoryPicCustomUrl: categoryPicCustomUrl,
+    categoryPicCustomTga: categoryPicCustomTga,
+    categoryPicFileName: categoryPicFileName,
 
     cost: parseInt(val('decision-cost'), 10) || 50,
     days: parseInt(val('decision-days'), 10) || 0,
@@ -1006,6 +1464,17 @@ function populateFormFromData(d) {
   setCategoryMode(d.categoryMode || 'formation');
   setVal('custom-cat-id', d.customCatId);
   setVal('custom-cat-name', d.customCatName);
+  setVal('category-title', d.categoryTitle || d.customCatName || '');
+  setVal('category-desc', d.categoryDesc || '');
+  setVal('category-icon-select', d.categoryIcon || 'generic_formable_nations');
+  setVal('category-pic-preset', d.categoryPicPreset || 'GFX_decision_cat_generic_commonwealth');
+  const picUploadBox = document.getElementById('cat-pic-upload-box');
+  if (picUploadBox) {
+    picUploadBox.style.display = (d.categoryPicPreset === 'custom_upload') ? 'block' : 'none';
+  }
+  categoryPicCustomUrl = d.categoryPicCustomUrl || null;
+  categoryPicCustomTga = d.categoryPicCustomTga || null;
+  categoryPicFileName = d.categoryPicFileName || null;
 
   setVal('decision-cost', d.cost !== undefined ? d.cost : 50);
   setVal('decision-days', d.days !== undefined ? d.days : 0);
@@ -1094,8 +1563,147 @@ function populateFormFromData(d) {
 }
 
 // ─── AUTO-SAVE ON CHANGE & EXIT ───────────────
+
+// ─── HOI4 IN-GAME GUI PREVIEW ─────────────────
+function updateHoi4Preview() {
+  const catTitleEl = document.getElementById('prev-cat-title-text');
+  const catDescEl = document.getElementById('prev-cat-desc-text');
+  const catIconImg = document.getElementById('prev-cat-icon-img');
+  const catBannerImg = document.getElementById('prev-cat-banner-img');
+  const decNameEl = document.getElementById('prev-dec-title-text');
+  const decIconImg = document.getElementById('prev-dec-icon-img');
+
+  if (!catTitleEl || !catDescEl) return;
+
+  const d = collectProjectData();
+  const ideos = d.ideologies || {};
+  const firstIdeo = (d.ideologies && (ideos.neutrality?.name || ideos.democratic?.name || ideos.fascism?.name || ideos.communism?.name)) || d.cosmeticTag || 'Держава';
+
+  // Category Title
+  const catTitle = d.categoryTitle || d.customCatName || (currentLang === 'ru' ? `Реформировать ${firstIdeo}` : `Re-form ${firstIdeo}`);
+  catTitleEl.textContent = catTitle;
+
+  // Category Description
+  const catDesc = d.categoryDesc || (currentLang === 'ru'
+    ? 'У наших народов богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое и основать великую державу.'
+    : 'Our nations share a long and intertwined history. Now that our lands are unified once again, it is time to restore our glorious past and proclaim a greater nation.');
+  catDescEl.textContent = catDesc;
+
+  const assets = (typeof window !== 'undefined' && window.HOI4_DECISION_ASSETS) ? window.HOI4_DECISION_ASSETS : {};
+
+  // Category Icon
+  const iconChoice = d.categoryIcon || 'generic_formable_nations';
+  if (catIconImg) {
+    if (iconChoice === 'GFX_decision_cat_generic_austria_hungary_icon' && assets.icon_austria_hungary) {
+      catIconImg.src = assets.icon_austria_hungary;
+    } else if (assets.icon_generic_formable) {
+      catIconImg.src = assets.icon_generic_formable;
+    }
+  }
+
+  // Category Banner Map (114x101)
+  if (catBannerImg) {
+    if (categoryPicCustomUrl) {
+      catBannerImg.src = categoryPicCustomUrl;
+    } else {
+      const presetKey = d.categoryPicPreset || 'GFX_decision_cat_generic_commonwealth';
+      let assetKey = 'cat_commonwealth';
+      if (presetKey.includes('austria_hungary')) assetKey = 'cat_austria_hungary';
+      else if (presetKey.includes('turan')) assetKey = 'cat_turan';
+      else if (presetKey.includes('mountainous')) assetKey = 'cat_mountainous_republic';
+      else if (presetKey.includes('transcaucas')) assetKey = 'cat_transcaucasia';
+      else if (presetKey.includes('commonwealth')) assetKey = 'cat_commonwealth';
+      else assetKey = 'cat_generic';
+
+      if (assets[assetKey]) {
+        catBannerImg.src = assets[assetKey];
+      }
+    }
+  }
+
+  // Decision Name
+  const decName = d.decisionName || (currentLang === 'ru' ? `Провозгласить ${firstIdeo}` : `Proclaim ${firstIdeo}`);
+  if (decNameEl) decNameEl.textContent = decName;
+
+  // Decision Icon
+  if (decIconImg) {
+    if (decisionImagePreviewUrl) {
+      decIconImg.src = decisionImagePreviewUrl;
+    } else if (assets.icon_flag_decision) {
+      decIconImg.src = assets.icon_flag_decision;
+    }
+  }
+}
+
+function onCategoryPicPresetChange() {
+  const sel = document.getElementById('category-pic-preset');
+  const uploadBox = document.getElementById('cat-pic-upload-box');
+  if (!sel) return;
+  const val = sel.value;
+  if (uploadBox) {
+    uploadBox.style.display = val === 'custom_upload' ? 'block' : 'none';
+  }
+  if (val !== 'custom_upload') {
+    categoryPicCustomTga = null;
+    categoryPicCustomUrl = null;
+    categoryPicFileName = null;
+  }
+  onFieldChange();
+}
+
+function onCategoryIconChange() {
+  onFieldChange();
+}
+
+function handleCategoryPicUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const cv = document.getElementById('cv-category-pic') || document.createElement('canvas');
+      cv.width = 114;
+      cv.height = 101;
+      const ctx = cv.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.clearRect(0, 0, 114, 101);
+      ctx.drawImage(img, 0, 0, 114, 101);
+
+      categoryPicCustomTga = canvasToTGA(cv);
+      categoryPicCustomUrl = cv.toDataURL('image/png');
+      categoryPicFileName = `decision_cat_${file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_]/g, '') || 'custom'}.tga`;
+
+      const sel = document.getElementById('category-pic-preset');
+      if (sel) sel.value = 'custom_upload';
+      const uploadBox = document.getElementById('cat-pic-upload-box');
+      if (uploadBox) uploadBox.style.display = 'block';
+
+      onFieldChange();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearCategoryPic() {
+  categoryPicCustomTga = null;
+  categoryPicCustomUrl = null;
+  categoryPicFileName = null;
+  const input = document.getElementById('category-pic-upload');
+  if (input) input.value = '';
+  const sel = document.getElementById('category-pic-preset');
+  if (sel) sel.value = 'GFX_decision_cat_generic_commonwealth';
+  const uploadBox = document.getElementById('cat-pic-upload-box');
+  if (uploadBox) uploadBox.style.display = 'none';
+  onFieldChange();
+}
+
 function onFieldChange() {
   updateProjectToolbar();
+  updateHoi4Preview();
 
   const status = document.getElementById('autoSaveStatus');
   if (status) status.textContent = '...';
@@ -1370,45 +1978,45 @@ function generateMod() {
     decVisibleBlock = `\t\tOR = {\n${orLines}\n\t\t}\n${notCosmetics}`;
   }
 
-  // 3. Category Definition File (00_${modSlug}_categories.txt - pure definition, NO banner picture)
-  const catContent = `${categoryId} = {
-\ticon = generic_formable_nations
-\tpriority = 90
-}
-`;
+  // 3. Category Definition File (00_${modSlug}_categories.txt - with category picture banner!)
+  let catPicSprite = data.categoryPicPreset || "GFX_decision_cat_generic_commonwealth";
+  let catGfxBlock = "";
+  let customCatPicFileName = null;
+
+  if (categoryPicCustomTga) {
+    catPicSprite = `GFX_decision_cat_picture_${modSlug}`;
+    customCatPicFileName = `decision_cat_${modSlug}.tga`;
+    catGfxBlock = `\tspriteType = {\n\t\tname = "${catPicSprite}"\n\t\ttexturefile = "gfx/interface/decisions/${customCatPicFileName}"\n\t}\n`;
+  }
+
+  const catIcon = data.categoryIcon || "generic_formable_nations";
+
+  const catContent = `${categoryId} = {\n\ticon = ${catIcon}\n\tpicture = ${catPicSprite}\n\tpriority = 90\n}\n`;
 
   // 4. Decision Icon & GFX Registration (Standard 32x32 TGA)
   let decisionIcon = 'generic_form_nation';
   let gfxFileContent = null;
   let customIconFileName = null;
 
+  let decGfxBlock = '';
   if (decisionImageTga) {
     const cleanPicName = (data.decisionPictureName || `decision_${cosTag.toLowerCase()}`).replace(/[^a-zA-Z0-9_]/g, '');
     const spriteName = cleanPicName.startsWith('GFX_') ? cleanPicName : `GFX_${cleanPicName}`;
     customIconFileName = `${cleanPicName}.tga`;
     decisionIcon = spriteName;
-
-    gfxFileContent = `spriteTypes = {
-\tspriteType = {
-\t\tname = "${spriteName}"
-\t\ttexturefile = "gfx/interface/decisions/${customIconFileName}"
-\t}
-}
-`;
+    decGfxBlock = `\tspriteType = {\n\t\tname = "${spriteName}"\n\t\ttexturefile = "gfx/interface/decisions/${customIconFileName}"\n\t}\n`;
   } else if (data.decisionPictureName && data.decisionPictureName.trim() !== '') {
     const cleanName = data.decisionPictureName.trim();
     if (cleanName.startsWith('GFX_') || cleanName.startsWith('generic_')) {
       decisionIcon = cleanName;
     } else {
       decisionIcon = `GFX_${cleanName}`;
-      gfxFileContent = `spriteTypes = {
-\tspriteType = {
-\t\tname = "GFX_${cleanName}"
-\t\ttexturefile = "gfx/interface/decisions/${cleanName}.dds"
-\t}
-}
-`;
+      decGfxBlock = `\tspriteType = {\n\t\tname = "GFX_${cleanName}"\n\t\ttexturefile = "gfx/interface/decisions/${cleanName}.dds"\n\t}\n`;
     }
+  }
+
+  if (catGfxBlock || decGfxBlock) {
+    gfxFileContent = `spriteTypes = {\n${catGfxBlock}${decGfxBlock}}\n`;
   }
 
   // 5. Decision File (common/decisions/)
@@ -1562,11 +2170,16 @@ ${cosTag}_neutrality = {
   });
 
   // Category localization
-  locRuLines.push(` ${categoryId}: "${escapePds(categoryTitleRu)}"`);
-  locRuLines.push(` ${categoryId}_desc: "Специальные решения для создания и реорганизации государства."`);
+  const catTitleRu = data.categoryTitle || categoryTitleRu;
+  const catDescRu = data.categoryDesc || "У наших народов богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.";
+  const catTitleEn = data.categoryTitle || categoryTitleEn;
+  const catDescEn = data.categoryDesc || "Our nations share a long and intertwined history. Now that our lands are unified once again, it is time to restore our glorious past.";
 
-  locEnLines.push(` ${categoryId}: "${escapePds(categoryTitleEn)}"`);
-  locEnLines.push(` ${categoryId}_desc: "Special decisions regarding nation formation and reorganization."`);
+  locRuLines.push(` ${categoryId}: "${escapePds(catTitleRu)}"`);
+  locRuLines.push(` ${categoryId}_desc: "${escapePds(catDescRu)}"`);
+
+  locEnLines.push(` ${categoryId}: "${escapePds(catTitleEn)}"`);
+  locEnLines.push(` ${categoryId}_desc: "${escapePds(catDescEn)}"`);
 
   // Decision localization
   const decTitle = data.decisionName || `Создать ${baseName}`;
@@ -1654,6 +2267,10 @@ ${commonDependencies}`;
     generatedFiles.text[`${modSlug}/interface/${modSlug}_decisions.gfx`] = gfxFileContent;
   }
 
+  if (categoryPicCustomTga && customCatPicFileName) {
+    generatedFiles.tgaFlags[`${modSlug}/gfx/interface/decisions/${customCatPicFileName}`] = categoryPicCustomTga;
+  }
+
   if (decisionImageTga && customIconFileName) {
     generatedFiles.tgaFlags[`${modSlug}/gfx/interface/decisions/${customIconFileName}`] = decisionImageTga;
   }
@@ -1714,7 +2331,7 @@ ${commonDependencies}`;
   if (fpDec) fpDec.textContent = `common/decisions/${modSlug}_decisions.txt`;
 
   buildSummary(baseName);
-  buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName);
+  buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile, customCatPicFileName);
 
   document.getElementById('btn-download').style.display = 'inline-flex';
   showToast(t('generated_toast'));
@@ -1791,9 +2408,12 @@ function buildSummary(baseName) {
   `;
 }
 
-function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = null) {
+function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null, customCatPicFileName = null) {
   const container = document.getElementById('tree-content');
   if (!container) return;
+
+  const ruFile = locRuFile || `${modSlug}_l_russian.yml`;
+  const enFile = locEnFile || `${modSlug}_l_english.yml`;
 
   let flagEntries = '';
   IDEOLOGIES.forEach(i => {
@@ -1808,12 +2428,19 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
   }
 
   const gfxEntry = hasGfx
-    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${modSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайта иконки)</span>\n`
+    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${modSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайтов и картинок)</span>\n`
     : '';
 
-  const decIconEntry = (decisionImageTga && customIconFileName)
-    ? `│   ├── <span class="tree-dir">interface/</span>\n│   │   └── <span class="tree-dir">decisions/</span>\n│   │       └── <span class="tree-f">${customIconFileName}</span> <span class="tree-sub">(32×32 TGA)</span>\n`
-    : '';
+  let decAssetsEntry = '';
+  if (customCatPicFileName || (decisionImageTga && customIconFileName)) {
+    decAssetsEntry = `│   ├── <span class="tree-dir">interface/</span>\n│   │   └── <span class="tree-dir">decisions/</span>\n`;
+    if (customCatPicFileName) {
+      decAssetsEntry += `│   │       ├── <span class="tree-f">${customCatPicFileName}</span> <span class="tree-sub">(114×101 TGA карта)</span>\n`;
+    }
+    if (decisionImageTga && customIconFileName) {
+      decAssetsEntry += `│   │       └── <span class="tree-f">${customIconFileName}</span> <span class="tree-sub">(32×32 TGA иконка)</span>\n`;
+    }
+  }
 
   container.innerHTML = `
 <div class="file-tree-view">
@@ -1821,19 +2448,19 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
 ├── <span class="tree-dir">common/</span>
 │   ├── <span class="tree-dir">decisions/</span>
 │   │   ├── <span class="tree-dir">categories/</span>
-│   │   │   └── <span class="tree-f">00_${modSlug}_categories.txt</span> <span class="tree-sub">(определение категории)</span>
+│   │   │   └── <span class="tree-f">00_${modSlug}_categories.txt</span> <span class="tree-sub">(определение категории с picture =)</span>
 │   │   └── <span class="tree-f">${modSlug}_decisions.txt</span> <span class="tree-sub">(само решение)</span>
 │   ├── <span class="tree-dir">countries/</span>
 │   │   └── <span class="tree-f">cosmetic.txt</span> <span class="tree-sub">(цвета косметического тега)</span>
 ├── <span class="tree-dir">localisation/</span>
-│   ├── <span class="tree-f">${locRuFile}</span>
-│   ├── <span class="tree-f">${locEnFile}</span>
+│   ├── <span class="tree-f">${ruFile}</span>
+│   ├── <span class="tree-f">${enFile}</span>
 │   ├── <span class="tree-dir">russian/</span>
-│   │   └── <span class="tree-f">${locRuFile}</span>
+│   │   └── <span class="tree-f">${ruFile}</span>
 │   └── <span class="tree-dir">english/</span>
-│       └── <span class="tree-f">${locEnFile}</span>
+│       └── <span class="tree-f">${enFile}</span>
 ${gfxEntry}├── <span class="tree-dir">gfx/</span>
-${decIconEntry}│   └── <span class="tree-dir">flags/</span>
+${decAssetsEntry}│   └── <span class="tree-dir">flags/</span>
 ${flagEntries || '│       └── (флаги не загружались)\n'}
 │       ├── <span class="tree-dir">medium/</span> <span class="tree-sub">(41×26 TGA)</span>
 │       └── <span class="tree-dir">small/</span> <span class="tree-sub">(10×7 TGA)</span>
@@ -1902,15 +2529,18 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ─── QUICK PRESETS (1-CLICK TEMPLATES) ────────
+// ─── QUICK PRESETS (1-CLICK TEMPLATES MATCHING HOI4) ────────
 const COSMETIC_PRESETS = {
   pol_lithuania: {
     modName: 'Polish-Lithuanian Commonwealth',
     scope: 'specific',
     ownerTag: 'POL, LIT, BLR',
     cosmeticTag: 'POL_LITHUANIA',
-    categoryMode: 'formation',
-    decisionName: 'Восстановить Речь Посполитую',
+    categoryTitle: 'Реформировать Содружество',
+    categoryDesc: 'У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_generic_commonwealth',
+    decisionName: 'Реформировать Унию',
     decisionDesc: 'Объединить земли Королевства Польского и Великого княжества Литовского в единую мощную державу.',
     cost: 50,
     coreStates: '10, 11, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 110, 188, 189, 190, 191',
@@ -1934,13 +2564,112 @@ const COSMETIC_PRESETS = {
       neutrality: { name: 'Королевство Польско-Литовское', adj: 'польско-литовский' }
     }
   },
+  austria_hungary: {
+    modName: 'Austria-Hungary Restoration',
+    scope: 'specific',
+    ownerTag: 'AUS, HUN, CZE',
+    cosmeticTag: 'AUS_HUNGARY',
+    categoryTitle: 'Восстановить Австро-Венгерскую империю',
+    categoryDesc: 'Мы завоевали старые земли Австро-Венгерской империи, и, будучи единственным государством-наследником, можем восстановить её. Не будем медлить, сделаем это сейчас же.',
+    categoryIcon: 'GFX_decision_cat_generic_austria_hungary_icon',
+    categoryPicPreset: 'GFX_decision_cat_generic_austria_hungary',
+    decisionName: 'Восстановить Австро-Венгерскую империю',
+    decisionDesc: 'Воссоединить коронные земли Габсбургов в единую Дунайскую монархию.',
+    cost: 50,
+    coreStates: '4, 9, 43, 69, 70, 71, 72, 73, 74, 75, 76, 152, 153',
+    newCapital: '4',
+    rewardPP: 100,
+    rewardStability: 15,
+    rewardWarSupport: 10,
+    rewardManpower: 60000,
+    colorR: 160, colorG: 20, colorB: 20,
+    triggers: [
+      'controls_state = 4',
+      'controls_state = 43',
+      'controls_state = 69',
+      'is_subject = no'
+    ],
+    ideologies: {
+      democratic: { name: 'Дунайская Федерация', adj: 'дунайский' },
+      fascism: { name: 'Великая Австрийская Империя', adj: 'австро-венгерский' },
+      communism: { name: 'Дунайская Социалистическая Республика', adj: 'дунайский' },
+      neutrality: { name: 'Австро-Венгерская империя', adj: 'австро-венгерский' }
+    }
+  },
+  turan: {
+    modName: 'Turkic Nation Formation',
+    scope: 'specific',
+    ownerTag: 'TUR, AZR, KAZ, UZB, TMS, KYR',
+    cosmeticTag: 'TUR_TURAN',
+    categoryTitle: 'Основать Тюркскую нацию',
+    categoryDesc: 'В течение всей нашей истории тюркские народы множество раз объединялись и расходились вновь. Если мы сможем контролировать весь Центральноазиатский регион, то возродим наследие великих тюркских ханов и объединим наши народы в одну нацию!',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_picture_form_turan',
+    decisionName: 'Объединить тюрков',
+    decisionDesc: 'Провозгласить Великий Туран и объединить тюркские народы.',
+    cost: 50,
+    coreStates: '339, 340, 341, 404, 405, 406, 586, 587, 588, 589',
+    newCapital: '341',
+    rewardPP: 100,
+    rewardStability: 10,
+    rewardWarSupport: 15,
+    rewardManpower: 75000,
+    colorR: 60, colorG: 120, colorB: 180,
+    triggers: [
+      'controls_state = 341',
+      'controls_state = 405',
+      'controls_state = 586',
+      'is_subject = no'
+    ],
+    ideologies: {
+      democratic: { name: 'Тюркская Демократическая Республика', adj: 'тюркский' },
+      fascism: { name: 'Великий Туран', adj: 'туранский' },
+      communism: { name: 'Союз Тюркских Республик', adj: 'тюркский' },
+      neutrality: { name: 'Тюркский Каганат', adj: 'тюркский' }
+    }
+  },
+  mountainous_republic: {
+    modName: 'Mountainous Republic of Northern Caucasus',
+    scope: 'specific',
+    ownerTag: 'SOV, RUS',
+    cosmeticTag: 'CAU_MOUNTAIN',
+    categoryTitle: 'Образовать Горную республику Северный Кавказ',
+    categoryDesc: 'Во время русской гражданской войны великий Тапа Чермоев пытался объединить республики Северного Кавказа под общим знаменем, чтобы противостоять вторжению России. Теперь народы Северного Кавказа объединятся вновь, чтобы изгнать иноземцев и восстановить былую славу!',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_picture_form_mountainous_republic',
+    decisionName: 'Объединить Горские республики',
+    decisionDesc: 'Создать объединенное союзное государство народов Северного Кавказа.',
+    cost: 50,
+    coreStates: '234, 235, 236, 574',
+    newCapital: '235',
+    rewardPP: 75,
+    rewardStability: 15,
+    rewardWarSupport: 15,
+    rewardManpower: 40000,
+    colorR: 45, colorG: 95, colorB: 65,
+    triggers: [
+      'controls_state = 234',
+      'controls_state = 235',
+      'controls_state = 236',
+      'is_subject = no'
+    ],
+    ideologies: {
+      democratic: { name: 'Союз Горцев Северного Кавказа', adj: 'северокавказский' },
+      fascism: { name: 'Горская Держава', adj: 'горский' },
+      communism: { name: 'Горская Советская Республика', adj: 'горский' },
+      neutrality: { name: 'Горская республика Северный Кавказ', adj: 'северокавказский' }
+    }
+  },
   geo_transcaucasia: {
     modName: 'Transcaucasian Federation',
     scope: 'specific',
     ownerTag: 'GEO, ARM, AZR',
     cosmeticTag: 'GEO_TRANSCAUCASIA',
-    categoryMode: 'formation',
-    decisionName: 'Провозгласить Закавказскую Федерацию',
+    categoryTitle: 'Транскавказская республика',
+    categoryDesc: 'Идея о Транскавказской республике, недавно распущенной после принятия Конституции СССР 1936 года, до сих пор витает в умах народа. Если бы страна могла объединить эти территории, был бы шанс повторно основать Федерацию государств и Транскавказия могла бы снова стать единой и сильной.',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_picture_form_transcaucasian_republic',
+    decisionName: 'Воссоздать Транскавказскую Федерацию',
     decisionDesc: 'Объединить народы Кавказа в единое федеративное государство.',
     cost: 50,
     coreStates: '230, 231, 232, 233, 539',
@@ -1968,7 +2697,10 @@ const COSMETIC_PRESETS = {
     scope: 'specific',
     ownerTag: 'GER',
     cosmeticTag: 'GER_EMPIRE',
-    categoryMode: 'formation',
+    categoryTitle: 'Восстановить Германскую Империю',
+    categoryDesc: 'Возродить великую Германскую Империю и восстановить исторические границы Второго Рейха.',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_generic_formable_nations',
     decisionName: 'Восстановить Германскую Империю',
     decisionDesc: 'Возродить великую Германскую Империю и восстановить исторические границы.',
     cost: 75,
@@ -1997,7 +2729,10 @@ const COSMETIC_PRESETS = {
     scope: 'specific',
     ownerTag: 'SOV',
     cosmeticTag: 'SOV_EMPIRE',
-    categoryMode: 'formation',
+    categoryTitle: 'Возродить Российскую Империю',
+    categoryDesc: 'Восстановить историческую Российскую Империю, восстановить престол и объединить коронные земли.',
+    categoryIcon: 'generic_formable_nations',
+    categoryPicPreset: 'GFX_decision_cat_generic_formable_nations',
     decisionName: 'Возродить Российскую Империю',
     decisionDesc: 'Восстановить историческую Российскую Империю и восстановить престол.',
     cost: 100,
@@ -2031,6 +2766,11 @@ function cosm_applyPreset(key) {
   showToast(currentLang === 'ru' ? '✓ Шаблон применён: ' + p.modName : '✓ Preset applied: ' + p.modName);
 }
 window.cosm_applyPreset = cosm_applyPreset;
+window.cosm_updateHoi4Preview = updateHoi4Preview;
+window.cosm_onCategoryPicPresetChange = onCategoryPicPresetChange;
+window.cosm_onCategoryIconChange = onCategoryIconChange;
+window.cosm_handleCategoryPicUpload = handleCategoryPicUpload;
+window.cosm_clearCategoryPic = clearCategoryPic;
 
 // ─── EXPOSE NON-COLLIDING GLOBAL HANDLERS ─────
 window.cosm_setScope = setScope;
@@ -2049,6 +2789,25 @@ window.cosm_openEffectsModal = openEffectsModal;
 window.cosm_closeEffectsModal = closeEffectsModal;
 window.cosm_renderEffectsCheat = renderEffectsCheat;
 window.cosm_insertEffectFromCheat = insertEffectFromCheat;
+window.cosm_copyEffectCode = copyEffectCode;
+window.cosm_filterEffectsCheat = filterEffectsCheat;
+window.cosm_clearEffectsSearch = clearEffectsSearch;
+window.cosm_selectEffectsCategory = selectEffectsCategory;
+
+// State Map Exports
+window.cosm_openStatesMap = openStatesMap;
+window.cosm_closeStatesMap = closeStatesMap;
+window.cosm_filterStatesMap = filterStatesMap;
+window.cosm_clearStateSearch = clearStateSearch;
+window.cosm_selectMapRegion = selectMapRegion;
+window.cosm_onMapCountryChange = onMapCountryChange;
+window.cosm_toggleState = toggleState;
+window.cosm_selectAllFilteredStates = selectAllFilteredStates;
+window.cosm_deselectAllFilteredStates = deselectAllFilteredStates;
+window.cosm_clearSelectedStates = clearSelectedStates;
+window.cosm_copySelectedStateIds = copySelectedStateIds;
+window.cosm_applySelectedStatesToTarget = applySelectedStatesToTarget;
+
 window.cosm_showIdeology = showIdeology;
 window.cosm_handleFlagUpload = handleFlagUpload;
 window.cosm_clearFlag = clearFlag;
