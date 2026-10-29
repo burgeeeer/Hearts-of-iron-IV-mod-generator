@@ -1352,7 +1352,8 @@ textarea:focus {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  max-height: 90vh;
+  height: min(85vh, 760px);
+  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1361,19 +1362,28 @@ textarea:focus {
 }
 
 #triggersModal .modal-window {
-  width: 680px;
+  width: 720px;
   max-width: 95vw;
+  height: min(85vh, 760px);
 }
 
 #effectsModal .modal-window {
-  width: 920px;
+  width: 960px;
   max-width: 96vw;
+  height: min(88vh, 820px);
+}
+
+.modal-header,
+.triggers-search-bar,
+.effects-filter-container,
+.modal-footer {
+  flex-shrink: 0;
 }
 
 .modal-body {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
-  max-height: calc(88vh - 120px);
+  height: 100%;
   overflow-y: auto !important;
   overscroll-behavior: contain;
   padding: 16px 20px;
@@ -3546,4 +3556,500 @@ html[data-theme="dark"] .hoi4-map-state-path.selected {
   gap: 8px;
   align-items: center;
   margin-top: 4px;
+}
+
+/* ==========================================================================
+   CARDINAL REDESIGN: STUDIO LAYOUT & AUTHENTIC HOI4 IN-GAME GUI PREVIEW
+   ========================================================================== */
+
+/* ─── Studio 2-Column Responsive Layout ─── */
+.studio-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 440px);
+  gap: 24px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.studio-editor-pane {
+  min-width: 0;
+}
+
+.studio-sidebar-pane {
+  position: sticky;
+  top: 76px;
+  z-index: 20;
+}
+
+/* ─── Step Badges ─── */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--teal-primary, #32887f), var(--teal-dark, #105951));
+  color: #ffffff;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+  box-shadow: 0 2px 6px rgba(50, 136, 127, 0.25);
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+html[data-theme="dark"] .step-badge {
+  background: linear-gradient(135deg, var(--teal-glow, #50afa5), var(--teal-container, #1b6159));
+  color: #061e1b;
+  box-shadow: 0 2px 8px rgba(80, 175, 165, 0.3);
+}
+
+.section-head h2 {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ─── Sticky Preview Card ─── */
+.hoi4-preview-sticky-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.25s ease;
+}
+
+.studio-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.studio-preview-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.2px;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(61, 167, 80, 0.12);
+  color: var(--success, #3da750);
+  border: 1px solid rgba(61, 167, 80, 0.3);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── AUTHENTIC HOI4 IN-GAME GUI WINDOW (Matching Screenshots 1-5) ─── */
+.hoi4-gui-window {
+  background: #14100c;
+  border: 2px solid #3c3227;
+  border-radius: 4px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.85), 0 6px 18px rgba(0,0,0,0.45);
+  font-family: var(--font-main, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  color: #e6e0d2;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Header bar with metallic bronze texture, rivets and plaque */
+.hoi4-gui-header {
+  height: 38px;
+  background: linear-gradient(180deg, #514436 0%, #3e3328 40%, #282119 100%);
+  border-bottom: 2px solid #1a1510;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* 3 Rivets on the left */
+.hoi4-gui-rivets {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 2px;
+  flex-shrink: 0;
+}
+
+.hoi4-rivet {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #a69886, #2a221a);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.8), inset 0 0 1px #000;
+}
+
+/* Bracket around Category Crest */
+.hoi4-gui-icon-bracket {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(180deg, #322b22 0%, #1c1813 100%);
+  border: 1px solid #5a4c3c;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.7), 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.hoi4-gui-cat-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
+}
+
+/* Recessed gunmetal title plaque with rivets */
+.hoi4-gui-title-plate {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  background: linear-gradient(180deg, #161a1b 0%, #1f2325 50%, #121516 100%);
+  border: 1px solid #3d4346;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+}
+
+.hoi4-gui-title-plate::before,
+.hoi4-gui-title-plate::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #5a6468;
+  box-shadow: inset 0 0 1px #000, 0 1px 1px rgba(0,0,0,0.8);
+}
+.hoi4-gui-title-plate::before { left: 4px; }
+.hoi4-gui-title-plate::after { right: 4px; }
+
+#prev-cat-title-text {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000000, 0 0 4px rgba(255,255,255,0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.3px;
+}
+
+/* Header Controls: Glowing orb + Square chevron */
+.hoi4-gui-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.hoi4-gui-orb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #9fff80 0%, #3da750 50%, #0d4016 90%, #000 100%);
+  border: 1.5px solid #1a221b;
+  box-shadow: 0 0 6px #3da750, 0 1px 2px rgba(0,0,0,0.8);
+  flex-shrink: 0;
+}
+
+.hoi4-gui-chevron {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(180deg, #514436 0%, #2f251c 100%);
+  border: 1px solid #6b5c4a;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #c9bca8;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 2px rgba(0,0,0,0.7);
+  cursor: pointer;
+}
+
+/* Category Inner Box: Map banner on left + Lore on right */
+.hoi4-gui-body {
+  padding: 8px;
+  background: #110e0b;
+  border-top: 1px solid #080605;
+  border-bottom: 2px solid #282119;
+  display: grid;
+  grid-template-columns: 114px 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.hoi4-gui-banner-frame {
+  width: 114px;
+  height: 101px;
+  background: #000000;
+  border: 1px solid #3c3227;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.6);
+  flex-shrink: 0;
+}
+
+.hoi4-gui-banner-img {
+  width: 114px;
+  height: 101px;
+  object-fit: cover;
+  display: block;
+}
+
+.hoi4-gui-lore-frame {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid #2a221a;
+  border-radius: 2px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: flex-start;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.8);
+  overflow-y: auto;
+  max-height: 101px;
+}
+
+#prev-cat-desc-text {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #f2ece0;
+  text-shadow: 0 1px 2px #000000;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Decision Item Row: flag + title + green checkmark button */
+.hoi4-gui-decision-row {
+  height: 38px;
+  background: linear-gradient(180deg, #2c2825 0%, #1f1b18 50%, #141210 100%);
+  border-top: 1px solid #3d3429;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.hoi4-gui-dec-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.hoi4-gui-dec-icon-slot {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hoi4-gui-dec-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
+}
+
+.hoi4-gui-dec-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hoi4-gui-dec-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Take Decision Button (Green steel rim checkmark button) */
+.hoi4-gui-take-btn {
+  width: 32px;
+  height: 24px;
+  background: linear-gradient(180deg, #2f3632 0%, #1d211e 100%);
+  border: 1px solid #4a544e;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.6);
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.hoi4-gui-take-btn:hover {
+  background: linear-gradient(180deg, #3a443e 0%, #252b27 100%);
+  border-color: #5d6a62;
+  box-shadow: 0 0 6px rgba(80, 175, 165, 0.4);
+}
+
+.hoi4-gui-envelope-icon {
+  font-size: 13px;
+  color: #717d76;
+  position: relative;
+}
+
+.hoi4-gui-check-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -5px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #55ba67;
+  text-shadow: 0 1px 2px #000, 0 0 4px #3da750;
+}
+
+/* ─── Studio Stats Pill Card ─── */
+.studio-stats-card {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm, 6px);
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--bg-card);
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.stat-icon {
+  font-size: 13px;
+}
+
+/* ─── Studio Sidebar Actions ─── */
+.studio-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.studio-btn-map {
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--teal-primary, #32887f), var(--teal-dark, #105951));
+  border: none;
+  color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(50, 136, 127, 0.25);
+}
+
+.studio-btn-map:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(50, 136, 127, 0.35);
+}
+
+.studio-btn-gen {
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--green-accent, #3da750), #1b6129);
+  border: none;
+  color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(61, 167, 80, 0.25);
+}
+
+.studio-btn-gen:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(61, 167, 80, 0.35);
+}
+
+.studio-btn-dl {
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1f77b4, #0d4a75);
+  border: none;
+  color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(31, 119, 180, 0.25);
+}
+
+/* ─── Preset Dropdown in Section 03 ─── */
+.select-formable-preset {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.select-formable-preset:hover {
+  border-color: var(--teal-primary, #32887f);
+}
+
+/* ─── Responsive Media Query for Studio ─── */
+@media (max-width: 1024px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .studio-sidebar-pane {
+    position: static;
+    top: auto;
+    order: -1;
+    margin-bottom: 8px;
+  }
 }

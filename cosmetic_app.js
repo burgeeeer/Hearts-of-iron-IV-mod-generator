@@ -595,41 +595,76 @@ function getTriggers() {
 }
 
 function openTriggersModal() {
-  renderTriggersCheat();
-  document.getElementById('triggersModal').style.display = 'flex';
+  const filterInp = document.getElementById('triggersFilterInput');
+  if (filterInp) filterInp.value = '';
+  renderTriggersCheat('');
+  const modal = document.getElementById('triggersModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.MotionFX) window.MotionFX.animateModalOpen(modal);
+  }
 }
 
 function closeTriggersModal() {
-  document.getElementById('triggersModal').style.display = 'none';
+  const modal = document.getElementById('triggersModal');
+  if (modal) {
+    if (window.MotionFX) {
+      window.MotionFX.animateModalClose(modal, () => { modal.style.display = 'none'; });
+    } else {
+      modal.style.display = 'none';
+    }
+  }
 }
 
-function renderTriggersCheat() {
+function filterTriggersModal(query) {
+  renderTriggersCheat(query);
+}
+
+function renderTriggersCheat(filter = '') {
   const container = document.getElementById('triggersCheatBody');
   if (!container) return;
 
+  const q = (filter || '').trim().toLowerCase();
   let html = '';
+  let matchCount = 0;
+
   CHEAT_TRIGGERS.forEach(cat => {
     const title = cat.category[currentLang] || cat.category.ru;
-    html += `<div class="cheat-category">`;
-    html += `<div class="cheat-category-title">${title}</div>`;
-    cat.items.forEach(item => {
-      const desc = item.desc[currentLang] || item.desc.ru;
-      html += `
-        <div class="cheat-item">
-          <div class="cheat-info">
-            <div class="cheat-code">${item.code}</div>
-            <div class="cheat-desc">${desc}</div>
-          </div>
-          <button type="button" class="btn-sm" onclick="insertTriggerFromCheat('${item.code.replace(/'/g, "\\'")}')">
-            + Вставить
-          </button>
-        </div>
-      `;
+    const filteredItems = cat.items.filter(item => {
+      if (!q) return true;
+      const desc = (item.desc[currentLang] || item.desc.ru || '').toLowerCase();
+      const code = (item.code || '').toLowerCase();
+      return code.includes(q) || desc.includes(q) || title.toLowerCase().includes(q);
     });
-    html += `</div>`;
+
+    if (filteredItems.length > 0) {
+      matchCount += filteredItems.length;
+      html += `<div class="cheat-category">`;
+      html += `<div class="cheat-category-title">${title} (${filteredItems.length})</div>`;
+      filteredItems.forEach(item => {
+        const desc = item.desc[currentLang] || item.desc.ru;
+        html += `
+          <div class="cheat-item">
+            <div class="cheat-info">
+              <div class="cheat-code">${item.code}</div>
+              <div class="cheat-desc">${desc}</div>
+            </div>
+            <button type="button" class="btn-sm" onclick="insertTriggerFromCheat('${item.code.replace(/'/g, "\\'")}')">
+              + Вставить
+            </button>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
   });
+
+  if (matchCount === 0) {
+    html = `<div style="text-align:center; padding:36px 16px; color:var(--text-muted); font-size:13px;">Ничего не найдено по запросу «${filter}». Попробуйте другое ключевое слово (например: state, puppet, war_support, stability).</div>`;
+  }
+
   container.innerHTML = html;
-  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function' && !filter) {
     window.MotionFX.animateCardsEntrance(container);
   }
 }
@@ -1902,6 +1937,182 @@ function updateHoi4Preview() {
       decIconImg.src = assets.icon_flag_decision;
     }
   }
+
+  // Update Live Sidebar Stats
+  const statPP = document.getElementById('statPP');
+  if (statPP) {
+    const cost = document.getElementById('decision-cost')?.value || '50';
+    statPP.textContent = cost + ' PP';
+  }
+  const statCores = document.getElementById('statCores');
+  if (statCores) {
+    const cores = parseStatesList(document.getElementById('core-states')?.value || '');
+    statCores.textContent = cores.length + ' регион(ов)';
+  }
+  const statTriggers = document.getElementById('statTriggers');
+  if (statTriggers) {
+    const trigs = getTriggers();
+    statTriggers.textContent = trigs.length + ' условий';
+  }
+  const statFlags = document.getElementById('statFlags');
+  if (statFlags) {
+    let flagCount = 0;
+    ['neutrality', 'democratic', 'fascism', 'communism'].forEach(id => {
+      if (flagData && flagData[id] && flagData[id].tga) flagCount++;
+    });
+    statFlags.textContent = (flagCount || 4) + ' флага';
+  }
+}
+
+
+const HOI4_CATEGORY_PRESETS_DATA = {
+  GFX_decision_cat_generic_commonwealth: {
+    categoryTitle: 'Реформировать Содружество',
+    categoryDesc: 'У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.',
+    decisionName: 'Реформировать Унию',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'POL, LIT',
+    coreStates: '10, 11, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 188, 189, 190, 191',
+    cosmeticTag: 'PLC',
+    countryName: 'Речь Посполитая'
+  },
+  GFX_decision_cat_generic_austria_hungary: {
+    categoryTitle: 'Восстановить Австро-Венгерскую империю',
+    categoryDesc: 'Мы завоевали старые земли Австро-Венгерской империи, и, будучи единственным государством-наследником, можем восстановить её. Не будем медлить, сделаем это сейчас же.',
+    decisionName: 'Восстановить Австро-Венгерскую империю',
+    categoryIcon: 'GFX_decision_cat_generic_austria_hungary_icon',
+    ownerTags: 'HUN, AUS, CZE',
+    coreStates: '4, 9, 43, 69, 70, 71, 72, 73, 74, 75, 76, 83, 84, 152, 153, 154, 155, 664',
+    cosmeticTag: 'AUH',
+    countryName: 'Австро-Венгрия'
+  },
+  GFX_decision_cat_picture_form_turan: {
+    categoryTitle: 'Основать Тюркскую нацию',
+    categoryDesc: 'В течение всей нашей истории тюркские народы множество раз объединялись и расходились вновь. Если мы сможем контролировать весь Центральноазиатский регион, то возродим наследие великих тюркских ханов и объединим наши народы в одну нацию!',
+    decisionName: 'Объединить тюрков',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'TUR, AZR, KAZ, UZB, TKM, KYR',
+    coreStates: '42, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 408, 409, 410, 584, 585, 586, 587, 588, 589',
+    cosmeticTag: 'TUR_TURAN',
+    countryName: 'Туран'
+  },
+  GFX_decision_cat_picture_form_mountainous_republic: {
+    categoryTitle: 'Образовать Горную республику Северный Кав...',
+    categoryDesc: 'Во время русской гражданской войны великий Тапа Чермоев пытался объединить республики Северного Кавказа под общим знаменем, чтобы противостоять вторжению России. Теперь народы Северного Кавказа объединятся вновь, чтобы изгнать иноземцев и восстановить былую славу!',
+    decisionName: 'Объединить Горские республики',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'SOV, RUS',
+    coreStates: '231, 232, 233, 234, 583',
+    cosmeticTag: 'MNT',
+    countryName: 'Горская Республика'
+  },
+  GFX_decision_cat_picture_form_transcaucasian_republic: {
+    categoryTitle: 'Транскавказская республика',
+    categoryDesc: 'Идея о Транскавказской республике, недавно распущенной после принятия Конституции СССР 1936 года, до сих пор витает в умах народа. Если бы страна могла объединить эти территории, был бы шанс повторно основать Федерацию государств и Транскавказия могла бы снова стать единой и сильной.',
+    decisionName: 'Воссоздать Транскавказскую Федерацию',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'GEO, ARM, AZR',
+    coreStates: '229, 230, 231, 419, 420, 582',
+    cosmeticTag: 'TCF',
+    countryName: 'Закавказская Федерация'
+  },
+  GFX_decision_cat_generic_gran_colombia: {
+    categoryTitle: 'Великая Колумбия',
+    categoryDesc: 'Мечта Симона Боливара о единой Великой Колумбии вдохновляет наш народ. Объединив Венесуэлу, Эквадор, Панаму и Колумбию, мы восстановим величайшую державу Южной Америки.',
+    decisionName: 'Провозгласить Великую Колумбию',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'COL, VEN, ECU, PAN',
+    coreStates: '304, 305, 306, 307, 308, 309, 488, 489',
+    cosmeticTag: 'GCO',
+    countryName: 'Великая Колумбия'
+  },
+  GFX_decision_cat_generic_scandinavia: {
+    categoryTitle: 'Кальмарская Уния / Скандинавия',
+    categoryDesc: 'Северные народы связаны веками общей истории и культуры. Объединение Дании, Норвегии, Швеции и Финляндии создаст непобедимый северный бастион.',
+    decisionName: 'Объединить Скандинавию',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'SWE, NOR, DEN, FIN',
+    coreStates: '110, 111, 112, 113, 114, 115, 140, 141, 142, 143, 144',
+    cosmeticTag: 'SCA',
+    countryName: 'Скандинавия'
+  },
+  GFX_decision_cat_generic_roman_empire: {
+    categoryTitle: 'Римская империя',
+    categoryDesc: 'Mare Nostrum снова под нашим контролем. От берегов Британии до песков Египта легионы восстановили величие Вечного Рима.',
+    decisionName: 'Провозгласить Римскую империю',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'ITA',
+    coreStates: '1, 2, 114, 115, 156, 157, 158, 159, 160, 161, 162',
+    cosmeticTag: 'SPQR',
+    countryName: 'Римская империя'
+  },
+  GFX_decision_cat_generic_arabia: {
+    categoryTitle: 'Аравийская Федерация',
+    categoryDesc: 'От Персидского залива до Красного моря арабские народы соединяются в единое могущественное государство.',
+    decisionName: 'Объединить арабский мир',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'SAU, IRQ, OMA, YEM',
+    coreStates: '290, 291, 292, 293, 294, 295, 453, 454',
+    cosmeticTag: 'ARA',
+    countryName: 'Аравийская Федерация'
+  },
+  GFX_decision_cat_generic_formable_nations: {
+    categoryTitle: 'Единая Европа',
+    categoryDesc: 'Настало время преодолеть вековые распри и объединить европейский континент под единым знаменем мира и силы.',
+    decisionName: 'Создать Европейский Союз',
+    categoryIcon: 'GFX_decision_cat_generic_formable_nations',
+    ownerTags: 'FRA, GER, ITA, HOL, BEL, LUX',
+    coreStates: '1, 2, 3, 4, 16, 17, 18, 19, 20',
+    cosmeticTag: 'EU',
+    countryName: 'Европейский Союз'
+  }
+};
+
+function onCategoryPicPresetSelect(val) {
+  const customRow = document.getElementById('cat-pic-custom-row');
+  if (val === 'custom') {
+    if (customRow) customRow.style.display = 'block';
+    return;
+  }
+  if (customRow) customRow.style.display = 'none';
+
+  categoryPicPreset = val;
+  const p = HOI4_CATEGORY_PRESETS_DATA[val];
+  if (p) {
+    const elTitle = document.getElementById('category-title');
+    const elDesc = document.getElementById('category-desc');
+    const elDec = document.getElementById('decision-name');
+    const elIcon = document.getElementById('category-icon');
+    const elScope = document.getElementById('cosm-scope');
+    const elOwners = document.getElementById('owner-tags');
+    const elCores = document.getElementById('core-states');
+    const elTag = document.getElementById('cosmetic-tag');
+    const elName = document.getElementById('country-name');
+
+    if (elTitle) elTitle.value = p.categoryTitle;
+    if (elDesc) elDesc.value = p.categoryDesc;
+    if (elDec) elDec.value = p.decisionName;
+    if (elIcon) elIcon.value = p.categoryIcon;
+    if (elOwners) elOwners.value = p.ownerTags;
+    if (elCores) elCores.value = p.coreStates;
+    if (elTag && !elTag.value) elTag.value = p.cosmeticTag;
+    if (elName && !elName.value) elName.value = p.countryName;
+
+    if (elScope && elScope.value !== 'one') {
+      elScope.value = 'one';
+      setScope('one');
+    }
+  }
+
+  // Clear custom image if preset chosen
+  categoryPicCustomTga = null;
+  categoryPicCustomUrl = null;
+  categoryPicFileName = null;
+  const input = document.getElementById('category-pic-upload');
+  if (input) input.value = '';
+
+  updateCategoryPicThumbnail();
+  onFieldChange();
 }
 
 function updateCategoryPicThumbnail() {
@@ -3051,6 +3262,8 @@ function cosm_applyPreset(key, event) {
   showToast(currentLang === 'ru' ? '✓ Шаблон применён: ' + p.modName : '✓ Preset applied: ' + p.modName);
 }
 window.cosm_applyPreset = cosm_applyPreset;
+window.cosm_onCategoryPicPresetSelect = onCategoryPicPresetSelect;
+window.cosm_filterTriggersModal = filterTriggersModal;
 window.cosm_updateHoi4Preview = updateHoi4Preview;
 window.cosm_updateCategoryPicThumbnail = updateCategoryPicThumbnail;
 window.cosm_onCategoryIconChange = onCategoryIconChange;

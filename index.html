@@ -403,10 +403,14 @@
         <input type="file" id="cosm_projectFileInput" accept=".json" style="display:none" onchange="cosm_handleProjectFileUpload(event)" />
       </div>
 
+      <!-- Studio Layout: Editor Pane on Left, Sticky In-Game Live Preview on Right -->
+      <div class="studio-layout">
+        <div class="studio-editor-pane">
+
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
       <div class="section" id="cosm-section-info">
         <div class="section-head">
-          <h2 data-t="s1_head">Данные мода</h2>
+          <h2 data-t="s1_head"><span class="step-badge">01</span> <span>Данные мода</span></h2>
           <p class="section-desc" data-t="s1_desc">Параметры дескриптора для лаунчера Hearts of Iron IV</p>
         </div>
         <div class="form-grid-2">
@@ -446,7 +450,7 @@
       <!-- ════════════ SECTION 2: DECISION & TRIGGERS ════════════ -->
       <div class="section" id="cosm-section-decision">
         <div class="section-head">
-          <h2 data-t="s2_scope_head">Доступность решения (Для кого)</h2>
+          <h2 data-t="s2_scope_head"><span class="step-badge">02</span> <span>Доступность решения (Для кого)</span></h2>
           <p class="section-desc" data-t="s2_scope_desc">Выберите, кто может принять решение о создании страны: одна страна или любая страна мира</p>
         </div>
 
@@ -484,11 +488,32 @@
         </div>
       </div>
 
-            <!-- Category Settings & Visuals -->
+      <!-- Category Settings & Visuals -->
       <div class="section">
         <div class="section-head">
-          <h2 data-t="s2_cat_head">Категория решений и оформление в HoI4</h2>
+          <h2 data-t="s2_cat_head"><span class="step-badge">03</span> <span>Оформление категории решений в HoI4</span></h2>
           <p class="section-desc" data-t="s2_cat_desc">Задайте заголовок категории, исторический лор и карту 114×101 для окна решений в Hearts of Iron IV</p>
+        </div>
+
+        <!-- Historical Formable Preset Dropdown (Attachment 6) -->
+        <div class="field" style="margin-bottom: 14px;">
+          <label style="font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+            <span>🗺️ Выберите готовую карту и лор формируемой нации:</span>
+          </label>
+          <select id="category-pic-select" class="inp select-formable-preset" onchange="cosm_onCategoryPicPresetSelect(this.value)">
+            <option value="GFX_decision_cat_generic_commonwealth" selected>🇵🇱 Речь Посполитая (GFX_decision_cat_generic_commonwealth)</option>
+            <option value="GFX_decision_cat_generic_austria_hungary">🇦🇹 Австро-Венгрия (GFX_decision_cat_generic_austria_hungary)</option>
+            <option value="GFX_decision_cat_picture_form_turan">🇹🇷 Тюркская нация / Туран (GFX_decision_cat_picture_form_turan)</option>
+            <option value="GFX_decision_cat_picture_form_mountainous_republic">🏔️ Горская республика Северный Кавказ (GFX_decision_cat_picture_form_mountainous_republic)</option>
+            <option value="GFX_decision_cat_picture_form_transcaucasian_republic">🇬🇪 Транскавказская республика (GFX_decision_cat_picture_form_transcaucasian_republic)</option>
+            <option value="GFX_decision_cat_generic_gran_colombia">🇨🇴 Великая Колумбия (GFX_decision_cat_generic_gran_colombia)</option>
+            <option value="GFX_decision_cat_generic_scandinavia">🇸🇪 Скандинавия (GFX_decision_cat_generic_scandinavia)</option>
+            <option value="GFX_decision_cat_generic_roman_empire">🏛️ Римская империя (GFX_decision_cat_generic_roman_empire)</option>
+            <option value="GFX_decision_cat_generic_arabia">🇸🇦 Аравийская федерация (GFX_decision_cat_generic_arabia)</option>
+            <option value="GFX_decision_cat_generic_formable_nations">🇪🇺 Единая Европа / Общая (GFX_decision_cat_generic_formable_nations)</option>
+            <option value="custom">📁 Загрузить свою собственную карту (114×101 TGA)</option>
+          </select>
+          <div class="hint">При переключении автоматически подставляются историческая карта, лор, заголовок и целевые регионы.</div>
         </div>
 
         <div class="form-grid-2">
@@ -521,7 +546,7 @@
             </div>
             <div class="cat-pic-info-actions">
               <div class="cat-pic-title" id="catPicStatusLabel">Карта категории (из шаблона)</div>
-              <div class="cat-pic-hint">Размер в игре 114×101 px (формат 32-bit TGA). При выборе готового шаблона сверху карта подставляется автоматически.</div>
+              <div class="cat-pic-hint">Размер в игре 114×101 px (формат 32-bit TGA). Подставляется автоматически или загружается из файла.</div>
               <div class="cat-pic-btn-group">
                 <label class="btn-secondary btn-sm" style="cursor:pointer; margin:0">
                   📁 Загрузить свою карту
@@ -546,66 +571,11 @@
         </div>
       </div>
 
-      <!-- ════════════ LIVE HOI4 DECISION PREVIEW ════════════ -->
-      <div class="section hoi4-preview-section">
-        <div class="section-head" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px">
-          <div>
-            <h2 style="display:flex; align-items:center; gap:8px">
-              <span>🎮 Внешний вид в игре (HoI4 Decision GUI)</span>
-              <span class="live-pill">Live Preview</span>
-            </h2>
-            <p class="section-desc">Точное отображение в интерфейсе решений Hearts of Iron IV — как на скриншотах</p>
-          </div>
-        </div>
-
-        <div class="hoi4-gui-window">
-          <!-- Category Header Bar -->
-          <div class="hoi4-gui-header">
-            <div class="hoi4-gui-icon-bracket">
-              <img id="prev-cat-icon-img" src="" alt="icon" class="hoi4-gui-cat-icon" />
-            </div>
-            <div class="hoi4-gui-title-plate">
-              <span id="prev-cat-title-text">Реформировать Содружество</span>
-            </div>
-            <div class="hoi4-gui-header-controls">
-              <div class="hoi4-gui-orb"></div>
-              <div class="hoi4-gui-chevron">▲</div>
-            </div>
-          </div>
-
-          <!-- Category Inner Content Box -->
-          <div class="hoi4-gui-body">
-            <div class="hoi4-gui-banner-frame">
-              <img id="prev-cat-banner-img" src="" alt="Banner Map" class="hoi4-gui-banner-img" />
-            </div>
-            <div class="hoi4-gui-lore-frame">
-              <p id="prev-cat-desc-text">У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.</p>
-            </div>
-          </div>
-
-          <!-- Decision Item Row -->
-          <div class="hoi4-gui-decision-row">
-            <div class="hoi4-gui-dec-left">
-              <div class="hoi4-gui-dec-icon-slot">
-                <img id="prev-dec-icon-img" src="" alt="Flag" class="hoi4-gui-dec-icon" />
-              </div>
-              <span id="prev-dec-title-text" class="hoi4-gui-dec-name">Реформировать Унию</span>
-            </div>
-            <div class="hoi4-gui-dec-right">
-              <div class="hoi4-gui-orb"></div>
-              <div class="hoi4-gui-take-btn" title="Принять решение">
-                <span class="hoi4-gui-envelope-icon">✉<span class="hoi4-gui-check-badge">✓</span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Decision Parameters & Triggers -->
+      <!-- ════════════ SECTION 3: DECISION PARAMETERS & TRIGGERS ════════════ -->
       <div class="section">
         <div class="section-head">
-          <h2 data-t="s2_dec_head">Параметры и требования решения</h2>
-          <p class="section-desc" data-t="s2_dec_desc">Название, описание, затраты политической силы и условия</p>
+          <h2 data-t="s2_dec_head"><span class="step-badge">04</span> <span>Параметры и требования решения</span></h2>
+          <p class="section-desc" data-t="s2_dec_desc">Название, описание, затраты политической силы и условия выполнения</p>
         </div>
 
         <div class="form-grid-3">
@@ -652,7 +622,7 @@
       <!-- Rewards & Buffs Upon Enactment -->
       <div class="section">
         <div class="section-head">
-          <h2 data-t="s2_rewards_head">Награды и эффекты после выполнения (Баффы)</h2>
+          <h2 data-t="s2_rewards_head"><span class="step-badge">05</span> <span>Награды и эффекты после выполнения (Баффы)</span></h2>
           <p class="section-desc" data-t="s2_rewards_desc">Что произойдет после принятия решения: национализация территорий, перенос столицы, бонусы и эффекты</p>
         </div>
 
@@ -720,8 +690,8 @@
       <!-- ════════════ SECTION 3: COUNTRY, FLAGS & 4 IDEOLOGIES ════════════ -->
       <div class="section" id="cosm-section-cosmetic">
         <div class="section-head">
-          <h2 data-t="s3_color_head">Цвет страны на карте</h2>
-          <p class="section-desc" data-t="s3_color_desc">Цвет границ и территории при принятии косметического тега</p>
+          <h2 data-t="s3_color_head"><span class="step-badge">06</span> <span>Цвет страны, партии и 4 флага</span></h2>
+          <p class="section-desc" data-t="s3_color_desc">Цвет границ, названия партий по 4 идеологиям и автоматический конвертер флагов в TGA</p>
         </div>
         <div class="color-container">
           <div class="form-grid-3" style="flex:1">
@@ -941,7 +911,7 @@
       <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
       <div class="section" id="cosm-section-preview">
         <div class="section-head">
-          <h2 data-t="step4_title">Сборка и файлы мода</h2>
+          <h2 data-t="step4_title"><span class="step-badge">07</span> <span>Сборка и файлы мода</span></h2>
           <p class="section-desc">Сгенерируйте скрипты Paradox, проверьте код во вкладках и скачайте готовый ZIP-архив</p>
         </div>
 
@@ -1022,6 +992,92 @@
         </div>
       </div>
 
+        </div> <!-- /.studio-editor-pane -->
+
+        <!-- ════════════ STICKY STUDIO PREVIEW SIDEBAR ════════════ -->
+        <aside class="studio-sidebar-pane">
+          <div class="hoi4-preview-sticky-card">
+            <div class="preview-card-header">
+              <div class="preview-card-title-wrap">
+                <span class="preview-badge">🎮 Live In-Game Preview</span>
+                <h3>Окно решений в игре</h3>
+              </div>
+              <span class="live-pill">HoI4 GUI</span>
+            </div>
+
+            <!-- The Authentic in-game HoI4 GUI Box (matching Screenshots 1-5) -->
+            <div class="hoi4-gui-window">
+              <!-- Header bar with rivets, icon, title, orb and chevron -->
+              <div class="hoi4-gui-header">
+                <div class="hoi4-gui-rivets">
+                  <span class="hoi4-rivet"></span>
+                  <span class="hoi4-rivet"></span>
+                  <span class="hoi4-rivet"></span>
+                </div>
+                <div class="hoi4-gui-icon-bracket">
+                  <img id="prev-cat-icon-img" src="" alt="icon" class="hoi4-gui-cat-icon" />
+                </div>
+                <div class="hoi4-gui-title-plate">
+                  <span id="prev-cat-title-text">Реформировать Содружество</span>
+                </div>
+                <div class="hoi4-gui-header-controls">
+                  <div class="hoi4-gui-orb"></div>
+                  <div class="hoi4-gui-chevron">▲</div>
+                </div>
+              </div>
+
+              <!-- Category Inner Box (Map banner on left + Lore on right) -->
+              <div class="hoi4-gui-body">
+                <div class="hoi4-gui-banner-frame">
+                  <img id="prev-cat-banner-img" src="" alt="Banner Map" class="hoi4-gui-banner-img" />
+                </div>
+                <div class="hoi4-gui-lore-frame">
+                  <p id="prev-cat-desc-text">У Польши с Литвой богатая общая история. Теперь, когда мы снова объединены силой оружия, возможно, стоит возродить наше славное прошлое.</p>
+                </div>
+              </div>
+
+              <!-- Decision Item Row: flag + title + green checkmark button -->
+              <div class="hoi4-gui-decision-row">
+                <div class="hoi4-gui-dec-left">
+                  <div class="hoi4-gui-dec-icon-slot">
+                    <img id="prev-dec-icon-img" src="" alt="Flag" class="hoi4-gui-dec-icon" />
+                  </div>
+                  <span id="prev-dec-title-text" class="hoi4-gui-dec-name">Реформировать Унию</span>
+                </div>
+                <div class="hoi4-gui-dec-right">
+                  <div class="hoi4-gui-orb"></div>
+                  <div class="hoi4-gui-take-btn" title="Принять решение">
+                    <span class="hoi4-gui-envelope-icon">✉<span class="hoi4-gui-check-badge">✓</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Stats Pill Bar -->
+            <div class="studio-stats-card">
+              <div class="stat-pill"><span class="stat-icon">💰</span> <span id="statPP">50 PP</span></div>
+              <div class="stat-pill"><span class="stat-icon">🗺️</span> <span id="statCores">Регионы</span></div>
+              <div class="stat-pill"><span class="stat-icon">📜</span> <span id="statTriggers">Условия</span></div>
+              <div class="stat-pill"><span class="stat-icon">🚩</span> <span id="statFlags">4 флага</span></div>
+            </div>
+
+            <!-- Direct Actions -->
+            <div class="studio-sidebar-actions">
+              <button type="button" class="btn-primary studio-btn-map" onclick="cosm_openStatesMap('core')">
+                🗺️ Интерактивная карта (1081 регион)
+              </button>
+              <button type="button" class="btn-generate studio-btn-gen" onclick="cosm_generateMod()">
+                ⚡ Собрать файлы мода
+              </button>
+              <button type="button" class="btn-download studio-btn-dl" id="sidebar-btn-download" onclick="cosm_downloadMod()" style="display:none">
+                💾 Скачать готовый ZIP
+              </button>
+            </div>
+          </div>
+        </aside>
+
+      </div> <!-- /.studio-layout -->
+
     
     </div>
 
@@ -1059,6 +1115,9 @@
     <div class="modal-header">
       <h3 data-t="cheat_modal_title">📜 Доступные требования (Триггеры HoI4)</h3>
       <button type="button" class="modal-close-btn" onclick="cosm_closeTriggersModal()">&times;</button>
+    </div>
+    <div class="triggers-search-bar" style="padding: 10px 18px; border-bottom: 1px solid var(--border-color); background: var(--bg-card); flex-shrink: 0;">
+      <input type="text" id="triggersFilterInput" class="inp" placeholder="🔍 Быстрый поиск условий (например: state, puppet, stability, ideology)..." oninput="cosm_filterTriggersModal(this.value)" style="width: 100%;" />
     </div>
     <div class="modal-body" id="triggersCheatBody">
       <!-- Injected by JS -->
