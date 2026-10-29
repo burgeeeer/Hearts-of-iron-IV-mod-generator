@@ -250,11 +250,19 @@ h1, h2, h3, h4, h5 {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-card);
+  background: rgba(244, 247, 246, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color);
   padding: 10px 0;
-  box-shadow: var(--shadow-xs);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 4px rgba(25, 45, 42, 0.05);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+html[data-theme="dark"] .app-header {
+  background: rgba(13, 18, 18, 0.88);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .header-container {
@@ -1602,7 +1610,6 @@ textarea:focus {
   }
 }
 
-
 /* ==========================================================================
    STUDIO MODE NAVIGATION (TOP BAR)
    ========================================================================== */
@@ -1613,38 +1620,49 @@ textarea:focus {
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  padding: 3px;
-  gap: 3px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .mode-tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-xs);
-  padding: 6px 12px;
+  padding: 7px 14px;
   font-family: var(--font-main);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
 .mode-tab-btn:hover {
   color: var(--text-main);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+html[data-theme="dark"] .mode-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .mode-tab-btn.active {
   background: var(--bg-card);
-  color: var(--text-main);
+  color: var(--teal-primary);
   font-weight: 600;
   border-color: var(--border-color);
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+html[data-theme="dark"] .mode-tab-btn.active {
+  color: var(--teal-glow);
+  background: var(--bg-card);
+  border-color: var(--teal-border);
 }
 
 /* ==========================================================================
@@ -1662,7 +1680,10 @@ textarea:focus {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 16px 20px;
+  padding: 18px 22px;
+  box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
 }
 
 .cosm-presets-head {
@@ -1670,47 +1691,74 @@ textarea:focus {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .cosm-presets-title {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-main);
 }
 
 .cosm-presets-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
   gap: 10px;
 }
 
 .preset-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   font-family: var(--font-main);
   font-size: 12px;
   font-weight: 500;
   color: var(--text-main);
-  transition: all 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
   text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--teal-primary), var(--teal-light));
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .preset-btn:hover {
   border-color: var(--border-hover);
   background: var(--bg-card);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.preset-btn:hover::before {
+  opacity: 1;
+}
+
+.preset-btn:active {
+  transform: scale(0.97);
 }
 
 .preset-flag {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* Sections & Form layout */
@@ -1718,9 +1766,15 @@ textarea:focus {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 22px;
+  margin-bottom: 22px;
   box-shadow: var(--shadow-xs);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+  box-shadow: var(--shadow-sm);
+}
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -2319,7 +2373,6 @@ textarea:focus {
   color: var(--text-main);
   line-height: 1.4;
 }
-
 
 /* ==========================================================================
    HOI4 IN-GAME DECISION GUI PREVIEW (MATCHING SCREENSHOTS)
@@ -3233,7 +3286,21 @@ button:active, .btn-primary:active, .btn-secondary:active, .mode-tab-btn:active 
     margin-top: 8px;
   }
   .project-toolbar {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .project-toolbar-actions {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .project-toolbar-actions button {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
   .form-grid-2, .form-grid-3, .form-grid-4 {
     grid-template-columns: 1fr !important;
@@ -3274,7 +3341,22 @@ button:active, .btn-primary:active, .btn-secondary:active, .mode-tab-btn:active 
     padding: 8px;
   }
   button, .btn-primary, .btn-secondary, .region-tab, .cat-pill {
-    min-height: 40px;
+    min-height: 44px;
+  }
+  .hoi4-gui-window {
+    max-width: 100% !important;
+  }
+  .hoi4-gui-body {
+    flex-direction: column;
+  }
+  .hoi4-gui-banner-frame {
+    width: 100% !important;
+    height: 120px !important;
+  }
+  .hoi4-gui-banner-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
   }
 }
 

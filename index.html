@@ -41,6 +41,8 @@
     <script src="decisions_assets.js"></script>
     <script src="hoi4_states_data.js"></script>
     <script src="hoi4_effects_data.js"></script>
+    <script src="assets/anime.min.js"></script>
+    <script src="motion_fx.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
 <body>
@@ -376,9 +378,6 @@
          ════════════════════════════════════════════════════════════════════════ -->
     <div id="view-cosmetic-mod" style="display: none;">
 
-
-
-
       <!-- Project Toolbar -->
       <div class="project-toolbar">
         <div class="project-toolbar-left">
@@ -412,35 +411,35 @@
           </div>
         </div>
         <div class="cosm-presets-buttons">
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('pol_lithuania')">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('pol_lithuania', event)">
             <span class="preset-flag">🇵🇱</span>
             <div>
               <strong>Речь Посполитая</strong>
               <div style="font-size:11px; color:var(--text-muted)">Реформировать Содружество</div>
             </div>
           </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('austria_hungary')">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('austria_hungary', event)">
             <span class="preset-flag">🇦🇹</span>
             <div>
               <strong>Австро-Венгрия</strong>
               <div style="font-size:11px; color:var(--text-muted)">Восстановить империю</div>
             </div>
           </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('turan')">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('turan', event)">
             <span class="preset-flag">🇹🇷</span>
             <div>
               <strong>Тюркская нация</strong>
               <div style="font-size:11px; color:var(--text-muted)">Объединить тюрков</div>
             </div>
           </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('mountainous_republic')">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('mountainous_republic', event)">
             <span class="preset-flag">⛰️</span>
             <div>
               <strong>Горская республика</strong>
               <div style="font-size:11px; color:var(--text-muted)">Северный Кавказ</div>
             </div>
           </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('geo_transcaucasia')">
+          <button type="button" class="preset-btn" onclick="cosm_applyPreset('geo_transcaucasia', event)">
             <span class="preset-flag">🇬🇪</span>
             <div>
               <strong>Транскавказия</strong>
@@ -449,7 +448,6 @@
           </button>
         </div>
       </div>
-
 
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
       <div class="section" id="cosm-section-info">
@@ -648,7 +646,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- Decision Parameters & Triggers -->
       <div class="section">
@@ -1413,6 +1410,9 @@
                     localStorage.setItem('hoi4_theme', next);
                 } catch(e) {}
                 updateThemeToggleUI(next);
+                if (window.MotionFX && typeof window.MotionFX.animateThemeToggle === 'function') {
+                    window.MotionFX.animateThemeToggle(document.getElementById('themeToggleIcon'));
+                }
             };
 
             function updateThemeToggleUI(theme) {
@@ -1439,21 +1439,16 @@
             }
         })();
 
-            // Studio Mode Switcher: 'general' | 'cosmetic'
+            // Studio Mode Switcher: 'general' | 'cosmetic' with Anime.js transitions
             window.switchStudioMode = function(mode) {
                 var isGeneral = (mode === 'general');
-                var viewGen = document.getElementById('view-general-mod');
-                var viewCosm = document.getElementById('view-cosmetic-mod');
                 var navGen = document.getElementById('sub-nav-general');
                 var navCosm = document.getElementById('sub-nav-cosmetic');
                 var btnGen = document.getElementById('btnModeGeneral');
                 var btnCosm = document.getElementById('btnModeCosmetic');
 
-                if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
-                if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
                 if (navGen) navGen.style.display = isGeneral ? 'block' : 'none';
                 if (navCosm) navCosm.style.display = isGeneral ? 'none' : 'block';
-
                 if (btnGen) btnGen.classList.toggle('active', isGeneral);
                 if (btnCosm) btnCosm.classList.toggle('active', !isGeneral);
 
@@ -1461,8 +1456,24 @@
                     localStorage.setItem('hoi4_studio_mode', mode);
                 } catch(e) {}
 
-                if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
-                    window.CosmeticCreator.onActivate();
+                if (window.MotionFX && typeof window.MotionFX.animateModeSwitch === 'function') {
+                    window.MotionFX.animateModeSwitch(mode, function() {
+                        var viewGen = document.getElementById('view-general-mod');
+                        var viewCosm = document.getElementById('view-cosmetic-mod');
+                        if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
+                        if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
+                        if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
+                            window.CosmeticCreator.onActivate();
+                        }
+                    });
+                } else {
+                    var viewGen = document.getElementById('view-general-mod');
+                    var viewCosm = document.getElementById('view-cosmetic-mod');
+                    if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
+                    if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
+                    if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
+                        window.CosmeticCreator.onActivate();
+                    }
                 }
             };
 

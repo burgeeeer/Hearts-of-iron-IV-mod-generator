@@ -446,8 +446,17 @@ function showToast(msg, duration = 2600) {
   if (!el) return;
   el.textContent = msg;
   el.style.display = 'block';
+  if (window.MotionFX && typeof window.MotionFX.animateToast === 'function') {
+    window.MotionFX.animateToast(el);
+  }
   clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.display = 'none'; }, duration);
+  el._t = setTimeout(() => {
+    if (window.MotionFX && typeof window.MotionFX.animateToastHide === 'function') {
+      window.MotionFX.animateToastHide(el, () => { el.style.display = 'none'; });
+    } else {
+      el.style.display = 'none';
+    }
+  }, duration);
 }
 
 // ─── SCOPE SWITCHER ───────────────────────────
@@ -620,6 +629,9 @@ function renderTriggersCheat() {
     html += `</div>`;
   });
   container.innerHTML = html;
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+    window.MotionFX.animateCardsEntrance(container);
+  }
 }
 
 function insertTriggerFromCheat(code) {
@@ -660,12 +672,21 @@ function openEffectsModal() {
   renderEffectsCategories();
   renderEffectsCheat();
   const modal = document.getElementById('effectsModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.MotionFX) window.MotionFX.animateModalOpen(modal);
+  }
 }
 
 function closeEffectsModal() {
   const modal = document.getElementById('effectsModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(modal, () => { modal.style.display = 'none'; });
+    } else {
+      modal.style.display = 'none';
+    }
+  }
 }
 
 function renderEffectsCategories() {
@@ -764,6 +785,9 @@ function renderEffectsCheat() {
   }
 
   container.innerHTML = html;
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+    window.MotionFX.animateCardsEntrance(container);
+  }
 }
 
 function insertEffectFromCheat(code) {
@@ -858,12 +882,21 @@ function openStatesMap(target = 'core') {
   updateDockUI();
 
   const modal = document.getElementById('statesMapModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.MotionFX) window.MotionFX.animateModalOpen(modal);
+  }
 }
 
 function closeStatesMap() {
   const modal = document.getElementById('statesMapModal');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(modal, () => { modal.style.display = 'none'; });
+    } else {
+      modal.style.display = 'none';
+    }
+  }
 }
 
 function populateCountrySelect() {
@@ -1011,6 +1044,9 @@ function renderStatesGrid() {
     `;
   });
   container.innerHTML = html;
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+    window.MotionFX.animateCardsEntrance(container);
+  }
 }
 
 function toggleState(id) {
@@ -1022,14 +1058,16 @@ function toggleState(id) {
 
   // Quick DOM toggle without full redraw for 60fps responsiveness
   const card = document.getElementById('stateCard_' + id);
+  const isSelected = selectedMapStateIds.has(id);
   if (card) {
-    const isSelected = selectedMapStateIds.has(id);
     card.classList.toggle('selected', isSelected);
     const checkEl = card.querySelector('.state-card-check');
     if (checkEl) checkEl.textContent = isSelected ? '✓' : '+';
+    if (window.MotionFX) window.MotionFX.animateStateCard(card, isSelected);
   }
 
   updateDockUI();
+  if (window.MotionFX) window.MotionFX.animateCounterBump(document.getElementById('dockSelectedCount'));
 }
 
 function selectAllFilteredStates() {
@@ -1710,6 +1748,9 @@ function clearCategoryPic() {
 function onFieldChange() {
   updateProjectToolbar();
   updateHoi4Preview();
+  if (window.MotionFX && typeof window.MotionFX.animateLivePreviewUpdate === 'function') {
+    window.MotionFX.animateLivePreviewUpdate();
+  }
 
   const status = document.getElementById('autoSaveStatus');
   if (status) status.textContent = '...';
@@ -1862,6 +1903,9 @@ function renderProjectsList() {
     `;
   });
   container.innerHTML = html;
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+    window.MotionFX.animateCardsEntrance(container);
+  }
 }
 
 function loadProjectFromLibrary(id) {
@@ -2534,7 +2578,6 @@ window.addEventListener('DOMContentLoaded', () => {
   updateColorPreview();
 });
 
-
 // ─── QUICK PRESETS (1-CLICK TEMPLATES MATCHING HOI4) ────────
 const COSMETIC_PRESETS = {
   pol_lithuania: {
@@ -2764,11 +2807,14 @@ const COSMETIC_PRESETS = {
   }
 };
 
-function cosm_applyPreset(key) {
+function cosm_applyPreset(key, event) {
   const p = COSMETIC_PRESETS[key];
   if (!p) return;
   populateFormFromData(p);
   onFieldChange();
+  if (window.MotionFX && event && event.target) {
+    window.MotionFX.animatePresetClick(event.target.closest('.preset-btn') || event.target);
+  }
   showToast(currentLang === 'ru' ? '✓ Шаблон применён: ' + p.modName : '✓ Preset applied: ' + p.modName);
 }
 window.cosm_applyPreset = cosm_applyPreset;
