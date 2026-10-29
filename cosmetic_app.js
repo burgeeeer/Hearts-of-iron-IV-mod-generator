@@ -877,7 +877,6 @@ function openStatesMap(target = 'core') {
 
   populateCountrySelect();
   updateRegionPillsUI();
-  updateSvgMapHighlight();
   renderStatesGrid();
   updateDockUI();
 
@@ -885,7 +884,221 @@ function openStatesMap(target = 'core') {
   if (modal) {
     modal.style.display = 'flex';
     if (window.MotionFX) window.MotionFX.animateModalOpen(modal);
+    // Initialize MapChart interactive SVG map
+    setTimeout(() => {
+      initMapChartInteractiveSvg();
+    }, 50);
   }
+}
+
+// ─── MAPCHART-STYLE HOI4 INTERACTIVE SVG MAP ───────────────
+let mapChartSvgInited = false;
+let mapChartCurViewBox = { x: 0, y: 0, w: 1400.16, h: 600 };
+let mapChartIsDragging = false;
+let mapChartHasDragged = false;
+let mapChartDragStart = { x: 0, y: 0 };
+let mapChartDragViewBoxStart = { x: 0, y: 0 };
+
+function initMapChartInteractiveSvg() {
+  const container = document.getElementById('mapInteractiveContainer');
+  if (!container) return;
+
+  if (!mapChartSvgInited) {
+    if (window.HOI4_MAP_SVG_STRING) {
+      container.innerHTML = window.HOI4_MAP_SVG_STRING;
+      mapChartSvgInited = true;
+      setupMapChartEvents();
+    }
+  }
+
+  updateMapSvgSelections();
+}
+
+function setupMapChartEvents() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  const tooltip = document.getElementById('mapStateTooltip');
+  if (!svg) return;
+
+  svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+
+  // 1. Click to Select State (ignoring drag releases)
+  svg.addEventListener('click', (e) => {
+    if (mapChartHasDragged) return;
+    const path = e.target.closest('.hoi4-map-state-path');
+    if (!path) return;
+    const sid = parseInt(path.dataset.stateId, 10);
+    if (!isNaN(sid)) {
+      toggleState(sid);
+    }
+  });
+
+  // 2. Hover Tooltip
+  svg.addEventListener('mousemove', (e) => {
+    const path = e.target.closest('.hoi4-map-state-path');
+    if (path && tooltip) {
+      const sid = path.dataset.stateId || '?';
+      const ru = path.dataset.ru || '';
+      const en = path.dataset.en || path.id || '';
+      const tag = path.dataset.tag || '';
+      tooltip.innerHTML = `<strong>${ru || en}</strong> (${en}) <span class="tooltip-tag">#${sid} • ${tag}</span>`;
+      tooltip.style.display = 'block';
+
+      const wrap = document.getElementById('mapSvgWrap');
+      if (wrap) {
+        const wrapRect = wrap.getBoundingClientRect();
+        const left = e.clientX - wrapRect.left;
+        const top = e.clientY - wrapRect.top - 12;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+    } else if (tooltip && !path) {
+      tooltip.style.display = 'none';
+    }
+  });
+
+  svg.addEventListener('mouseleave', () => {
+    if (tooltip) tooltip.style.display = 'none';
+  });
+
+  // 3. Mouse Pan / Drag
+  svg.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    mapChartIsDragging = true;
+    mapChartHasDragged = false;
+    mapChartDragStart = { x: e.clientX, y: e.clientY };
+    mapChartDragViewBoxStart = { x: mapChartCurViewBox.x, y: mapChartCurViewBox.y };
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mapChartIsDragging) return;
+    const dx = e.clientX - mapChartDragStart.x;
+    const dy = e.clientY - mapChartDragStart.y;
+
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      mapChartHasDragged = true;
+    }
+
+    const svgRect = svg.getBoundingClientRect();
+    const scaleX = mapChartCurViewBox.w / svgRect.width;
+    const scaleY = mapChartCurViewBox.h / svgRect.height;
+
+    mapChartCurViewBox.x = mapChartDragViewBoxStart.x - dx * scaleX;
+    mapChartCurViewBox.y = mapChartDragViewBoxStart.y - dy * scaleY;
+    svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+  });
+
+  window.addEventListener('mouseup', () => {
+    setTimeout(() => { mapChartIsDragging = false; }, 20);
+  });
+
+  // 4. Mouse Wheel Zoom centered on cursor
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY < 0 ? 0.85 : 1.18;
+    zoomMapAt(e.clientX, e.clientY, zoomFactor);
+  }, { passive: false });
+
+  // 5. Touch support for Mobile
+  let touchStartDist = 0;
+  let touchStartCenter = { x: 0, y: 0 };
+
+  svg.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      mapChartIsDragging = true;
+      mapChartHasDragged = false;
+      mapChartDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      mapChartDragViewBoxStart = { x: mapChartCurViewBox.x, y: mapChartCurViewBox.y };
+    } else if (e.touches.length === 2) {
+      mapChartIsDragging = false;
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      touchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      touchStartCenter = { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && mapChartIsDragging) {
+      const dx = e.touches[0].clientX - mapChartDragStart.x;
+      const dy = e.touches[0].clientY - mapChartDragStart.y;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) mapChartHasDragged = true;
+      const svgRect = svg.getBoundingClientRect();
+      const scaleX = mapChartCurViewBox.w / svgRect.width;
+      const scaleY = mapChartCurViewBox.h / svgRect.height;
+      mapChartCurViewBox.x = mapChartDragViewBoxStart.x - dx * scaleX;
+      mapChartCurViewBox.y = mapChartDragViewBoxStart.y - dy * scaleY;
+      svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+    } else if (e.touches.length === 2) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const curDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      if (touchStartDist > 0 && curDist > 0) {
+        const factor = touchStartDist / curDist;
+        zoomMapAt(touchStartCenter.x, touchStartCenter.y, factor);
+        touchStartDist = curDist;
+      }
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchend', () => {
+    mapChartIsDragging = false;
+    touchStartDist = 0;
+  });
+}
+
+function zoomMapAt(clientX, clientY, factor) {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+
+  const rect = svg.getBoundingClientRect();
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
+
+  const svgX = mapChartCurViewBox.x + (mouseX / rect.width) * mapChartCurViewBox.w;
+  const svgY = mapChartCurViewBox.y + (mouseY / rect.height) * mapChartCurViewBox.h;
+
+  const newW = Math.max(120, Math.min(2000, mapChartCurViewBox.w * factor));
+  const newH = Math.max(60, Math.min(900, mapChartCurViewBox.h * factor));
+
+  mapChartCurViewBox.x = svgX - (mouseX / rect.width) * newW;
+  mapChartCurViewBox.y = svgY - (mouseY / rect.height) * newH;
+  mapChartCurViewBox.w = newW;
+  mapChartCurViewBox.h = newH;
+
+  svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+}
+
+function cosm_mapZoomIn() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  zoomMapAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 0.72);
+}
+
+function cosm_mapZoomOut() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  zoomMapAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.38);
+}
+
+function cosm_mapZoomReset() {
+  mapChartCurViewBox = { x: 0, y: 0, w: 1400.16, h: 600 };
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (svg) svg.setAttribute('viewBox', '0 0 1400.16 600');
+}
+
+function updateMapSvgSelections() {
+  const paths = document.querySelectorAll('.hoi4-map-state-path');
+  paths.forEach(p => {
+    const sid = parseInt(p.dataset.stateId, 10);
+    p.classList.toggle('selected', selectedMapStateIds.has(sid));
+  });
 }
 
 function closeStatesMap() {
@@ -924,8 +1137,49 @@ function populateCountrySelect() {
 function selectMapRegion(regionKey) {
   mapActiveRegion = regionKey;
   updateRegionPillsUI();
-  updateSvgMapHighlight();
   renderStatesGrid();
+
+  // Region ViewBox Presets
+  const regionViewBoxes = {
+    ALL: { x: 0, y: 0, w: 1400.16, h: 600 },
+    EUROPE: { x: 440, y: 30, w: 390, h: 260 },
+    SOVIET: { x: 530, y: 20, w: 580, h: 320 },
+    ASIA: { x: 740, y: 130, w: 460, h: 330 },
+    AMERICA: { x: 60, y: 40, w: 440, h: 520 },
+    AFRICA: { x: 440, y: 190, w: 340, h: 320 },
+    MIDDLE_EAST: { x: 590, y: 160, w: 260, h: 190 },
+    OCEANIA: { x: 860, y: 300, w: 420, h: 280 }
+  };
+
+  const targetVB = regionViewBoxes[regionKey] || regionViewBoxes.ALL;
+  mapChartCurViewBox = { ...targetVB };
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (svg) {
+    if (window.MotionFX && typeof window.anime === 'function') {
+      const currentRaw = (svg.getAttribute('viewBox') || '0 0 1400.16 600').split(' ');
+      const vbObj = {
+        x: parseFloat(currentRaw[0]) || 0,
+        y: parseFloat(currentRaw[1]) || 0,
+        w: parseFloat(currentRaw[2]) || 1400.16,
+        h: parseFloat(currentRaw[3]) || 600
+      };
+      window.anime({
+        targets: vbObj,
+        x: targetVB.x,
+        y: targetVB.y,
+        w: targetVB.w,
+        h: targetVB.h,
+        duration: 450,
+        easing: 'easeOutCubic',
+        update: function() {
+          svg.setAttribute('viewBox', `${vbObj.x} ${vbObj.y} ${vbObj.w} ${vbObj.h}`);
+        }
+      });
+    } else {
+      svg.setAttribute('viewBox', `${targetVB.x} ${targetVB.y} ${targetVB.w} ${targetVB.h}`);
+    }
+  }
 }
 
 function updateRegionPillsUI() {
@@ -934,37 +1188,6 @@ function updateRegionPillsUI() {
     const onclickAttr = pill.getAttribute('onclick') || '';
     pill.classList.toggle('active', onclickAttr.includes("'" + mapActiveRegion + "'"));
   });
-}
-
-function updateSvgMapHighlight() {
-  const label = document.getElementById('mapCurrentTheatreLabel');
-  const regionNames = {
-    ALL: 'Весь мир',
-    EUROPE: 'Европа',
-    SOVIET: 'СССР и Восточная Евразия',
-    ASIA: 'Азия и Дальний Восток',
-    AMERICA: 'Северная и Южная Америка',
-    AFRICA: 'Африканский континент',
-    MIDDLE_EAST: 'Ближний Восток',
-    OCEANIA: 'Океания и Тихий океан'
-  };
-  if (label) label.textContent = regionNames[mapActiveRegion] || mapActiveRegion;
-
-  // Highlight corresponding SVG path
-  document.querySelectorAll('.map-theatre-path').forEach(p => p.classList.remove('active'));
-  const svgMap = {
-    EUROPE: 'geo_EUROPE',
-    SOVIET: 'geo_SOVIET',
-    ASIA: 'geo_ASIA',
-    AMERICA: 'geo_SAM',
-    AFRICA: 'geo_AFRICA',
-    MIDDLE_EAST: 'geo_MIDDLE_EAST',
-    OCEANIA: 'geo_OCEANIA'
-  };
-  if (svgMap[mapActiveRegion]) {
-    const el = document.getElementById(svgMap[mapActiveRegion]);
-    if (el) el.classList.add('active');
-  }
 }
 
 function onMapCountryChange(tag) {
@@ -1056,14 +1279,21 @@ function toggleState(id) {
     selectedMapStateIds.add(id);
   }
 
-  // Quick DOM toggle without full redraw for 60fps responsiveness
-  const card = document.getElementById('stateCard_' + id);
   const isSelected = selectedMapStateIds.has(id);
+
+  // Quick DOM toggle for state card
+  const card = document.getElementById('stateCard_' + id);
   if (card) {
     card.classList.toggle('selected', isSelected);
     const checkEl = card.querySelector('.state-card-check');
     if (checkEl) checkEl.textContent = isSelected ? '✓' : '+';
     if (window.MotionFX) window.MotionFX.animateStateCard(card, isSelected);
+  }
+
+  // Quick DOM toggle for SVG Map path
+  const svgPath = document.querySelector(`.hoi4-map-state-path[data-state-id="${id}"]`);
+  if (svgPath) {
+    svgPath.classList.toggle('selected', isSelected);
   }
 
   updateDockUI();
@@ -1074,6 +1304,7 @@ function selectAllFilteredStates() {
   const filtered = getFilteredStates();
   filtered.forEach(s => selectedMapStateIds.add(s.id));
   renderStatesGrid();
+  updateMapSvgSelections();
   updateDockUI();
   showToast(`✓ Добавлено ${filtered.length} регионов в выборку`);
 }
@@ -1082,6 +1313,7 @@ function deselectAllFilteredStates() {
   const filtered = getFilteredStates();
   filtered.forEach(s => selectedMapStateIds.delete(s.id));
   renderStatesGrid();
+  updateMapSvgSelections();
   updateDockUI();
   showToast('Снято выделение с показанных регионов');
 }
@@ -1089,6 +1321,7 @@ function deselectAllFilteredStates() {
 function clearSelectedStates() {
   selectedMapStateIds.clear();
   renderStatesGrid();
+  updateMapSvgSelections();
   updateDockUI();
   showToast('Выборка очищена');
 }
@@ -2859,6 +3092,9 @@ window.cosm_deselectAllFilteredStates = deselectAllFilteredStates;
 window.cosm_clearSelectedStates = clearSelectedStates;
 window.cosm_copySelectedStateIds = copySelectedStateIds;
 window.cosm_applySelectedStatesToTarget = applySelectedStatesToTarget;
+window.cosm_mapZoomIn = cosm_mapZoomIn;
+window.cosm_mapZoomOut = cosm_mapZoomOut;
+window.cosm_mapZoomReset = cosm_mapZoomReset;
 
 window.cosm_showIdeology = showIdeology;
 window.cosm_handleFlagUpload = handleFlagUpload;

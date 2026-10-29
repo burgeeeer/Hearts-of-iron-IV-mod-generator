@@ -43,6 +43,7 @@
     <script src="hoi4_effects_data.js"></script>
     <script src="assets/anime.min.js"></script>
     <script src="motion_fx.js"></script>
+    <script src="assets/hoi4_map_data.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
 <body>
@@ -400,53 +401,6 @@
           </button>
         </div>
         <input type="file" id="cosm_projectFileInput" accept=".json" style="display:none" onchange="cosm_handleProjectFileUpload(event)" />
-      </div>
-
-      <!-- ════════════ QUICK PRESETS (FROM HOI4) ════════════ -->
-      <div class="cosm-presets-card">
-        <div class="cosm-presets-head">
-          <div>
-            <div class="cosm-presets-title">⚡ Готовые решения формируемых наций (из Hearts of Iron IV)</div>
-            <div style="font-size:12px; color:var(--text-muted); margin-top:2px">Нажмите на любой исторический шаблон, чтобы загрузить карту, лор и оформление как в игре:</div>
-          </div>
-        </div>
-        <div class="cosm-presets-buttons">
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('pol_lithuania', event)">
-            <span class="preset-flag">🇵🇱</span>
-            <div>
-              <strong>Речь Посполитая</strong>
-              <div style="font-size:11px; color:var(--text-muted)">Реформировать Содружество</div>
-            </div>
-          </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('austria_hungary', event)">
-            <span class="preset-flag">🇦🇹</span>
-            <div>
-              <strong>Австро-Венгрия</strong>
-              <div style="font-size:11px; color:var(--text-muted)">Восстановить империю</div>
-            </div>
-          </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('turan', event)">
-            <span class="preset-flag">🇹🇷</span>
-            <div>
-              <strong>Тюркская нация</strong>
-              <div style="font-size:11px; color:var(--text-muted)">Объединить тюрков</div>
-            </div>
-          </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('mountainous_republic', event)">
-            <span class="preset-flag">⛰️</span>
-            <div>
-              <strong>Горская республика</strong>
-              <div style="font-size:11px; color:var(--text-muted)">Северный Кавказ</div>
-            </div>
-          </button>
-          <button type="button" class="preset-btn" onclick="cosm_applyPreset('geo_transcaucasia', event)">
-            <span class="preset-flag">🇬🇪</span>
-            <div>
-              <strong>Транскавказия</strong>
-              <div style="font-size:11px; color:var(--text-muted)">Закавказская Федерация</div>
-            </div>
-          </button>
-        </div>
       </div>
 
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
@@ -1189,55 +1143,24 @@
 
     <!-- Map Workspace: Interactive Vector Minimap + States Grid -->
     <div class="map-body-workspace">
-      <!-- Interactive SVG Geopolitical Theatres Map -->
+      <!-- Interactive MapChart HoI4 World Map (1081 States) -->
       <div class="map-vector-card">
         <div class="map-vector-header">
-          <span class="map-vector-title">Театры военных действий (клик фильтрует список)</span>
-          <span class="map-vector-current" id="mapCurrentTheatreLabel">Весь мир</span>
+          <div class="map-header-left">
+            <span class="map-vector-title">🗺️ Интерактивная карта Hearts of Iron IV</span>
+            <span class="map-vector-hint">Кликните по провинции на карте для выбора</span>
+          </div>
+          <div class="map-zoom-controls">
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomIn()" title="Приблизить">+</button>
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomOut()" title="Отдалить">−</button>
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomReset()" title="Сбросить масштаб">⟲ Сброс</button>
+          </div>
         </div>
         <div class="map-svg-wrap" id="mapSvgWrap">
-          <!-- Interactive Vector World Map -->
-          <svg viewBox="0 0 1000 500" class="hoi4-vector-world-map" id="hoi4WorldSvg" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="mapOceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="var(--bg-subtle)" stop-opacity="0.6" />
-                <stop offset="100%" stop-color="var(--bg-card)" stop-opacity="0.9" />
-              </linearGradient>
-            </defs>
-            <rect width="1000" height="500" rx="10" fill="url(#mapOceanGrad)" stroke="var(--border-subtle)" stroke-width="1" />
-            <!-- Continents & Theatres Paths -->
-            <!-- North America -->
-            <path id="geo_NAM" class="map-theatre-path" d="M 80,60 L 260,50 L 330,100 L 280,190 L 230,230 L 180,250 L 120,160 Z" onclick="cosm_selectMapRegion('AMERICA')" />
-            <text x="180" y="140" class="map-theatre-text" onclick="cosm_selectMapRegion('AMERICA')">Северная Америка</text>
-
-            <!-- South America -->
-            <path id="geo_SAM" class="map-theatre-path" d="M 250,260 L 360,270 L 390,330 L 340,430 L 280,460 L 250,340 Z" onclick="cosm_selectMapRegion('AMERICA')" />
-            <text x="310" y="360" class="map-theatre-text" onclick="cosm_selectMapRegion('AMERICA')">Южная Америка</text>
-
-            <!-- Europe -->
-            <path id="geo_EUROPE" class="map-theatre-path" d="M 450,80 L 570,70 L 580,170 L 540,210 L 450,200 L 430,150 Z" onclick="cosm_selectMapRegion('EUROPE')" />
-            <text x="500" y="140" class="map-theatre-text" onclick="cosm_selectMapRegion('EUROPE')">Европа</text>
-
-            <!-- USSR & North Eurasia -->
-            <path id="geo_SOVIET" class="map-theatre-path" d="M 580,50 L 910,50 L 890,150 L 740,180 L 590,160 Z" onclick="cosm_selectMapRegion('SOVIET')" />
-            <text x="710" y="100" class="map-theatre-text" onclick="cosm_selectMapRegion('SOVIET')">СССР / Евразия</text>
-
-            <!-- Middle East -->
-            <path id="geo_MIDDLE_EAST" class="map-theatre-path" d="M 580,190 L 680,180 L 670,250 L 600,260 Z" onclick="cosm_selectMapRegion('MIDDLE_EAST')" />
-            <text x="630" y="225" class="map-theatre-text" onclick="cosm_selectMapRegion('MIDDLE_EAST')">Бл. Восток</text>
-
-            <!-- Africa -->
-            <path id="geo_AFRICA" class="map-theatre-path" d="M 460,220 L 590,220 L 620,310 L 570,440 L 490,410 L 450,270 Z" onclick="cosm_selectMapRegion('AFRICA')" />
-            <text x="530" y="320" class="map-theatre-text" onclick="cosm_selectMapRegion('AFRICA')">Африка</text>
-
-            <!-- Asia -->
-            <path id="geo_ASIA" class="map-theatre-path" d="M 680,180 L 880,160 L 910,280 L 790,330 L 690,270 Z" onclick="cosm_selectMapRegion('ASIA')" />
-            <text x="790" y="240" class="map-theatre-text" onclick="cosm_selectMapRegion('ASIA')">Азия</text>
-
-            <!-- Oceania & Australia -->
-            <path id="geo_OCEANIA" class="map-theatre-path" d="M 790,350 L 940,340 L 930,450 L 810,450 Z" onclick="cosm_selectMapRegion('OCEANIA')" />
-            <text x="860" y="400" class="map-theatre-text" onclick="cosm_selectMapRegion('OCEANIA')">Океания</text>
-          </svg>
+          <div id="mapInteractiveContainer" class="map-interactive-container">
+            <!-- Injected by cosmetic_app.js using HOI4_MAP_SVG_STRING -->
+          </div>
+          <div id="mapStateTooltip" class="map-state-tooltip" style="display:none"></div>
         </div>
       </div>
 

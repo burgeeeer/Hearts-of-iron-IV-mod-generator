@@ -43,7 +43,7 @@
         : '#view-general-mod';
 
       window.anime({
-        targets: `${activeView} .section, ${activeView} .cosm-presets-card, ${activeView} .hoi4-gui-decision-preview-box`,
+        targets: `${activeView} .section, ${activeView} .hoi4-gui-decision-preview-box`,
         translateY: [24, 0],
         opacity: [0, 1],
         delay: window.anime.stagger(60, { start: 200 }),

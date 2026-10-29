@@ -29,22 +29,22 @@ html[data-theme="light"] {
   --ochre-soft: #EDAB7B;
 
   /* Surfaces & Backgrounds */
-  --bg-body: #f4f7f6;            /* Чистый светлый фон со скандинавским оттенком */
-  --bg-card: #ffffff;            /* Белоснежные карточки */
-  --bg-subtle: #ebf2f1;          /* Тонкая подложка */
+  --bg-body: #ecf3f2;            /* Тёплый скандинавский мягкий хвойно-льняной тон */
+  --bg-card: #ffffff;            /* Белоснежные карточки с выразительным контрастом */
+  --bg-subtle: #e2ecea;          /* Подложка списков и полей */
   --bg-input: #ffffff;           /* Фон инпутов */
-  --bg-hover: #e1ecea;           /* Плавный ховер */
+  --bg-hover: #d7e7e4;           /* Плавный акцентный ховер */
 
   /* Borders */
-  --border-color: #d1dedc;       /* Деликатная граница */
-  --border-subtle: #e2ecea;
-  --border-hover: #8ab8b4;
+  --border-color: #cadbd8;       /* Чёткая аккуратная граница */
+  --border-subtle: #dbe8e6;
+  --border-hover: #65c3b9;
   --border-focus: #32887F;
 
   /* Typography */
-  --text-main: #182624;          /* Глубокий угольный с хвойным отливом */
-  --text-muted: #4e6361;         /* Читаемый второстепенный текст */
-  --text-dim: #7d9694;
+  --text-main: #142422;          /* Глубокий угольно-хвойный текст */
+  --text-muted: #3f5855;         /* Читаемый второстепенный текст */
+  --text-dim: #6b8582;
   --text-white: #ffffff;
 
   /* Primary Accent & Buttons */
@@ -1360,6 +1360,37 @@ textarea:focus {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+#triggersModal .modal-window {
+  width: 680px;
+  max-width: 95vw;
+}
+
+#effectsModal .modal-window {
+  width: 920px;
+  max-width: 96vw;
+}
+
+.modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(88vh - 120px);
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding: 16px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .projects-modal-window { width: 680px; max-width: 96vw; }
 
 .modal-header {
@@ -1369,6 +1400,7 @@ textarea:focus {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-card);
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -1765,28 +1797,34 @@ html[data-theme="dark"] .mode-tab-btn.active {
 .section {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 22px;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
   box-shadow: var(--shadow-xs);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .section:hover {
+  border-color: var(--teal-soft);
   box-shadow: var(--shadow-sm);
-}
-  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .section-head {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .section-head h2 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal-dark);
   margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+
+html[data-theme="dark"] .section-head h2 {
+  color: var(--teal-glow);
 }
 
 .form-grid-2 {
@@ -2920,88 +2958,176 @@ button:active, .btn-primary:active, .btn-secondary:active, .mode-tab-btn:active 
   border-color: var(--primary);
 }
 
-/* Workspace: Vector Minimap + States Cards */
+/* Workspace: MapChart Interactive Map + States Cards */
 .map-body-workspace {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 1fr 360px;
   flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: var(--bg-card);
 }
 
-/* Vector Card */
+/* Map Canvas Container */
 .map-vector-card {
   border-right: 1px solid var(--border-color);
   background: var(--bg-subtle);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 .map-vector-header {
-  padding: 10px 14px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.76rem;
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+
+.map-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .map-vector-title {
   font-weight: 600;
-  color: var(--text-muted);
+  font-size: 13px;
+  color: var(--text-main);
 }
 
-.map-vector-current {
-  font-weight: 700;
-  color: var(--accent);
+.map-vector-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.map-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-map-zoom {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.15s ease;
+}
+
+.btn-map-zoom:hover {
+  background: var(--bg-card);
+  border-color: var(--border-hover);
 }
 
 .map-svg-wrap {
   flex: 1;
-  padding: 12px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  background: #a9c6ce; /* Authentic MapChart ocean tone */
+}
+
+html[data-theme="dark"] .map-svg-wrap {
+  background: #0d1517;
+}
+
+.map-interactive-container {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.hoi4-vector-world-map {
-  width: 100%;
-  max-height: 280px;
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
-}
-
-.map-theatre-path {
-  fill: var(--bg-hover);
-  stroke: var(--border-hover);
-  stroke-width: 1.5;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.map-theatre-path:hover {
-  fill: var(--accent-light);
-  stroke: var(--accent);
-  stroke-width: 2.2;
-}
-
-.map-theatre-path.active {
-  fill: var(--primary);
-  stroke: var(--accent);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 2px 6px rgba(50, 136, 127, 0.4));
-}
-
-.map-theatre-text {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  fill: var(--text-main);
-  text-anchor: middle;
-  cursor: pointer;
-  pointer-events: all;
+  cursor: grab;
   user-select: none;
+}
+
+.map-interactive-container:active {
+  cursor: grabbing;
+}
+
+.map-interactive-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* MapChart SVG Paths */
+.hoi4-map-state-path {
+  fill: #dce4e5;
+  stroke: #485b5e;
+  stroke-width: 0.28px;
+  cursor: pointer;
+  transition: fill 0.12s ease, stroke 0.12s ease;
+}
+
+html[data-theme="dark"] .hoi4-map-state-path {
+  fill: #192425;
+  stroke: #091011;
+  stroke-width: 0.35px;
+}
+
+.hoi4-map-state-path:hover {
+  fill: #7ec3bb !important;
+  stroke: #105951 !important;
+  stroke-width: 0.8px !important;
+}
+
+html[data-theme="dark"] .hoi4-map-state-path:hover {
+  fill: #50AFA5 !important;
+  stroke: #ffffff !important;
+  stroke-width: 0.8px !important;
+}
+
+.hoi4-map-state-path.selected {
+  fill: var(--teal-primary) !important;
+  stroke: #105951 !important;
+  stroke-width: 1px !important;
+  filter: drop-shadow(0 0 2px rgba(50, 136, 127, 0.7));
+}
+
+html[data-theme="dark"] .hoi4-map-state-path.selected {
+  fill: var(--teal-glow) !important;
+  stroke: #ffffff !important;
+  stroke-width: 1px !important;
+  filter: drop-shadow(0 0 3px rgba(80, 175, 165, 0.85));
+}
+
+/* Floating Tooltip */
+.map-state-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  background: rgba(18, 28, 27, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.18);
+  white-space: nowrap;
+  transform: translate(-50%, -130%);
+}
+
+.map-state-tooltip strong {
+  color: #ffffff;
+}
+
+.map-state-tooltip .tooltip-tag {
+  color: #7ec3bb;
+  font-weight: 700;
+  margin-left: 4px;
 }
 
 /* States Cards List */
@@ -3265,14 +3391,12 @@ button:active, .btn-primary:active, .btn-secondary:active, .mode-tab-btn:active 
 @media (max-width: 900px) {
   .map-body-workspace {
     grid-template-columns: 1fr;
-    grid-template-rows: 200px 1fr;
+    grid-template-rows: 340px 1fr;
   }
   .map-vector-card {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
-  }
-  .hoi4-vector-world-map {
-    max-height: 150px;
+    min-height: 340px;
   }
 }
 
