@@ -3908,3 +3908,54 @@ html {
   gap: 8px !important;
   margin-top: 8px !important;
 }
+
+
+/* Enhanced Dark Theme Buttons Elevation & Depth */
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] .secondary-btn {
+  background: #142a26;
+  color: #e5f3f1;
+  border: 1.5px solid #23524b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .btn-secondary:hover,
+html[data-theme="dark"] .secondary-btn:hover {
+  background: #1c3b35;
+  border-color: #3aa899;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 8px rgba(58, 168, 153, 0.2);
+  transform: translateY(-1px);
+}
+
+html[data-theme="dark"] .btn-sm {
+  background: #162f2a;
+  color: #d1ece8;
+  border: 1.5px solid #2a5e55;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .btn-sm:hover {
+  background: #1e423b;
+  border-color: #4db8a9;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 8px rgba(77, 184, 169, 0.25);
+  transform: translateY(-1px);
+}
+
+html[data-theme="dark"] .btn-add,
+html[data-theme="dark"] .add-btn {
+  background: #0d1e1c;
+  border: 1.5px dashed #23524b;
+  color: #8aaea9;
+}
+
+html[data-theme="dark"] .btn-add:hover,
+html[data-theme="dark"] .add-btn:hover {
+  background: rgba(27, 115, 103, 0.15);
+  border-color: #3aa899;
+  border-style: solid;
+  color: #3aa899;
+  box-shadow: 0 2px 10px rgba(58, 168, 153, 0.2);
+  transform: translateY(-1px);
+}
