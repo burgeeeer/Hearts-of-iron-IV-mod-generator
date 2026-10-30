@@ -1,0 +1,52 @@
+name: CI Syntax & Quality Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Validate JavaScript Syntax
+      run: |
+        node -c app.js
+        node -c cosmetic_app.js
+        node -c decisions_assets.js
+        node -c hoi4_effects_data.js
+        node -c hoi4_states_data.js
+        node -c motion_fx.js
+        node -c vanilla_cosmetic_data.js
+        echo "All JavaScript files compiled with zero syntax errors."
+
+    - name: Check for Clean Emojis Policy
+      run: |
+        node -e "
+        const fs = require('fs');
+        const files = ['index.html', 'app.js', 'cosmetic_app.js', 'style.css', 'README.md', 'README.en.md'];
+        const emojiRegex = /([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|\uD83C[\uDDE6-\uDDFF]{2})/u;
+        let errors = 0;
+        files.forEach(f => {
+          if (!fs.existsSync(f)) return;
+          const lines = fs.readFileSync(f, 'utf8').split('\n');
+          lines.forEach((l, i) => {
+            if (emojiRegex.test(l)) {
+              console.error('Emoji found in ' + f + ':' + (i+1));
+              errors++;
+            }
+          });
+        });
+        if (errors > 0) process.exit(1);
+        console.log('Zero emojis verified.');
+        "

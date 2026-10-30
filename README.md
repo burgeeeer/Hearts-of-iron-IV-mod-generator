@@ -1,6 +1,23 @@
 # Hearts of Iron IV Mod Generator
 
-**Русский** | [English](README.en.md)
+<p align="center">
+  <strong>Русский</strong> | <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
+  <a href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/"><img src="https://img.shields.io/badge/Live_App-burgeeeer.github.io-0284c7?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live App"></a>
+  <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3780620332"><img src="https://img.shields.io/badge/Steam_Workshop-3780620332-171a21?style=for-the-badge&logo=steam&logoColor=white" alt="Steam Workshop"></a>
+  <img src="https://img.shields.io/badge/HoI4_Engine-1.14.*_%E2%80%94_1.19.*+-059669?style=for-the-badge" alt="HoI4 Version">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-475569?style=for-the-badge" alt="License MIT"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/burgeeeer/Hearts-of-iron-IV-mod-generator?style=flat-square&color=eab308" alt="GitHub Stars">
+  <img src="https://img.shields.io/github/forks/burgeeeer/Hearts-of-iron-IV-mod-generator?style=flat-square&color=64748b" alt="GitHub Forks">
+  <img src="https://img.shields.io/github/issues/burgeeeer/Hearts-of-iron-IV-mod-generator?style=flat-square&color=ef4444" alt="GitHub Issues">
+  <img src="https://img.shields.io/badge/Status-Active_Development-10b981?style=flat-square" alt="Status">
+  <img src="https://img.shields.io/badge/Desktop_App-Windows_x64-8b5cf6?style=flat-square&logo=windows&logoColor=white" alt="Desktop App">
+</p>
 
 Hearts of Iron IV Mod Generator — профессиональный визуальный редактор и генератор модификаций для **Hearts of Iron IV** (Clausewitz Engine 1.14.* — 1.19.*+).
 
