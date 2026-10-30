@@ -2546,12 +2546,21 @@ function openProjectsModal() {
     if (modal) {
         renderProjectsList();
         modal.style.display = 'flex';
+        if (window.MotionFX && typeof window.MotionFX.animateModalOpen === 'function') {
+            window.MotionFX.animateModalOpen(modal);
+        }
     }
 }
 
 function closeProjectsModal() {
     var modal = document.getElementById('projectsModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+            window.MotionFX.animateModalClose(modal, function() { modal.style.display = 'none'; });
+        } else {
+            modal.style.display = 'none';
+        }
+    }
 }
 
 function getStoredProjectsList() {

@@ -581,11 +581,24 @@ function getTriggers() {
 
 function openTriggersModal() {
   renderTriggersCheat();
-  document.getElementById('triggersModal').style.display = 'flex';
+  const m = document.getElementById('triggersModal');
+  if (m) {
+    m.style.display = 'flex';
+    if (window.MotionFX && typeof window.MotionFX.animateModalOpen === 'function') {
+      window.MotionFX.animateModalOpen(m);
+    }
+  }
 }
 
 function closeTriggersModal() {
-  document.getElementById('triggersModal').style.display = 'none';
+  const m = document.getElementById('triggersModal');
+  if (m) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(m, () => { m.style.display = 'none'; });
+    } else {
+      m.style.display = 'none';
+    }
+  }
 }
 
 function renderTriggersCheat() {
@@ -644,11 +657,24 @@ function getCustomEffects() {
 
 function openEffectsModal() {
   renderEffectsCheat();
-  document.getElementById('effectsModal').style.display = 'flex';
+  const m = document.getElementById('effectsModal');
+  if (m) {
+    m.style.display = 'flex';
+    if (window.MotionFX && typeof window.MotionFX.animateModalOpen === 'function') {
+      window.MotionFX.animateModalOpen(m);
+    }
+  }
 }
 
 function closeEffectsModal() {
-  document.getElementById('effectsModal').style.display = 'none';
+  const m = document.getElementById('effectsModal');
+  if (m) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(m, () => { m.style.display = 'none'; });
+    } else {
+      m.style.display = 'none';
+    }
+  }
 }
 
 function renderEffectsCheat() {
@@ -1195,11 +1221,24 @@ function getStoredProjectsList() {
 
 function openProjectsModal() {
   renderProjectsList();
-  document.getElementById('cosm_projectsModal').style.display = 'flex';
+  const m = document.getElementById('cosm_projectsModal');
+  if (m) {
+    m.style.display = 'flex';
+    if (window.MotionFX && typeof window.MotionFX.animateModalOpen === 'function') {
+      window.MotionFX.animateModalOpen(m);
+    }
+  }
 }
 
 function closeProjectsModal() {
-  document.getElementById('cosm_projectsModal').style.display = 'none';
+  const m = document.getElementById('cosm_projectsModal');
+  if (m) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(m, () => { m.style.display = 'none'; });
+    } else {
+      m.style.display = 'none';
+    }
+  }
 }
 
 function saveCurrentToLibrary() {

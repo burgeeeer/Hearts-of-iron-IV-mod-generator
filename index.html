@@ -13,7 +13,7 @@
     <!-- Clean Grotesque Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
     
@@ -38,6 +38,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="vanilla_cosmetic_data.js"></script>
+    <script src="hoi4_states_data.js"></script>
+    <script src="hoi4_effects_data.js"></script>
+    <script src="decisions_assets.js"></script>
+    <script src="assets/anime.min.js"></script>
+    <script src="motion_fx.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
 <body>
@@ -1095,6 +1100,9 @@
                     localStorage.setItem('hoi4_theme', next);
                 } catch(e) {}
                 updateThemeToggleUI(next);
+                if (window.MotionFX && typeof window.MotionFX.animateThemeToggle === 'function') {
+                    window.MotionFX.animateThemeToggle(document.getElementById('themeToggleIcon'));
+                }
             };
 
             function updateThemeToggleUI(theme) {
@@ -1131,20 +1139,28 @@
                 var btnGen = document.getElementById('btnModeGeneral');
                 var btnCosm = document.getElementById('btnModeCosmetic');
 
-                if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
-                if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
-                if (navGen) navGen.style.display = isGeneral ? 'block' : 'none';
-                if (navCosm) navCosm.style.display = isGeneral ? 'none' : 'block';
+                function applyState() {
+                    if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
+                    if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
+                    if (navGen) navGen.style.display = isGeneral ? 'block' : 'none';
+                    if (navCosm) navCosm.style.display = isGeneral ? 'none' : 'block';
 
-                if (btnGen) btnGen.classList.toggle('active', isGeneral);
-                if (btnCosm) btnCosm.classList.toggle('active', !isGeneral);
+                    if (btnGen) btnGen.classList.toggle('active', isGeneral);
+                    if (btnCosm) btnCosm.classList.toggle('active', !isGeneral);
 
-                try {
-                    localStorage.setItem('hoi4_studio_mode', mode);
-                } catch(e) {}
+                    try {
+                        localStorage.setItem('hoi4_studio_mode', mode);
+                    } catch(e) {}
 
-                if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
-                    window.CosmeticCreator.onActivate();
+                    if (!isGeneral && window.CosmeticCreator && typeof window.CosmeticCreator.onActivate === 'function') {
+                        window.CosmeticCreator.onActivate();
+                    }
+                }
+
+                if (window.MotionFX && typeof window.MotionFX.animateModeSwitch === 'function') {
+                    window.MotionFX.animateModeSwitch(mode, applyState);
+                } else {
+                    applyState();
                 }
             };
 
