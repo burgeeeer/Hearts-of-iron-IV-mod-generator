@@ -34,6 +34,43 @@ const I18N = {
     f_hoi4ver_h: 'Актуальная поддерживаемая версия: 1.19.*',
     f_moddesc: 'Описание мода',
     f_moddesc_ph: 'Краткое описание мода для лаунчера...',
+    map_vector_title: 'Интерактивная карта Hearts of Iron IV',
+    map_btn_zoom_reset: 'Сброс',
+    cosm_ideology_hint: 'В Hearts of Iron IV строго 4 идеологии: Демократия, Фашизм, Коммунизм и Нейтралитет. Задайте названия и загрузите флаги (PNG/JPG). Сайт автоматически конвертирует их в 32-битный TGA и подгонит под все 3 разрешения: 82×52, 41×26 и 10×7!',
+    nav_cosm_info: '1. Данные мода',
+    nav_cosm_decision: '2. Решение и условия',
+    nav_cosm_tag: '3. Косметический тег и флаги',
+    nav_cosm_preview: '4. Просмотр кода и экспорт',
+    btn_cosm_export: 'Сохранить проект .json',
+    btn_cosm_import: 'Загрузить .json файл',
+    btn_cosm_lib: 'Библиотека в браузере',
+    btn_cosm_new: 'Новый проект',
+    btn_cosm_export_title: 'Скачать .json файл проекта',
+    btn_cosm_import_title: 'Загрузить .json файл',
+    btn_cosm_lib_title: 'Библиотека проектов в браузере',
+    btn_cosm_new_title: 'Начать новый проект',
+    btn_map_trigger: 'Выбрать регионы для контроля на карте',
+    btn_map_core: 'Выбрать на карте регионов',
+    trigger_search_ph: 'Поиск условий (например: controls_state, war, stability, manpower, focus)...',
+    effect_search_ph: 'Поиск наград и баффов (например: add_core, factory, attack, stability, resource)...',
+    map_search_ph: 'Поиск региона: название, ID или тег (например: Варшава, 10, POL, Москва, 219, Berlin, 64)...',
+    map_country_label: 'Страна (1936):',
+    map_country_all: 'Все страны мира (1081 регион)',
+    map_btn_select_all: 'Выбрать показанные',
+    map_btn_deselect_all: 'Снять показанные',
+    map_btn_reset: 'Сбросить',
+    map_btn_copy: 'Копировать IDs',
+    map_btn_apply_core: 'Применить в Core States',
+    map_btn_apply_trigger: 'Добавить в Условия (controls_state)',
+    map_selected: 'выбрано',
+    map_tab_all: 'Весь мир',
+    map_tab_europe: 'Европа',
+    map_tab_soviet: 'СССР и Восток',
+    map_tab_asia: 'Азия',
+    map_tab_america: 'Америка',
+    map_tab_africa: 'Африка',
+    map_tab_middle_east: 'Ближний Восток',
+    map_tab_oceania: 'Океания',
     f_cosm_loc_filename: 'Файл локализации решений и косметики',
     f_cosm_loc_filename_h: 'Полное имя файла локализации (например: strana.yml или mod_l_russian.yml). По умолчанию: [id_мода]_l_russian.yml.',
     s2_scope_head: 'Доступность решения (Для кого)',
@@ -155,6 +192,45 @@ const I18N = {
     f_hoi4ver_h: 'Current supported game version: 1.19.*',
     f_moddesc: 'Mod Description',
     f_moddesc_ph: 'Short description for the launcher...',
+    f_cosm_loc_filename: 'Decisions & Cosmetic Localisation File',
+    f_cosm_loc_filename_h: 'Full localisation file name (e.g. strana.yml or mod_l_english.yml). Default: [mod_id]_l_english.yml.',
+    btn_map_trigger: 'Select States on Map',
+    btn_map_core: 'Select on States Map',
+    trigger_search_ph: 'Search triggers (e.g. controls_state, war, stability, manpower, focus)...',
+    effect_search_ph: 'Search rewards & buffs (e.g. add_core, factory, attack, stability, resource)...',
+    map_search_ph: 'Search state: name, ID or tag (e.g. Warsaw, 10, POL, Moscow, 219, Berlin, 64)...',
+    map_country_label: 'Country (1936):',
+    map_country_all: 'All Countries (1081 states)',
+    map_btn_select_all: 'Select Visible',
+    map_btn_deselect_all: 'Deselect Visible',
+    map_btn_reset: 'Reset',
+    map_btn_copy: 'Copy IDs',
+    map_btn_apply_core: 'Apply to Core States',
+    map_btn_apply_trigger: 'Add to Triggers (controls_state)',
+    map_selected: 'selected',
+    map_tab_all: 'All World (1081)',
+    map_tab_europe: 'Europe',
+    map_tab_soviet: 'USSR & East',
+    map_tab_asia: 'Asia',
+    map_tab_america: 'America',
+    map_tab_africa: 'Africa',
+    map_tab_middle_east: 'Middle East',
+    map_tab_oceania: 'Oceania',
+    map_vector_title: 'Interactive Map Hearts of Iron IV',
+    map_btn_zoom_reset: 'Reset',
+    cosm_ideology_hint: 'Hearts of Iron IV has strictly 4 ideologies: Democratic, Fascism, Communism, and Non-Aligned. Enter names and upload flags (PNG/JPG). The generator automatically converts them to 32-bit TGA and scales them to all 3 resolutions: 82x52, 41x26, and 10x7!',
+    nav_cosm_info: '1. Mod Info',
+    nav_cosm_decision: '2. Decision & Triggers',
+    nav_cosm_tag: '3. Cosmetic Tag & Flags',
+    nav_cosm_preview: '4. Code Preview & Export',
+    btn_cosm_export: 'Save Project .json',
+    btn_cosm_import: 'Load .json File',
+    btn_cosm_lib: 'Browser Library',
+    btn_cosm_new: 'New Project',
+    btn_cosm_export_title: 'Download .json project file',
+    btn_cosm_import_title: 'Load .json project file',
+    btn_cosm_lib_title: 'Browser projects library',
+    btn_cosm_new_title: 'Start fresh project',
     s2_scope_head: 'Decision Scope (Who can form it)',
     s2_scope_desc: 'Choose whether specified nation(s) or any nation worldwide can enact this decision',
     scope_specific_t: 'Selected Countries (one or multiple)',
@@ -1373,6 +1449,23 @@ const REGION_COUNTRY_TAGS = {
   OCEANIA: new Set(['AST','NZL'])
 };
 
+const COUNTRY_NAMES_EN = {
+  SOV: 'USSR (SOV)', GER: 'Germany (GER)', FRA: 'France (FRA)', ENG: 'United Kingdom (ENG)',
+  ITA: 'Italy (ITA)', USA: 'United States (USA)', JAP: 'Japan (JAP)', POL: 'Poland (POL)',
+  CZE: 'Czechoslovakia (CZE)', ROM: 'Romania (ROM)', YUG: 'Yugoslavia (YUG)', HUN: 'Hungary (HUN)',
+  TUR: 'Turkey (TUR)', SWE: 'Sweden (SWE)', FIN: 'Finland (FIN)', NOR: 'Norway (NOR)',
+  DEN: 'Denmark (DEN)', HOL: 'Netherlands (HOL)', BEL: 'Belgium (BEL)', LUX: 'Luxembourg (LUX)',
+  SPR: 'Spain (SPR)', POR: 'Portugal (POR)', GRE: 'Greece (GRE)', BUL: 'Bulgaria (BUL)',
+  ALB: 'Albania (ALB)', LIT: 'Lithuania (LIT)', LAT: 'Latvia (LAT)', EST: 'Estonia (EST)',
+  IRE: 'Ireland (IRE)', SWI: 'Switzerland (SWI)', AUS: 'Austria (AUS)', CAN: 'Canada (CAN)',
+  MEX: 'Mexico (MEX)', BRA: 'Brazil (BRA)', ARG: 'Argentina (ARG)', CHL: 'Chile (CHL)',
+  COL: 'Colombia (COL)', VEN: 'Venezuela (VEN)', PER: 'Peru (PRU)', BOL: 'Bolivia (BOL)',
+  AST: 'Australia (AST)', NZL: 'New Zealand (NZL)', RAJ: 'British Raj (RAJ)',
+  CHI: 'China (CHI)', PRC: 'PR China (PRC)', MAN: 'Manchukuo (MAN)', MEN: 'Mengkukuo (MEN)',
+  SIK: 'Sinkiang (SIK)', TIB: 'Tibet (TIB)', SAF: 'South Africa (SAF)', ETH: 'Ethiopia (ETH)',
+  IRQ: 'Iraq (IRQ)', IRN: 'Iran (PER)', PER: 'Iran (PER)', SAU: 'Saudi Arabia (SAU)'
+};
+
 const COUNTRY_NAMES_RU = {
   SOV: 'СССР (SOV)', GER: 'Германия (GER)', FRA: 'Франция (FRA)', ENG: 'Великобритания (ENG)',
   ITA: 'Италия (ITA)', USA: 'США (USA)', JAP: 'Япония (JAP)', POL: 'Польша (POL)',
@@ -1496,7 +1589,10 @@ function setupMapChartEvents() {
       const ru = path.dataset.ru || '';
       const en = path.dataset.en || path.id || '';
       const tag = path.dataset.tag || '';
-      tooltip.innerHTML = `<strong>${ru || en}</strong> (${en}) <span class="tooltip-tag">#${sid} • ${tag}</span>`;
+      const isRu = (currentLang !== 'en');
+      const name = isRu ? (ru || en) : (en || ru);
+      const subName = isRu ? (en ? ` (${en})` : '') : (ru ? ` (${ru})` : '');
+      tooltip.innerHTML = `<strong>${name}</strong>${subName} <span class="tooltip-tag">#${sid} • ${tag}</span>`;
       tooltip.style.display = 'block';
 
       const wrap = document.getElementById('mapSvgWrap');
@@ -1935,7 +2031,8 @@ function updateDockUI() {
 
   if (!previewEl) return;
   if (size === 0) {
-    previewEl.innerHTML = `<span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>`;
+    const isRu = (currentLang !== 'en');
+  previewEl.innerHTML = `<span class="dock-placeholder">${isRu ? 'Нажмите на регионы на карте выше, чтобы добавить их в выборку' : 'Click states on the map above to select'}</span>`;
     return;
   }
 
@@ -1948,7 +2045,8 @@ function updateDockUI() {
   // Show up to first 30 chips
   sortedIds.slice(0, 30).forEach(id => {
     const s = stateMap[id];
-    const name = s ? s.ru : ('ID ' + id);
+    const isRu = (currentLang !== 'en');
+    const name = s ? (isRu ? s.ru : (s.en || s.ru)) : ('ID ' + id);
     chipsHtml += `
       <span class="dock-chip" onclick="cosm_toggleState(${id})" title="Нажмите, чтобы удалить из выборки">
         #${id} ${name} &times;

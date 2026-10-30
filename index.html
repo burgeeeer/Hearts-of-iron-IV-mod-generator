@@ -113,18 +113,18 @@
     <!-- Sub-navigation tabs -->
     <nav class="sub-nav-bar" id="sub-nav-general" aria-label="Быстрый переход (Страны и марионетки)">
         <div class="sub-nav-container">
-            <a href="#countries-section" class="sub-nav-link active">1. Страны и флаги</a>
-            <a href="#puppet-section" class="sub-nav-link">2. Марионетки</a>
-            <a href="#state-name-section" class="sub-nav-link">3. Регионы</a>
-            <a href="#city-name-section" class="sub-nav-link">4. Города</a>
+            <a href="#countries-section" id="navGenCountries" class="sub-nav-link active">1. Страны и флаги</a>
+            <a href="#puppet-section" id="navGenPuppets" class="sub-nav-link">2. Марионетки</a>
+            <a href="#state-name-section" id="navGenStates" class="sub-nav-link">3. Регионы</a>
+            <a href="#city-name-section" id="navGenCities" class="sub-nav-link">4. Города</a>
         </div>
     </nav>
     <nav class="sub-nav-bar" id="sub-nav-cosmetic" aria-label="Быстрый переход (Формируемые нации)" style="display: none;">
         <div class="sub-nav-container">
-            <a href="#cosm-section-info" class="sub-nav-link active">1. Данные мода</a>
-            <a href="#cosm-section-decision" class="sub-nav-link">2. Решение и условия</a>
-            <a href="#cosm-section-cosmetic" class="sub-nav-link">3. Косметический тег и флаги</a>
-            <a href="#cosm-section-preview" class="sub-nav-link">4. Просмотр кода и экспорт</a>
+            <a href="#cosm-section-info" class="sub-nav-link active" data-t="nav_cosm_info">1. Данные мода</a>
+            <a href="#cosm-section-decision" class="sub-nav-link" data-t="nav_cosm_decision">2. Решение и условия</a>
+            <a href="#cosm-section-cosmetic" class="sub-nav-link" data-t="nav_cosm_tag">3. Косметический тег и флаги</a>
+            <a href="#cosm-section-preview" class="sub-nav-link" data-t="nav_cosm_preview">4. Просмотр кода и экспорт</a>
         </div>
     </nav>
 
@@ -153,11 +153,11 @@
 
                 <div class="mod-details-grid">
                     <div class="mod-detail-box">
-                        <span class="detail-label">Движок / Версия</span>
+                        <span class="detail-label" id="metaEngineLabel">Движок / Версия</span>
                         <span class="detail-value">Clausewitz 1.14.* — 1.19.*</span>
                     </div>
                     <div class="mod-detail-box">
-                        <span class="detail-label">Кодировка локализации</span>
+                        <span class="detail-label" id="metaEncodingLabel">Кодировка локализации</span>
                         <span class="detail-value">UTF-8 with BOM</span>
                     </div>
                 </div>
@@ -204,37 +204,37 @@
             <!-- Right: Live Summary & Telemetry -->
             <div class="card summary-card">
                 <div class="summary-header">
-                    <span class="summary-title">Сводка мода</span>
+                    <span class="summary-title" id="metaSummaryTitle">Сводка мода</span>
                     <span class="format-pill">Clausewitz UTF-8 BOM</span>
                 </div>
 
                 <div class="metrics-row">
                     <div class="metric-item">
                         <span class="metric-val" id="statCountCountries">1</span>
-                        <span class="metric-label">Стран</span>
+                        <span class="metric-label" id="metaCountriesLabel">Стран</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-val" id="statCountPuppets">1</span>
-                        <span class="metric-label">Марионеток</span>
+                        <span class="metric-label" id="metaPuppetsLabel">Марионеток</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-val" id="statCountStates">1</span>
-                        <span class="metric-label">Регионов</span>
+                        <span class="metric-label" id="metaStatesLabel">Регионов</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-val" id="statCountCities">1</span>
-                        <span class="metric-label">Городов</span>
+                        <span class="metric-label" id="metaCitiesLabel">Городов</span>
                     </div>
                 </div>
 
                 <div class="summary-file-tree">
-                    <span class="tree-caption">Структура создаваемого архива:</span>
+                    <span class="tree-caption" id="metaTreeCaption">Структура создаваемого архива:</span>
                     <div class="tree-body">
                         <div><strong id="treeModDirName">MyAwesomeMod</strong>/</div>
                         <div class="tree-sub">├── descriptor.mod</div>
                         <div class="tree-sub">├── <span id="treeLocPath">localisation/replace/</span> <span class="muted-note" id="treeLocNote">(countries_l_russian.yml)</span></div>
                         <div class="tree-sub">├── gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
-                        <div class="tree-sub">└── common/on_actions/ <span class="muted-note">(марионетки и регионы)</span></div>
+                        <div class="tree-sub">└── common/on_actions/ <span class="muted-note" id="metaTreeNote">(марионетки и регионы)</span></div>
                     </div>
                 </div>
             </div>
@@ -244,8 +244,8 @@
         <section class="section-group" id="countries-section">
             <div class="section-group-header">
                 <div>
-                    <h2 class="section-group-title">1. Названия стран и национальные флаги</h2>
-                    <p class="section-group-desc">Настройка названий для 4 идеологий и автоматическая нарезка флагов в TGA формат</p>
+                    <h2 class="section-group-title" id="countriesGroupTitle">1. Названия стран и национальные флаги</h2>
+                    <p class="section-group-desc" id="countriesGroupDesc">Настройка названий для 4 идеологий и автоматическая нарезка флагов в TGA формат</p>
                 </div>
                 <div class="dim-pills">
                     <span class="dim-pill">82×52</span>
@@ -335,10 +335,10 @@
                 </div>
                 <div class="dock-buttons">
                     <button type="button" class="btn-secondary" onclick="saveProjectToFile()">
-                        <span>Экспорт .json</span>
+                        <span id="btnExportJsonText">Экспорт .json</span>
                     </button>
                     <button id="generateBtn" onclick="generateMod()" class="btn-primary btn-generate">
-                        <span>Сгенерировать мод</span>
+                        <span id="btnGenModText">Сгенерировать мод</span>
                     </button>
                 </div>
             </div>
@@ -538,7 +538,7 @@
             <button type="button" class="btn-primary" onclick="cosm_openTriggersModal()" data-t="btn_show_cheat">
               Все доступные требования (справочник HoI4)
             </button>
-            <button type="button" class="btn-secondary btn-map-launch" onclick="cosm_openStatesMap('trigger')">
+            <button type="button" class="btn-secondary btn-map-launch" onclick="cosm_openStatesMap('trigger')" data-t="btn_map_trigger">
               Выбрать регионы для контроля на карте
             </button>
           </div>
@@ -556,7 +556,7 @@
           <div class="field">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
               <label data-t="f_core_states" style="margin:0">Национальные регионы (Core States IDs)</label>
-              <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')">
+              <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')" data-t="btn_map_core">
                 Выбрать на карте регионов
               </button>
             </div>
@@ -1009,7 +1009,7 @@
           <button type="button" class="btn-clear-search" onclick="cosm_clearStateSearch()" title="Очистить поиск"></button>
         </div>
         <div class="map-country-filter-wrap">
-          <label class="map-label-inline">Страна (1936):</label>
+          <label class="map-label-inline" data-t="map_country_label">Страна (1936):</label>
           <select id="mapCountrySelect" class="inp select-sm" onchange="cosm_onMapCountryChange(this.value)">
             <option value="">Все страны мира (1081 регион)</option>
           </select>
@@ -1018,14 +1018,14 @@
 
       <!-- Macro Region / Continent Tabs -->
       <div class="map-region-tabs" id="mapRegionPills">
-        <button type="button" class="region-tab active" onclick="cosm_selectMapRegion('ALL')">Весь мир (<span id="countAllStates">1081</span>)</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('EUROPE')">Европа</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('SOVIET')">СССР и Восток</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('ASIA')">Азия</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AMERICA')">Америка</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AFRICA')">Африка</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('MIDDLE_EAST')">Ближний Восток</button>
-        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('OCEANIA')">Океания</button>
+        <button type="button" class="region-tab active" id="tabRegionAll" onclick="cosm_selectMapRegion('ALL')">Весь мир (1081)</button>
+        <button type="button" class="region-tab" id="tabRegionEurope" onclick="cosm_selectMapRegion('EUROPE')">Европа</button>
+        <button type="button" class="region-tab" id="tabRegionSoviet" onclick="cosm_selectMapRegion('SOVIET')">СССР и Восток</button>
+        <button type="button" class="region-tab" id="tabRegionAsia" onclick="cosm_selectMapRegion('ASIA')">Азия</button>
+        <button type="button" class="region-tab" id="tabRegionAmerica" onclick="cosm_selectMapRegion('AMERICA')">Америка</button>
+        <button type="button" class="region-tab" id="tabRegionAfrica" onclick="cosm_selectMapRegion('AFRICA')">Африка</button>
+        <button type="button" class="region-tab" id="tabRegionMiddleEast" onclick="cosm_selectMapRegion('MIDDLE_EAST')">Ближний Восток</button>
+        <button type="button" class="region-tab" id="tabRegionOceania" onclick="cosm_selectMapRegion('OCEANIA')">Океания</button>
       </div>
     </div>
 
@@ -1035,13 +1035,13 @@
       <div class="map-vector-card">
         <div class="map-vector-header">
           <div class="map-header-left">
-            <span class="map-vector-title">Интерактивная карта Hearts of Iron IV</span>
+            <span class="map-vector-title" data-t="map_vector_title">Интерактивная карта Hearts of Iron IV</span>
             <span class="map-vector-hint" id="mapFilteredHint">Всего 1081 регион • Кликните по региону для выбора</span>
           </div>
           <div class="map-header-right" style="display:flex; align-items:center; gap:10px">
             <div class="map-bulk-btns">
-              <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()" title="Выбрать все регионы выбранной страны / региона">Выбрать показанные</button>
-              <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()" title="Снять выделение со всех регионов выбранной страны">Снять показанные</button>
+              <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()" data-t="map_btn_select_all" title="Выбрать все регионы выбранной страны / региона">Выбрать показанные</button>
+              <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()" data-t="map_btn_deselect_all" title="Снять выделение со всех регионов выбранной страны">Снять показанные</button>
             </div>
             <div class="map-zoom-controls">
               <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomIn()" title="Приблизить">+</button>
@@ -1064,7 +1064,7 @@
       <div class="dock-selection-summary">
         <div class="dock-pill">
           <span class="dock-pill-count" id="dockSelectedCount">0</span>
-          <span class="dock-pill-label">выбрано</span>
+          <span class="dock-pill-label" data-t="map_selected">выбрано</span>
         </div>
         <div class="dock-chips-preview" id="dockTagsPreview">
           <span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>
