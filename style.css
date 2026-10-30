@@ -3959,3 +3959,13 @@ html[data-theme="dark"] .add-btn:hover {
   box-shadow: 0 2px 10px rgba(58, 168, 153, 0.2);
   transform: translateY(-1px);
 }
+
+/* Flash highlight when inserting cheat items */
+.btn-inserted-flash {
+  background: var(--success) !important;
+  color: #FFFFFF !important;
+  border-color: var(--success-hover) !important;
+  box-shadow: 0 0 12px rgba(85, 186, 103, 0.45) !important;
+  transform: scale(1.04) !important;
+  transition: all 0.15s ease !important;
+}

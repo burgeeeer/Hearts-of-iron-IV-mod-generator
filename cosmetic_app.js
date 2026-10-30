@@ -1323,7 +1323,7 @@ function renderTriggersCheat(filter = '') {
             <div class="cheat-code">${item.code}</div>
             <div class="cheat-desc">${desc}</div>
           </div>
-          <button type="button" class="btn-sm" onclick="insertTriggerFromCheat('${item.code.replace(/'/g, "\\'")}')">
+          <button type="button" class="btn-sm" onclick="insertTriggerFromCheat(this, '${item.code.replace(/'/g, "\\'")}')">
             + Вставить
           </button>
         </div>
@@ -1419,7 +1419,7 @@ function renderEffectsCheat(filter = '') {
             <div class="cheat-code">${item.code}</div>
             <div class="cheat-desc">${desc}</div>
           </div>
-          <button type="button" class="btn-sm" onclick="insertEffectFromCheat('${item.code.replace(/'/g, "\\'")}')">
+          <button type="button" class="btn-sm" onclick="insertEffectFromCheat(this, '${item.code.replace(/'/g, "\\'")}')">
             + Вставить
           </button>
         </div>
@@ -3519,6 +3519,19 @@ window.cosm_setScope = setScope;
 window.cosm_handleOwnerTagsInput = handleOwnerTagsInput;
 window.cosm_handleCoreStatesInput = handleCoreStatesInput;
 window.cosm_setCategoryMode = setCategoryMode;
+// Expose directly to window for inline HTML onclick handlers
+window.insertTriggerFromCheat = insertTriggerFromCheat;
+window.insertEffectFromCheat = insertEffectFromCheat;
+window.onFieldChange = onFieldChange;
+window.loadProjectFromLibrary = loadProjectFromLibrary;
+window.deleteProjectFromLibrary = deleteProjectFromLibrary;
+window.addTrigger = addTrigger;
+window.addCustomEffect = addCustomEffect;
+window.toggleCheatCategory = toggleCheatCategory;
+window.collapseAllCategories = collapseAllCheatCategories;
+window.expandAllCategories = expandAllCheatCategories;
+window.buildAndDownloadMod = buildAndDownloadMod;
+
 window.cosm_addTrigger = addTrigger;
 window.cosm_getTriggers = getTriggers;
 window.cosm_openTriggersModal = openTriggersModal;
