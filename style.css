@@ -578,7 +578,7 @@ body {
 
 main.container {
   margin-top: 24px;
-  margin-bottom: 110px; /* Clearance for sticky bottom dock */
+  margin-bottom: 30px;
   animation: app-fade-in 0.4s ease-out;
 }
 
@@ -1377,32 +1377,32 @@ html[data-theme="dark"] .btn-generate:hover {
    -------------------------------------------------------------------------- */
 
 .bottom-action-dock {
-  position: fixed;
-  bottom: 16px;
-  left: 0;
-  right: 0;
-  z-index: 95;
+  position: static;
+  margin: 36px auto 20px auto;
+  max-width: 900px;
+  width: 100%;
   display: flex;
   justify-content: center;
-  pointer-events: none;
-  padding: 0 20px;
+  pointer-events: auto;
+  padding: 0 16px;
+  z-index: 10;
 }
 
 .dock-container {
   pointer-events: auto;
-  max-width: 860px;
+  max-width: 900px;
   width: 100%;
   background: var(--dock-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-pill);
-  padding: 8px 12px 8px 18px;
+  padding: 10px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: var(--shadow-md);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2041,5 +2041,242 @@ html[data-theme="dark"] .btn-generate:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   ALIGNMENT & FORM GEOMETRY (Grid-Aligned, Perfectly Spaced, No Crooked Inputs)
+   ========================================================================== */
+
+.input-group,
+.field {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 6px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 14px;
+}
+
+.input-group label,
+.field label,
+.field-label {
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 1.35;
+}
+
+.input-group input,
+.input-group select,
+.field input,
+.field select,
+.field textarea,
+.inp,
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  height: 38px;
+  padding: 0 12px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+textarea,
+.field textarea {
+  height: auto !important;
+  min-height: 76px;
+  padding: 10px 12px !important;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+/* Country Card Header & Meta */
+.country-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.country-header strong {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.country-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+@media (max-width: 650px) {
+  .country-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ideology Block Symmetrical Alignment */
+.ideology-block {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  padding: 18px 20px;
+  background: var(--bg-card-elevated);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius);
+  margin-bottom: 18px;
+  align-items: start;
+  box-shadow: var(--shadow-xs);
+}
+
+.ideology-block > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ideology-block h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--primary);
+  display: inline-block;
+  align-self: flex-start;
+}
+
+@media (max-width: 820px) {
+  .ideology-block {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Puppet Rule Autonomy Sections */
+.puppet-ideology-section {
+  background: var(--bg-card-elevated);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.puppet-ideology-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--bg-subtle);
+  cursor: pointer;
+  user-select: none;
+}
+
+.puppet-ideology-header strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.puppet-ideology-body {
+  padding: 16px;
+}
+
+.puppet-ideology-section.collapsed .puppet-ideology-body {
+  display: none;
+}
+
+.puppet-ideology-section.collapsed .puppet-ideology-arrow {
+  transform: rotate(-90deg);
+}
+
+.puppet-ideology-arrow {
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.puppet-autonomy-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 14px 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Dynamic Grid Proportions */
+.dynamic-grid {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.dynamic-grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dynamic-grid.three-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+  .dynamic-grid.two-col,
+  .dynamic-grid.three-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* View 2 Form Grids */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.form-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+@media (max-width: 800px) {
+  .form-grid-2,
+  .form-grid-3,
+  .form-grid-4 {
+    grid-template-columns: 1fr;
   }
 }
