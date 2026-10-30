@@ -1432,8 +1432,8 @@ function openStatesMap(target = 'core') {
 
   populateCountrySelect();
   updateRegionPillsUI();
-  renderStatesGrid();
   updateDockUI();
+  updateMapSvgFilter();
 
   const modal = document.getElementById('statesMapModal');
   if (modal) {
@@ -1692,7 +1692,7 @@ function populateCountrySelect() {
 function selectMapRegion(regionKey) {
   mapActiveRegion = regionKey;
   updateRegionPillsUI();
-  renderStatesGrid();
+  updateMapSvgFilter();
 
   // Region ViewBox Presets
   const regionViewBoxes = {
@@ -1753,14 +1753,59 @@ function onMapCountryChange(tag) {
 function filterStatesMap() {
   const inp = document.getElementById('mapStateSearchInput');
   mapSearchText = (inp ? inp.value : '').toLowerCase().trim();
-  renderStatesGrid();
+  updateMapSvgFilter();
 }
 
 function clearStateSearch() {
   mapSearchText = '';
   const inp = document.getElementById('mapStateSearchInput');
   if (inp) inp.value = '';
-  renderStatesGrid();
+  updateMapSvgFilter();
+}
+
+function updateMapSvgFilter() {
+  const filtered = getFilteredStates();
+  const filteredSet = new Set(filtered.map(s => s.id));
+  const isFiltering = !!(mapActiveCountry || mapActiveRegion !== 'ALL' || mapSearchText);
+
+  const paths = document.querySelectorAll('.hoi4-map-state-path');
+  paths.forEach(p => {
+    const sid = parseInt(p.dataset.stateId, 10);
+    const isMatch = filteredSet.has(sid);
+    p.classList.toggle('map-match', isMatch && isFiltering);
+    p.classList.toggle('map-dimmed', !isMatch && isFiltering);
+  });
+
+  const hintEl = document.getElementById('mapFilteredHint');
+  if (hintEl) {
+    if (isFiltering) {
+      hintEl.textContent = `Найдено ${filtered.length} регионов на карте`;
+    } else {
+      hintEl.textContent = 'Всего 1081 регион • Кликните по региону для выбора';
+    }
+  }
+
+  // If search matches 1 state, auto-zoom to it
+  if (mapSearchText && filtered.length === 1) {
+    const targetPath = document.querySelector(`.hoi4-map-state-path[data-state-id="${filtered[0].id}"]`);
+    if (targetPath) {
+      try {
+        const bbox = targetPath.getBBox();
+        const padding = 50;
+        const targetVB = {
+          x: Math.max(0, bbox.x - padding),
+          y: Math.max(0, bbox.y - padding),
+          w: Math.max(120, bbox.width + padding * 2),
+          h: Math.max(80, bbox.height + padding * 2)
+        };
+        const svg = document.querySelector('#mapInteractiveContainer svg');
+        if (svg) {
+          svg.setAttribute('viewBox', `${targetVB.x} ${targetVB.y} ${targetVB.w} ${targetVB.h}`);
+          mapChartCurViewBox = targetVB;
+        }
+      } catch(e) {}
+    }
+  }
 }
 
 function getFilteredStates() {
@@ -1858,7 +1903,7 @@ function toggleState(id) {
 function selectAllFilteredStates() {
   const filtered = getFilteredStates();
   filtered.forEach(s => selectedMapStateIds.add(s.id));
-  renderStatesGrid();
+  updateMapSvgSelections();
   updateMapSvgSelections();
   updateDockUI();
   showToast(`✓ Добавлено ${filtered.length} регионов в выборку`);
@@ -1867,7 +1912,7 @@ function selectAllFilteredStates() {
 function deselectAllFilteredStates() {
   const filtered = getFilteredStates();
   filtered.forEach(s => selectedMapStateIds.delete(s.id));
-  renderStatesGrid();
+  updateMapSvgSelections();
   updateMapSvgSelections();
   updateDockUI();
   showToast('Снято выделение с показанных регионов');
@@ -1875,7 +1920,7 @@ function deselectAllFilteredStates() {
 
 function clearSelectedStates() {
   selectedMapStateIds.clear();
-  renderStatesGrid();
+  updateMapSvgSelections();
   updateMapSvgSelections();
   updateDockUI();
   showToast('Выборка очищена');

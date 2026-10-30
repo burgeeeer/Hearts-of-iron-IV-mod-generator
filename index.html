@@ -1031,17 +1031,23 @@
 
     <!-- Map Workspace: Interactive Vector Minimap + States Grid -->
     <div class="map-body-workspace">
-      <!-- Interactive MapChart HoI4 World Map (1081 States) -->
+      <!-- Full-Width Interactive MapChart HoI4 World Map (1081 States) -->
       <div class="map-vector-card">
         <div class="map-vector-header">
           <div class="map-header-left">
             <span class="map-vector-title">🗺️ Интерактивная карта Hearts of Iron IV</span>
-            <span class="map-vector-hint">Кликните по провинции на карте для выбора</span>
+            <span class="map-vector-hint" id="mapFilteredHint">Всего 1081 регион • Кликните по региону для выбора</span>
           </div>
-          <div class="map-zoom-controls">
-            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomIn()" title="Приблизить">+</button>
-            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomOut()" title="Отдалить">−</button>
-            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomReset()" title="Сбросить масштаб">⟲ Сброс</button>
+          <div class="map-header-right" style="display:flex; align-items:center; gap:10px">
+            <div class="map-bulk-btns">
+              <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()" title="Выбрать все регионы выбранной страны / региона">➕ Выбрать показанные</button>
+              <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()" title="Снять выделение со всех регионов выбранной страны">➖ Снять показанные</button>
+            </div>
+            <div class="map-zoom-controls">
+              <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomIn()" title="Приблизить">+</button>
+              <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomOut()" title="Отдалить">−</button>
+              <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomReset()" title="Сбросить масштаб">⟲ Сброс</button>
+            </div>
           </div>
         </div>
         <div class="map-svg-wrap" id="mapSvgWrap">
@@ -1049,23 +1055,6 @@
             <!-- Injected by cosmetic_app.js using HOI4_MAP_SVG_STRING -->
           </div>
           <div id="mapStateTooltip" class="map-state-tooltip" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- States Cards List & Multi-Select View -->
-      <div class="map-cards-card">
-        <div class="map-cards-header">
-          <div class="map-cards-count-info">
-            <span class="map-count-badge" id="mapFilteredCount">1081 регион</span>
-            <span class="map-count-hint">Нажмите для выбора/снятия</span>
-          </div>
-          <div class="map-bulk-btns">
-            <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()">➕ Выбрать показанные</button>
-            <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()">➖ Снять показанные</button>
-          </div>
-        </div>
-        <div class="map-states-scroll" id="mapStatesGrid">
-          <!-- Populated by JS -->
         </div>
       </div>
     </div>

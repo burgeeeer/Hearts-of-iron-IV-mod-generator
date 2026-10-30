@@ -1225,7 +1225,7 @@ button:active,
 /* Primary Strategic Action & Generate Button */
 .btn-primary,
 .btn-generate {
-  height: 38px;
+  height: 44px;
   background: linear-gradient(180deg, var(--c-pri-1) 0%, var(--c-pri-3) 100%);
   color: #FFFFFF;
   border: 1px solid var(--c-pri-3);
@@ -1343,7 +1343,7 @@ html[data-theme="dark"] .btn-generate:hover {
 
 /* Download ZIP Button in Modal / Preview */
 .btn-download {
-  height: 38px;
+  height: 44px;
   background: linear-gradient(180deg, var(--c-sec-a4) 0%, var(--c-sec-a1) 100%);
   color: #FFFFFF;
   border: 1px solid var(--c-sec-a3);
@@ -1363,7 +1363,7 @@ html[data-theme="dark"] .btn-generate:hover {
 
 .cheat-search-box .inp {
   width: 100%;
-  height: 38px;
+  height: 44px;
   font-family: var(--font-main);
   font-size: 13px;
   background: var(--bg-input);
@@ -2084,7 +2084,7 @@ select,
 textarea {
   width: 100% !important;
   box-sizing: border-box !important;
-  height: 38px;
+  height: 44px;
   padding: 0 12px;
   font-family: var(--font-main);
   font-size: 13px;
@@ -2411,10 +2411,10 @@ input[type="file"]::file-selector-button:hover {
 ODAL (1081 STATES)
    ========================================================================== */
 .modal-map-layout {
-  width: 95vw;
-  max-width: 1240px;
-  height: 90vh;
-  max-height: 900px;
+  width: 96vw;
+  max-width: 1540px;
+  height: 94vh;
+  max-height: 980px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2531,22 +2531,27 @@ ODAL (1081 STATES)
 
 /* Workspace: MapChart Interactive Map + States Cards */
 .map-body-workspace {
-  display: grid;
-  grid-template-columns: 1fr 360px;
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: var(--bg-card);
 }
 
 /* Map Canvas Container */
 .map-vector-card {
-  border-right: 1px solid var(--border-color);
+  border-right: none;
   background: var(--bg-subtle);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
 }
 
 .map-vector-header {
@@ -3117,4 +3122,83 @@ html[data-theme="dark"] .hoi4-map-state-path.selected {
   gap: 8px;
   align-items: center;
   margin-top: 4px;
+}
+
+
+/* SVG Region Filter Highlights */
+.hoi4-map-state-path.map-dimmed {
+  opacity: 0.22 !important;
+}
+
+.hoi4-map-state-path.map-match {
+  fill: #6ED27F !important;
+  stroke: #146E24 !important;
+  stroke-width: 0.95px !important;
+  filter: drop-shadow(0 0 3px rgba(110, 210, 127, 0.7));
+}
+
+html[data-theme="dark"] .hoi4-map-state-path.map-match {
+  fill: #55BA67 !important;
+  stroke: #ffffff !important;
+  stroke-width: 1px !important;
+  filter: drop-shadow(0 0 4px rgba(85, 186, 103, 0.85));
+}
+
+.map-filter-top {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+}
+
+.map-search-input-wrap {
+  position: relative;
+  flex: 2;
+  min-width: 320px;
+}
+
+.map-search-input-wrap input {
+  height: 44px !important;
+  font-size: 14px !important;
+  padding: 0 36px 0 16px !important;
+  border-radius: var(--radius-sm);
+}
+
+.map-country-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.map-country-filter-wrap select {
+  height: 44px !important;
+  font-size: 13.5px !important;
+}
+
+.map-region-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.region-tab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Roomy & modern inputs across all forms */
+.inp,
+input[type="text"],
+input[type="number"],
+select {
+  height: 44px !important;
+  font-size: 14px !important;
+  padding: 0 14px !important;
+  border-radius: var(--radius-sm);
 }
