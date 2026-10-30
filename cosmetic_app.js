@@ -19,9 +19,9 @@ const I18N = {
     header_sub: 'Генератор модов со сменой названий, флагов и решений',
     proj_label: 'Проект:',
     autosave_on: '● Сохранено',
-    btn_save_proj: '💾 Сохранить в файл',
-    btn_load_proj: '📂 Загрузить из файла',
-    btn_lib_proj: '📚 Мои проекты',
+    btn_save_proj: 'Сохранить в файл',
+    btn_load_proj: 'Загрузить из файла',
+    btn_lib_proj: 'Мои проекты',
     btn_new_proj: '+ Новый',
     step4_title: 'Сборка и файлы мода',
     s1_head: 'Данные мода',
@@ -68,7 +68,7 @@ const I18N = {
     s2_trig_head: 'Требования к выполнению (Триггеры)',
     s2_trig_desc: 'Условия, которые должна выполнить страна для нажатия кнопки решения',
     btn_add_trigger: '+ Добавить условие вручную',
-    btn_show_cheat: '📜 Все доступные требования (справочник HoI4)',
+    btn_show_cheat: 'Все доступные требования (справочник HoI4)',
     s2_rewards_head: 'Награды и эффекты после выполнения (Баффы)',
     s2_rewards_desc: 'Что произойдет после принятия решения: национализация территорий, перенос столицы, бонусы и эффекты',
     f_core_states: 'Национальные регионы (Core States IDs)',
@@ -82,8 +82,8 @@ const I18N = {
     f_reward_mp: 'Призывники (Manpower)',
     f_custom_eff_head: 'Дополнительные эффекты и награды',
     btn_add_effect: '+ Добавить эффект вручную',
-    btn_show_cheat_effects: '🎁 Все доступные награды и баффы (справочник HoI4)',
-    effects_modal_title: '🎁 Доступные награды и эффекты (HoI4 Effects)',
+    btn_show_cheat_effects: 'Все доступные награды и баффы (справочник HoI4)',
+    effects_modal_title: 'Доступные награды и эффекты (HoI4 Effects)',
     s3_color_head: 'Цвет страны на карте',
     s3_color_desc: 'Цвет границ и территории при принятии косметического тега',
     f_r: 'Красный (0–255)',
@@ -104,31 +104,31 @@ const I18N = {
     f_cadj_neu: 'Нейтральное прилагательное',
     flag_upload_neu: 'Загрузить флаг нейтралитета (PNG/JPG)',
     flag_upload_hint: 'Автоматически масштабируется и конвертируется в TGA',
-    btn_clear_flag: '✕ Удалить флаг',
+    btn_clear_flag: 'Удалить флаг',
     s3_pic_head: 'Иконка решения (Опционально)',
     s3_pic_desc: 'Иконка в меню решений HoI4 (по умолчанию: generic_form_nation)',
     f_picname: 'Имя спрайта или иконки',
     f_picname_h: 'По умолчанию: generic_form_nation. Картинка автоматически масштабируется в 32×32 TGA и регистрируется в .gfx',
     f_picupload: 'Загрузить картинку иконки (PNG/JPG)',
-    btn_clear_dec_img: '✕ Удалить иконку',
-    btn_generate: '⚡ Сгенерировать файлы мода',
-    btn_download: '💾 Скачать ZIP-архив с флагами',
-    tab_summary: '📋 Сводка',
-    tab_struct: '🗃 Структура архива',
-    btn_copy: '📋 Копировать',
+    btn_clear_dec_img: 'Удалить иконку',
+    btn_generate: 'Сгенерировать файлы мода',
+    btn_download: 'Скачать ZIP-архив с флагами',
+    tab_summary: 'Сводка',
+    tab_struct: 'Структура архива',
+    btn_copy: 'Копировать',
     sum_empty: '← Нажмите «Сгенерировать файлы мода», чтобы выполнить сборку и просмотреть код',
     footer_text: 'Hearts of Iron IV Mod Generator · Cosmetic Tag Creator · Version 1.19.*',
-    cheat_modal_title: '📜 Доступные требования (Триггеры HoI4)',
-    lib_modal_title: '📚 Мои сохранённые проекты',
+    cheat_modal_title: 'Доступные требования (Триггеры HoI4)',
+    lib_modal_title: 'Мои сохранённые проекты',
     lib_modal_desc: 'Локальная библиотека проектов в вашем браузере',
     btn_save_to_lib: '+ Сохранить текущий проект в библиотеку',
     btn_close: 'Закрыть',
-    copied_toast: '📋 Скопировано в буфер обмена!',
-    saved_toast: '💾 Проект сохранён в файл!',
-    lib_saved_toast: '📚 Проект добавлен в библиотеку!',
-    loaded_toast: '📂 Проект успешно загружен!',
-    generated_toast: '⚡ Мод успешно сгенерирован!',
-    download_toast: '💾 ZIP-архив скачивается...',
+    copied_toast: 'Скопировано в буфер обмена!',
+    saved_toast: 'Проект сохранён в файл!',
+    lib_saved_toast: 'Проект добавлен в библиотеку!',
+    loaded_toast: 'Проект успешно загружен!',
+    generated_toast: 'Мод успешно сгенерирован!',
+    download_toast: 'ZIP-архив скачивается...',
     val_modname: 'Название мода',
     val_owner: 'Укажите хотя бы один 3-буквенный тег страны-владельца (например: POL или POL, LIT)',
     val_cosmetic: 'Косметический тег',
@@ -140,9 +140,9 @@ const I18N = {
     header_sub: 'Mod generator with country names, flags, and decisions',
     proj_label: 'Project:',
     autosave_on: '● Saved',
-    btn_save_proj: '💾 Save to File',
-    btn_load_proj: '📂 Load from File',
-    btn_lib_proj: '📚 My Projects',
+    btn_save_proj: 'Save to File',
+    btn_load_proj: 'Load from File',
+    btn_lib_proj: 'My Projects',
     btn_new_proj: '+ New',
     step4_title: 'Build & Mod Files',
     s1_head: 'Mod Information',
@@ -187,7 +187,7 @@ const I18N = {
     s2_trig_head: 'Completion Requirements (Triggers)',
     s2_trig_desc: 'Requirements needed for the country to enact the decision',
     btn_add_trigger: '+ Add Condition Manually',
-    btn_show_cheat: '📜 All Available Requirements (HoI4 Cheat-Sheet)',
+    btn_show_cheat: 'All Available Requirements (HoI4 Cheat-Sheet)',
     s2_rewards_head: 'Rewards & Buffs Upon Enactment',
     s2_rewards_desc: 'What happens after enacting the decision: national cores, capital move, stat buffs and custom effects',
     f_core_states: 'National Core States (IDs)',
@@ -201,8 +201,8 @@ const I18N = {
     f_reward_mp: 'Manpower',
     f_custom_eff_head: 'Additional Effects & Rewards',
     btn_add_effect: '+ Add Effect Manually',
-    btn_show_cheat_effects: '🎁 All Available Rewards & Buffs (HoI4 Cheat-Sheet)',
-    effects_modal_title: '🎁 Available Rewards & Buffs (HoI4 Effects)',
+    btn_show_cheat_effects: 'All Available Rewards & Buffs (HoI4 Cheat-Sheet)',
+    effects_modal_title: 'Available Rewards & Buffs (HoI4 Effects)',
     s3_color_head: 'Country Map Color',
     s3_color_desc: 'Color of territory and borders on the political map',
     f_r: 'Red (0–255)',
@@ -223,31 +223,31 @@ const I18N = {
     f_cadj_neu: 'Neutral Adjective',
     flag_upload_neu: 'Upload Neutral Flag (PNG/JPG)',
     flag_upload_hint: 'Automatically scaled and converted into 32-bit TGA',
-    btn_clear_flag: '✕ Remove Flag',
+    btn_clear_flag: 'Remove Flag',
     s3_pic_head: 'Decision Icon (Optional)',
     s3_pic_desc: 'Icon shown in the HoI4 decisions tab (default: generic_form_nation)',
     f_picname: 'Icon or Sprite Name',
     f_picname_h: 'Default: generic_form_nation. Uploaded image is automatically resized to 32×32 TGA and registered in .gfx',
     f_picupload: 'Upload Icon Image (PNG/JPG)',
-    btn_clear_dec_img: '✕ Remove Icon',
-    btn_generate: '⚡ Generate Mod Files',
-    btn_download: '💾 Download ZIP with TGA Flags',
-    tab_summary: '📋 Summary',
-    tab_struct: '🗃 Archive Structure',
-    btn_copy: '📋 Copy',
+    btn_clear_dec_img: 'Remove Icon',
+    btn_generate: 'Generate Mod Files',
+    btn_download: 'Download ZIP with TGA Flags',
+    tab_summary: 'Summary',
+    tab_struct: 'Archive Structure',
+    btn_copy: 'Copy',
     sum_empty: '← Click "Generate Mod Files" to assemble the mod and inspect code',
     footer_text: 'Hearts of Iron IV Mod Generator · Cosmetic Tag Creator · Version 1.19.*',
-    cheat_modal_title: '📜 Available Requirements (HoI4 Triggers Cheat-Sheet)',
-    lib_modal_title: '📚 Saved Projects Library',
+    cheat_modal_title: 'Available Requirements (HoI4 Triggers Cheat-Sheet)',
+    lib_modal_title: 'Saved Projects Library',
     lib_modal_desc: 'Local browser storage for your projects',
     btn_save_to_lib: '+ Save Current Project to Library',
     btn_close: 'Close',
-    copied_toast: '📋 Copied to clipboard!',
-    saved_toast: '💾 Project saved to JSON file!',
-    lib_saved_toast: '📚 Project added to library!',
-    loaded_toast: '📂 Project loaded successfully!',
-    generated_toast: '⚡ Mod generated successfully!',
-    download_toast: '💾 Downloading ZIP archive...',
+    copied_toast: 'Copied to clipboard!',
+    saved_toast: 'Project saved to JSON file!',
+    lib_saved_toast: 'Project added to library!',
+    loaded_toast: 'Project loaded successfully!',
+    generated_toast: 'Mod generated successfully!',
+    download_toast: 'Downloading ZIP archive...',
     val_modname: 'Mod Name',
     val_owner: 'Please specify at least one valid 3-letter owner tag (e.g. POL or POL, LIT)',
     val_cosmetic: 'Cosmetic Tag ID',
@@ -261,8 +261,8 @@ const I18N = {
 const CHEAT_TRIGGERS = [
   {
     "category": {
-      "ru": "🗺️ Территории, регионы и границы",
-      "en": "🗺️ Territories, States & Borders"
+      "ru": "Территории, регионы и границы",
+      "en": "Territories, States & Borders"
     },
     "items": [
       {
@@ -381,8 +381,8 @@ const CHEAT_TRIGGERS = [
   },
   {
     "category": {
-      "ru": "🏛️ Политика, идеология и суверенитет",
-      "en": "🏛️ Politics, Ideology & Sovereignty"
+      "ru": "Политика, идеология и суверенитет",
+      "en": "Politics, Ideology & Sovereignty"
     },
     "items": [
       {
@@ -543,8 +543,8 @@ const CHEAT_TRIGGERS = [
   },
   {
     "category": {
-      "ru": "⚔️ Война, альянсы, дипломатия и напряжённость",
-      "en": "⚔️ War, Factions, Diplomacy & Tension"
+      "ru": "Война, альянсы, дипломатия и напряжённость",
+      "en": "War, Factions, Diplomacy & Tension"
     },
     "items": [
       {
@@ -663,8 +663,8 @@ const CHEAT_TRIGGERS = [
   },
   {
     "category": {
-      "ru": "🏭 Промышленность, заводы и ресурсы",
-      "en": "🏭 Industry, Factories & Resources"
+      "ru": "Промышленность, заводы и ресурсы",
+      "en": "Industry, Factories & Resources"
     },
     "items": [
       {
@@ -755,8 +755,8 @@ const CHEAT_TRIGGERS = [
   },
   {
     "category": {
-      "ru": "🪖 Армия, Флот, Авиация и Склады",
-      "en": "🪖 Military, Fleet, Air & Equipment"
+      "ru": "Армия, Флот, Авиация и Склады",
+      "en": "Military, Fleet, Air & Equipment"
     },
     "items": [
       {
@@ -847,8 +847,8 @@ const CHEAT_TRIGGERS = [
   },
   {
     "category": {
-      "ru": "🔬 Наука, Технологии и Календарь",
-      "en": "🔬 Science, Technology & Date"
+      "ru": "Наука, Технологии и Календарь",
+      "en": "Science, Technology & Date"
     },
     "items": [
       {
@@ -921,7 +921,7 @@ const CHEAT_TRIGGERS = [
 // ─── EFFECTS / REWARDS CHEAT-SHEET DATA ───────
 const CHEAT_EFFECTS = [
   {
-    category: { ru: '🗺️ Территории, столица и национализация', en: '🗺️ Territories, Capital & Coring' },
+    category: { ru: 'Территории, столица и национализация', en: 'Territories, Capital & Coring' },
     items: [
       { code: '123 = { add_core_of = ROOT }', desc: { ru: 'Сделать регион 123 национальной территорией (core)', en: 'Make state 123 a core territory of ROOT' } },
       { code: 'set_capital = { state = 123 }', desc: { ru: 'Перенести столицу державы в регион 123', en: 'Relocate the nation capital to state 123' } },
@@ -930,7 +930,7 @@ const CHEAT_EFFECTS = [
     ]
   },
   {
-    category: { ru: '🏛️ Политическая власть, стабильность и идеология', en: '🏛️ Politics, Stability & Ideology' },
+    category: { ru: 'Политическая власть, стабильность и идеология', en: 'Politics, Stability & Ideology' },
     items: [
       { code: 'add_political_power = 150', desc: { ru: 'Добавить 150 очков политической силы (PP)', en: 'Add 150 political power' } },
       { code: 'add_stability = 0.15', desc: { ru: 'Увеличить базовую стабильность на +15%', en: 'Increase stability by +15%' } },
@@ -942,7 +942,7 @@ const CHEAT_EFFECTS = [
     ]
   },
   {
-    category: { ru: '🏭 Промышленность, заводы и ячейки', en: '🏭 Industry, Factories & Slots' },
+    category: { ru: 'Промышленность, заводы и ячейки', en: 'Industry, Factories & Slots' },
     items: [
       { code: 'add_offsite_building = { type = industrial_complex level = 2 }', desc: { ru: 'Добавить 2 внекартовые гражданские фабрики', en: 'Add 2 offsite civilian factories' } },
       { code: 'add_offsite_building = { type = arms_factory level = 2 }', desc: { ru: 'Добавить 2 внекартовых военных завода', en: 'Add 2 offsite military factories' } },
@@ -954,7 +954,7 @@ const CHEAT_EFFECTS = [
     ]
   },
   {
-    category: { ru: '⚔️ Армия, опыт и людские ресурсы', en: '⚔️ Military, Experience & Manpower' },
+    category: { ru: 'Армия, опыт и людские ресурсы', en: 'Military, Experience & Manpower' },
     items: [
       { code: 'add_manpower = 100000', desc: { ru: 'Добавить 100 000 людских ресурсов (призывников)', en: 'Add 100,000 manpower' } },
       { code: 'army_experience = 50', desc: { ru: 'Добавить +50 опыта армии', en: 'Add +50 army experience' } },
@@ -965,7 +965,7 @@ const CHEAT_EFFECTS = [
     ]
   },
   {
-    category: { ru: '🔬 Исследования и технологии', en: '🔬 Research & Technology' },
+    category: { ru: 'Исследования и технологии', en: 'Research & Technology' },
     items: [
       { code: 'add_research_slot = 1', desc: { ru: 'Добавить +1 дополнительную ячейку исследований', en: 'Add +1 research slot' } },
       { code: 'add_tech_bonus = { name = industrial_bonus bonus = 1.0 uses = 1 category = industry }', desc: { ru: '100% бонус на следующее исследование промышленности', en: '100% research bonus for 1 industrial technology' } },
@@ -1101,7 +1101,7 @@ function handleOwnerTagsInput(val) {
     container.innerHTML = '';
     return;
   }
-  container.innerHTML = tags.map(t => `<span class="tag-badge">🏷️ ${t}</span>`).join('');
+  container.innerHTML = tags.map(t => `<span class="tag-badge">${t}</span>`).join('');
 }
 
 // ─── CORE STATES PARSER & BADGES ──────────────
@@ -1127,7 +1127,7 @@ function handleCoreStatesInput(val) {
     container.innerHTML = '';
     return;
   }
-  container.innerHTML = states.map(s => `<span class="core-badge">🗺️ State ${s}</span>`).join('');
+  container.innerHTML = states.map(s => `<span class="core-badge">State ${s}</span>`).join('');
 }
 
 // ─── CATEGORY SWITCHER ────────────────────────
@@ -1183,7 +1183,7 @@ function addTrigger(value = '') {
   row.className = 'trigger-row';
   row.innerHTML = `
     <input type="text" class="inp" placeholder="controls_state = 123" value="${value.replace(/"/g, '&quot;')}" oninput="onFieldChange()" />
-    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить">✕</button>
+    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить"></button>
   `;
   list.appendChild(row);
   onFieldChange();
@@ -1263,7 +1263,7 @@ function renderTriggersCheat(filter = '') {
 
 function insertTriggerFromCheat(code) {
   addTrigger(code);
-  showToast('✓ ' + code);
+  showToast('' + code);
 }
 
 // ─── REWARDS & EFFECTS ────────────────────────
@@ -1275,7 +1275,7 @@ function addCustomEffect(value = '') {
   row.className = 'trigger-row';
   row.innerHTML = `
     <input type="text" class="inp" placeholder="add_research_slot = 1" value="${value.replace(/"/g, '&quot;')}" oninput="onFieldChange()" />
-    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить">✕</button>
+    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить"></button>
   `;
   list.appendChild(row);
   onFieldChange();
@@ -1359,7 +1359,7 @@ function renderEffectsCheat(filter = '') {
 
 function insertEffectFromCheat(code) {
   addCustomEffect(code);
-  showToast('✓ ' + code);
+  showToast('' + code);
 }
 
 // ─── INTERACTIVE HOI4 STATES MAP (1081 STATES) ──────────
@@ -1423,11 +1423,11 @@ function openStatesMap(target = 'core') {
   if (target === 'core') {
     if (titleEl) titleEl.textContent = 'Интерактивная карта — Национальные регионы (Core States)';
     if (subEl) subEl.textContent = 'Кликайте по регионам для выбора. Список автоматически обновит национальные регионы (add_core_of = ROOT)';
-    if (btnApply) btnApply.textContent = '✅ Применить в Core States';
+    if (btnApply) btnApply.textContent = 'Применить в Core States';
   } else {
     if (titleEl) titleEl.textContent = 'Интерактивная карта — Контроль регионов (controls_state)';
     if (subEl) subEl.textContent = 'Выберите необходимые регионы для победы или создания государства. Они добавятся в список условий (controls_state)';
-    if (btnApply) btnApply.textContent = '✅ Добавить в Условия (controls_state)';
+    if (btnApply) btnApply.textContent = 'Добавить в Условия (controls_state)';
   }
 
   populateCountrySelect();
@@ -1862,7 +1862,7 @@ function renderStatesGrid() {
         </div>
         <div class="state-card-name-ru">${state.ru || 'Безымянный регион'}</div>
         <div class="state-card-name-en">${state.en || ''}</div>
-        <div class="state-card-check">${isSelected ? '✓' : '+'}</div>
+        <div class="state-card-check">${isSelected ? '' : '+'}</div>
       </div>
     `;
   });
@@ -1886,7 +1886,7 @@ function toggleState(id) {
   if (card) {
     card.classList.toggle('selected', isSelected);
     const checkEl = card.querySelector('.state-card-check');
-    if (checkEl) checkEl.textContent = isSelected ? '✓' : '+';
+    if (checkEl) checkEl.textContent = isSelected ? '' : '+';
     if (window.MotionFX) window.MotionFX.animateStateCard(card, isSelected);
   }
 
@@ -1906,7 +1906,7 @@ function selectAllFilteredStates() {
   updateMapSvgSelections();
   updateMapSvgSelections();
   updateDockUI();
-  showToast(`✓ Добавлено ${filtered.length} регионов в выборку`);
+  showToast(`Добавлено ${filtered.length} регионов в выборку`);
 }
 
 function deselectAllFilteredStates() {
@@ -1972,10 +1972,10 @@ function copySelectedStateIds() {
   const text = sortedIds.join(', ');
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast(`📋 Скопировано ${sortedIds.length} ID: ` + text);
+      showToast(`Скопировано ${sortedIds.length} ID: ` + text);
     });
   } else {
-    showToast(`✓ IDs: ` + text);
+    showToast(`IDs: ` + text);
   }
 }
 
@@ -1993,14 +1993,14 @@ function applySelectedStatesToTarget() {
       handleCoreStatesInput(coreInp.value);
       onFieldChange();
     }
-    showToast(`✓ Назначено ${sortedIds.length} национальных регионов!`);
+    showToast(`Назначено ${sortedIds.length} национальных регионов!`);
   } else {
     // Add controls_state triggers
     sortedIds.forEach(id => {
       addTrigger(`controls_state = ${id}`);
     });
     onFieldChange();
-    showToast(`✓ Добавлено ${sortedIds.length} условий controls_state!`);
+    showToast(`Добавлено ${sortedIds.length} условий controls_state!`);
   }
 
   closeStatesMap();
@@ -2579,7 +2579,7 @@ function renderProjectsList() {
         </div>
         <div style="display:flex; gap:8px">
           <button type="button" class="btn-sm" onclick="loadProjectFromLibrary('${p.id}')">Загрузить</button>
-          <button type="button" class="btn-sm danger-btn" onclick="deleteProjectFromLibrary('${p.id}')">✕</button>
+          <button type="button" class="btn-sm danger-btn" onclick="deleteProjectFromLibrary('${p.id}')"></button>
         </div>
       </div>
     `;
@@ -3365,7 +3365,7 @@ function cosm_applyPreset(key) {
   if (!p) return;
   populateFormFromData(p);
   onFieldChange();
-  showToast(currentLang === 'ru' ? '✓ Шаблон применён: ' + p.modName : '✓ Preset applied: ' + p.modName);
+  showToast(currentLang === 'ru' ? 'Шаблон применён: ' + p.modName : 'Preset applied: ' + p.modName);
 }
 window.cosm_applyPreset = cosm_applyPreset;
 
@@ -3385,6 +3385,8 @@ window.cosm_getCustomEffects = getCustomEffects;
 window.cosm_openEffectsModal = openEffectsModal;
 window.cosm_closeEffectsModal = closeEffectsModal;
 window.cosm_renderEffectsCheat = renderEffectsCheat;
+window.cosm_filterTriggers = renderTriggersCheat;
+window.cosm_filterEffects = renderEffectsCheat;
 window.cosm_insertEffectFromCheat = insertEffectFromCheat;
 // State Map Exports
 window.cosm_openStatesMap = openStatesMap;
@@ -3442,10 +3444,3 @@ window.CosmeticCreator = {
 };
 
 })();
-
-window.cosm_filterTriggers = function(query) {
-  renderTriggersCheat(query);
-};
-window.cosm_filterEffects = function(query) {
-  renderEffectsCheat(query);
-};

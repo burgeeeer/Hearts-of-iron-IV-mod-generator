@@ -3,7 +3,7 @@
 
 const HOI4_ALL_EFFECTS = [
   {
-    category: { ru: "🎁 Прямые команды решений (Direct Effects)", en: "🎁 Direct Decision Effects" },
+    category: { ru: "Прямые команды решений (Direct Effects)", en: "Direct Decision Effects" },
     items: [
       { code: "add_political_power = 150", desc: { ru: "Добавить 150 очков политической силы (PP)", en: "Add 150 political power" } },
       { code: "add_stability = 0.15", desc: { ru: "Увеличить стабильность на +15%", en: "Add +15% stability" } },
@@ -61,7 +61,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "🏭 Промышленность и Строительство (Баффы)", en: "🏭 Industry & Construction (Buffs)" },
+    category: { ru: "Промышленность и Строительство (Баффы)", en: "Industry & Construction (Buffs)" },
     items: [
       { code: "industrial_capacity_factory = 0.15", desc: { ru: "Производительность фабрик и военных заводов: +15%", en: "Factory output: +15%" } },
       { code: "industrial_capacity_dockyard = 0.20", desc: { ru: "Производительность верфей: +20%", en: "Dockyard output: +20%" } },
@@ -86,7 +86,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "⚔️ Армия и Сухопутные войска (Баффы)", en: "⚔️ Army & Land Combat (Buffs)" },
+    category: { ru: "Армия и Сухопутные войска (Баффы)", en: "Army & Land Combat (Buffs)" },
     items: [
       { code: "army_attack_factor = 0.10", desc: { ru: "Атака всех сухопутных дивизий: +10%", en: "Division attack: +10%" } },
       { code: "army_defence_factor = 0.10", desc: { ru: "Оборона всех сухопутных дивизий: +10%", en: "Division defence: +10%" } },
@@ -112,7 +112,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "✈️ Авиация и Воздушные силы (Баффы)", en: "✈️ Air Force & Air Combat (Buffs)" },
+    category: { ru: "Авиация и Воздушные силы (Баффы)", en: "Air Force & Air Combat (Buffs)" },
     items: [
       { code: "air_superiority_factor = 0.15", desc: { ru: "Эффективность превосходства в воздухе: +15%", en: "Air superiority effectiveness: +15%" } },
       { code: "air_cas_efficiency = 0.20", desc: { ru: "Урон непосредственной поддержки с воздуха (CAS): +20%", en: "Close air support (CAS) efficiency: +20%" } },
@@ -128,7 +128,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "⚓ Военно-морской флот (Баффы)", en: "⚓ Navy & Naval Warfare (Buffs)" },
+    category: { ru: "Военно-морской флот (Баффы)", en: "Navy & Naval Warfare (Buffs)" },
     items: [
       { code: "navy_max_range_factor = 0.25", desc: { ru: "Дальность плавания военных кораблей: +25%", en: "Naval operational range: +25%" } },
       { code: "naval_speed_factor = 0.10", desc: { ru: "Скорость всех кораблей флота: +10%", en: "Navy speed: +10%" } },
@@ -147,7 +147,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "👥 Призывники, Людские ресурсы и Население", en: "👥 Manpower, Conscription & Population" },
+    category: { ru: "Призывники, Людские ресурсы и Население", en: "Manpower, Conscription & Population" },
     items: [
       { code: "conscription_factor = 0.15", desc: { ru: "Доля военнообязанного населения: +15%", en: "Recruitable population factor: +15%" } },
       { code: "conscription = 0.02", desc: { ru: "Базовый призывной контингент: +2.0% от населения", en: "Base recruitable population: +2.0%" } },
@@ -158,7 +158,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "🔬 Наука, Исследования и Доктрины", en: "🔬 Research, Technology & Doctrines" },
+    category: { ru: "Наука, Исследования и Доктрины", en: "Research, Technology & Doctrines" },
     items: [
       { code: "research_speed_factor = 0.10", desc: { ru: "Общая скорость всех исследований: +10%", en: "General research speed: +10%" } },
       { code: "industry_research_speed_factor = 0.15", desc: { ru: "Скорость исследований промышленности: +15%", en: "Industry research speed: +15%" } },
@@ -175,7 +175,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "⛽ Топливо, Сырьё и Ресурсы", en: "⛽ Fuel, Oil & Strategic Resources" },
+    category: { ru: "Топливо, Сырьё и Ресурсы", en: "Fuel, Oil & Strategic Resources" },
     items: [
       { code: "local_resources_factor = 0.20", desc: { ru: "Эффективность добычи местных ресурсов: +20%", en: "Local resource extraction: +20%" } },
       { code: "fuel_gain_factor = 0.25", desc: { ru: "Прирост и переработка топлива: +25%", en: "Fuel gain: +25%" } },
@@ -186,7 +186,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "🕊️ Дипломатия, Война и Напряженность", en: "🕊️ Diplomacy, Wargoals & Tension" },
+    category: { ru: "Дипломатия, Война и Напряженность", en: "Diplomacy, Wargoals & Tension" },
     items: [
       { code: "justify_war_goal_time = -0.30", desc: { ru: "Время фабрикации цели войны: -30%", en: "Justify wargoal duration: -30%" } },
       { code: "generate_wargoal_tension = -0.50", desc: { ru: "Порог мировой напряженности для объявления войны: -50%", en: "Generate wargoal tension limit: -50%" } },
@@ -198,7 +198,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "🛡️ Оккупация, Подчинение и Сопротивление", en: "🛡️ Occupation, Compliance & Resistance" },
+    category: { ru: "Оккупация, Подчинение и Сопротивление", en: "Occupation, Compliance & Resistance" },
     items: [
       { code: "compliance_growth = 0.20", desc: { ru: "Скорость роста подчинения оккупированных земель: +20%", en: "Compliance growth speed: +20%" } },
       { code: "resistance_growth = -0.25", desc: { ru: "Скорость роста подпольного сопротивления: -25%", en: "Resistance growth speed: -25%" } },
@@ -209,7 +209,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "🕵️ Шпионаж, Разведка и Шифры (LaR)", en: "🕵️ Intelligence, Cryptology & Espionage" },
+    category: { ru: "Шпионаж, Разведка и Шифры (LaR)", en: "Intelligence, Cryptology & Espionage" },
     items: [
       { code: "operative_slot = 1", desc: { ru: "Дополнительная ячейка для агента/шпиона: +1", en: "Operative slot: +1" } },
       { code: "crypto_strength = 2", desc: { ru: "Стойкость криптографического шифра: +2", en: "Cryptographic defense level: +2" } },
@@ -220,7 +220,7 @@ const HOI4_ALL_EFFECTS = [
     ]
   },
   {
-    category: { ru: "⚠️ Популярные дебаффы (Debuffs для баланса и кризисов)", en: "⚠️ Common Debuffs (Balance & Hard Mode)" },
+    category: { ru: "Популярные дебаффы (Debuffs для баланса и кризисов)", en: "Common Debuffs (Balance & Hard Mode)" },
     items: [
       { code: "consumer_goods_factor = 0.10", desc: { ru: "ШТРАФ: Товары народного потребления (ТНП) +10% (забирает фабрики)", en: "DEBUFF: Consumer goods +10%" } },
       { code: "production_speed_buildings_factor = -0.20", desc: { ru: "ШТРАФ: Скорость любого строительства снижена на -20%", en: "DEBUFF: Construction speed -20%" } },

@@ -47,7 +47,7 @@ var i18n = {
         adjName: "Adjective:",
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
-        footerCoverBtn: "🎨 Make Cover",
+        footerCoverBtn: "Make Cover",
         puppetTitle: "Puppet Names & Flags",
         puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
@@ -195,7 +195,7 @@ var i18n = {
         adjName: "Прилагательное:",
         uploadFlag: "Загрузить флаг (PNG):",
         genBtn: "Сгенерировать мод",
-        footerCoverBtn: "🎨 Сделать обложку",
+        footerCoverBtn: "Сделать обложку",
         puppetTitle: "Названия и флаги марионеток",
         puppetDesc: "Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
@@ -963,7 +963,7 @@ function renderCountries() {
             ideoHtml += '<div class="canvas-item"><span>Normal (82\u00d752)</span><canvas id="' + prefix + '_cn" width="82" height="52"></canvas></div>';
             ideoHtml += '<div class="canvas-item"><span>Medium (41\u00d726)</span><canvas id="' + prefix + '_cm" width="41" height="26"></canvas></div>';
             ideoHtml += '<div class="canvas-item"><span>Small (Zoom 4\u00d7)</span><canvas id="' + prefix + '_cs" width="10" height="7"></canvas></div>';
-            ideoHtml += '<button type="button" class="btn-sm btn-secondary danger-btn" onclick="clearCountryFlag(' + idx + ',\'' + ideo + '\')" title="Удалить флаг" style="margin-left:auto; align-self:center">✕</button>';
+            ideoHtml += '<button type="button" class="btn-sm btn-secondary danger-btn" onclick="clearCountryFlag(' + idx + ',\'' + ideo + '\')" title="Удалить флаг" style="margin-left:auto; align-self:center"></button>';
             ideoHtml += '</div></div></div>';
         }
 
@@ -1313,7 +1313,7 @@ function addPuppetIdeologyFlag(parent, puppetIndex, ideo, rule, t) {
     var delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'btn-sm btn-secondary danger-btn';
-    delBtn.textContent = '✕';
+    delBtn.textContent = '';
     delBtn.title = 'Удалить флаг';
     delBtn.style.alignSelf = 'center';
     delBtn.style.marginLeft = 'auto';
@@ -1887,7 +1887,7 @@ function renderCoverToContext(ctx, w, h, flagImg) {
         ctx.fillStyle = '#d88a00';
         ctx.font = 'bold 12px "Segoe UI", Tahoma, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('★  HEARTS OF IRON IV MOD  ★', w / 2, 42);
+        ctx.fillText('HEARTS OF IRON IV MOD  ', w / 2, 42);
         ctx.strokeStyle = 'rgba(216, 138, 0, 0.4)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -2657,7 +2657,7 @@ function renderProjectsList() {
                 im.src = item.cover;
                 thumb.appendChild(im);
             } else {
-                thumb.textContent = '🗺️';
+                thumb.textContent = '';
             }
 
             var meta = document.createElement('div');
@@ -2678,19 +2678,19 @@ function renderProjectsList() {
             var loadBtn = document.createElement('button');
             loadBtn.type = 'button';
             loadBtn.className = 'secondary-btn';
-            loadBtn.textContent = '📂 ' + (t.projCardLoadBtn || 'Загрузить');
+            loadBtn.textContent = '' + (t.projCardLoadBtn || 'Загрузить');
             loadBtn.onclick = function() { loadProjectFromLibrary(item.id); };
 
             var expBtn = document.createElement('button');
             expBtn.type = 'button';
             expBtn.className = 'secondary-btn';
-            expBtn.textContent = '💾 ' + (t.projCardExportBtn || 'JSON');
+            expBtn.textContent = '' + (t.projCardExportBtn || 'JSON');
             expBtn.onclick = function() { exportProjectFromLibrary(item.id); };
 
             var delBtn = document.createElement('button');
             delBtn.type = 'button';
             delBtn.className = 'secondary-btn danger-btn';
-            delBtn.textContent = '🗑️';
+            delBtn.textContent = '';
             delBtn.title = t.projCardDeleteBtn || 'Удалить';
             delBtn.onclick = function() { deleteProjectFromLibrary(item.id); };
 
