@@ -399,11 +399,15 @@
       </div>
 
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
-      <div class="section" id="cosm-section-info">
-        <div class="section-head">
-          <h2 data-t="s1_head">Данные мода</h2>
-          <p class="section-desc" data-t="s1_desc">Параметры дескриптора для лаунчера Hearts of Iron IV</p>
+      <div class="section collapsible" id="cosm-section-info">
+        <div class="section-head" onclick="toggleSection(this)">
+          <div>
+            <h2 data-t="s1_head">Данные мода</h2>
+            <p class="section-desc" data-t="s1_desc">Параметры дескриптора для лаунчера Hearts of Iron IV</p>
+          </div>
+          <span class="accordion-arrow">▼</span>
         </div>
+        <div class="section-body">
         <div class="form-grid-2">
           <div class="field">
             <label data-t="f_modname">Название мода <span class="req">*</span></label>
@@ -436,14 +440,19 @@
           </div>
           <div class="hint" data-t="f_cosm_loc_filename_h" id="cosmLocFileNameHint">Полное имя файла локализации. По умолчанию: [id_мода]_l_russian.yml.</div>
         </div>
+        </div>
       </div>
 
       <!-- ════════════ SECTION 2: DECISION & TRIGGERS ════════════ -->
-      <div class="section" id="cosm-section-decision">
-        <div class="section-head">
-          <h2 data-t="s2_scope_head">Доступность решения (Для кого)</h2>
-          <p class="section-desc" data-t="s2_scope_desc">Выберите, кто может принять решение о создании страны: одна страна или любая страна мира</p>
+      <div class="section collapsible" id="cosm-section-decision">
+        <div class="section-head" onclick="toggleSection(this)">
+          <div>
+            <h2 data-t="s2_scope_head">Доступность решения (Для кого)</h2>
+            <p class="section-desc" data-t="s2_scope_desc">Выберите, кто может принять решение о создании страны: одна страна или любая страна мира</p>
+          </div>
+          <span class="accordion-arrow">▼</span>
         </div>
+        <div class="section-body">
 
         <div class="radio-cards">
           <label class="radio-card selected" id="card-scope-specific" onclick="cosm_setScope('specific')">
@@ -633,11 +642,15 @@
       </div>
 
       <!-- ════════════ SECTION 3: COUNTRY, FLAGS & 4 IDEOLOGIES ════════════ -->
-      <div class="section" id="cosm-section-cosmetic">
-        <div class="section-head">
-          <h2 data-t="s3_color_head">Цвет страны на карте</h2>
-          <p class="section-desc" data-t="s3_color_desc">Цвет границ и территории при принятии косметического тега</p>
+      <div class="section collapsible" id="cosm-section-cosmetic">
+        <div class="section-head" onclick="toggleSection(this)">
+          <div>
+            <h2 data-t="s3_color_head">Цвет страны на карте</h2>
+            <p class="section-desc" data-t="s3_color_desc">Цвет границ и территории при принятии косметического тега</p>
+          </div>
+          <span class="accordion-arrow">▼</span>
         </div>
+        <div class="section-body">
         <div class="color-container">
           <div class="form-grid-3" style="flex:1">
             <div class="field">
@@ -851,18 +864,30 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
-      <div class="section" id="cosm-section-preview">
-        <div class="section-head">
-          <h2 data-t="step4_title">Сборка и файлы мода</h2>
-          <p class="section-desc">Сгенерируйте скрипты Paradox, проверьте код во вкладках и скачайте готовый ZIP-архив</p>
+      <div class="section collapsible" id="cosm-section-preview">
+        <div class="section-head" onclick="toggleSection(this)">
+          <div>
+            <h2 data-t="step4_title">Сборка и файлы мода</h2>
+            <p class="section-desc">Сгенерируйте скрипты Paradox, проверьте код во вкладках и скачайте готовый ZIP-архив</p>
+          </div>
+          <span class="accordion-arrow">▼</span>
         </div>
+        <div class="section-body">
 
         <div style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap">
-          <button type="button" class="btn-generate" onclick="cosm_generateMod()" data-t="btn_generate">Сгенерировать файлы мода</button>
-          <button type="button" class="btn-download" id="btn-download" onclick="cosm_downloadMod()" style="display:none" data-t="btn_download">Скачать ZIP-архив с флагами</button>
+          <button type="button" class="btn-primary btn-generate" onclick="cosm_buildAndDownloadMod()" data-t="btn_build_and_download">
+            <span id="btnSection4DownloadText">⬇ Сгенерировать и скачать мод (.zip)</span>
+          </button>
+          <button type="button" class="btn-secondary" onclick="cosm_generateMod()" data-t="btn_generate">
+            <span id="btnSection4PreviewText">Обновить код в предпросмотре</span>
+          </button>
+          <button type="button" class="btn-download" id="btn-download" onclick="cosm_downloadMod()" style="display:none" data-t="btn_download">
+            Скачать ZIP-архив с флагами
+          </button>
         </div>
 
         <div class="code-tabs-wrapper">

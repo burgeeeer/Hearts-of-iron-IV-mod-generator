@@ -370,6 +370,7 @@ function mkEmptyCity() {
     return { stateId: '', provinceId: '', controllerTag: '', name: '' };
 }
 
+window.toggleSection = toggleSection;
 function toggleSection(el) {
     var card = el.closest('.section, .country-card');
     if (card) card.classList.toggle('collapsed');

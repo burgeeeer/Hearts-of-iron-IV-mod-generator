@@ -3857,3 +3857,54 @@ html {
     max-width: 160px;
   }
 }
+
+
+/* Collapsible Cheat Categories in Triggers and Effects Modals */
+.cheat-category {
+  margin-bottom: 12px;
+}
+
+.cheat-category-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  padding: 8px 12px !important;
+  background: var(--bg-card) !important;
+  border-radius: var(--radius-sm) !important;
+  margin-bottom: 8px !important;
+  border: 1px solid var(--border-color) !important;
+  font-family: var(--font-display) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--text-main) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.15s ease !important;
+}
+
+.cheat-category-title:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--primary) !important;
+}
+
+.cheat-category-arrow {
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.cheat-category.collapsed .cheat-category-arrow {
+  transform: rotate(-90deg) !important;
+}
+
+.cheat-category.collapsed .cheat-category-body {
+  display: none !important;
+}
+
+.cheat-collapse-toggles {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+}

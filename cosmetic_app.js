@@ -1107,6 +1107,7 @@ function t(key) {
 }
 
 function applyTranslations() {
+  updateCosmeticDockSummary();
   const dict = I18N[currentLang] || I18N['ru'];
 
   document.querySelectorAll('[data-t]').forEach(el => {
@@ -1431,6 +1432,24 @@ function renderEffectsCheat(filter = '') {
     html = `<div style="text-align:center; padding:24px; color:var(--text-muted)">Ничего не найдено по запросу «${filter}»</div>`;
   }
   container.innerHTML = html;
+}
+
+
+function toggleCheatCategory(el) {
+  const cat = el.closest('.cheat-category');
+  if (cat) cat.classList.toggle('collapsed');
+}
+
+function collapseAllCheatCategories(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.querySelectorAll('.cheat-category').forEach(cat => cat.classList.add('collapsed'));
+}
+
+function expandAllCheatCategories(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.querySelectorAll('.cheat-category').forEach(cat => cat.classList.remove('collapsed'));
 }
 
 function insertEffectFromCheat(code) {
@@ -2516,7 +2535,35 @@ function populateFormFromData(d) {
 }
 
 // ─── AUTO-SAVE ON CHANGE & EXIT ───────────────
+
+function updateCosmeticDockSummary() {
+  const summaryEl = document.getElementById('cosmLaunchSummaryText');
+  if (!summaryEl) return;
+
+  const isRu = (currentLang !== 'en');
+  const decName = (document.getElementById('decision-name') || {}).value || '';
+  const trigCount = document.querySelectorAll('#triggers-list .trigger-row').length;
+  const effCount = document.querySelectorAll('#effects-list .trigger-row').length;
+
+  let coreCount = 0;
+  if (selectedMapStateIds && selectedMapStateIds.size > 0) {
+    coreCount = selectedMapStateIds.size;
+  } else {
+    const coreStr = (document.getElementById('core-states') || {}).value || '';
+    coreCount = coreStr.split(/[,\s]+/).filter(v => parseInt(v.trim(), 10) > 0).length;
+  }
+
+  if (isRu) {
+    const title = decName.trim() ? `Решение: «${decName.trim().slice(0, 20)}` + (decName.trim().length > 20 ? '...' : '') + '»' : '1 решение';
+    summaryEl.textContent = `${title} • ${trigCount} условий • ${effCount} наград • ${coreCount} кор-регионов`;
+  } else {
+    const title = decName.trim() ? `Decision: "${decName.trim().slice(0, 20)}` + (decName.trim().length > 20 ? '...' : '') + '"' : '1 decision';
+    summaryEl.textContent = `${title} • ${trigCount} triggers • ${effCount} effects • ${coreCount} core states`;
+  }
+}
+
 function onFieldChange() {
+  updateCosmeticDockSummary();
   updateProjectToolbar();
 
   const status = document.getElementById('autoSaveStatus');
