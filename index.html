@@ -944,7 +944,10 @@
   <div class="modal-backdrop" onclick="cosm_closeTriggersModal()"></div>
   <div class="modal-window">
     <div class="modal-header">
-      <h3 data-t="cheat_modal_title">📜 Доступные требования (Триггеры HoI4)</h3>
+      <div style="flex:1">
+        <h3 data-t="cheat_modal_title">📜 Доступные требования (Триггеры HoI4)</h3>
+        <input type="text" id="triggerSearchInput" class="inp" placeholder="🔍 Быстрый поиск условий (например: controls_state, war, stability, manpower, focus)..." oninput="cosm_filterTriggers(this.value)" style="width:100%; margin-top:8px; height:34px; font-size:12px;">
+      </div>
       <button type="button" class="modal-close-btn" onclick="cosm_closeTriggersModal()">&times;</button>
     </div>
     <div class="modal-body" id="triggersCheatBody">
@@ -960,7 +963,10 @@
   <div class="modal-backdrop" onclick="cosm_closeEffectsModal()"></div>
   <div class="modal-window">
     <div class="modal-header">
-      <h3 data-t="effects_modal_title">🎁 Доступные награды и эффекты (HoI4 Effects)</h3>
+      <div style="flex:1">
+        <h3 data-t="effects_modal_title">🎁 Доступные награды и эффекты (HoI4 Effects)</h3>
+        <input type="text" id="effectSearchInput" class="inp" placeholder="🔍 Быстрый поиск наград и баффов (например: add_core, factory, attack, stability, resource)..." oninput="cosm_filterEffects(this.value)" style="width:100%; margin-top:8px; height:34px; font-size:12px;">
+      </div>
       <button type="button" class="modal-close-btn" onclick="cosm_closeEffectsModal()">&times;</button>
     </div>
     <div class="modal-body" id="effectsCheatBody">

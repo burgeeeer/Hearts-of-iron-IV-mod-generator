@@ -260,44 +260,660 @@ const I18N = {
 // ─── TRIGGERS CHEAT-SHEET DATA ────────────────
 const CHEAT_TRIGGERS = [
   {
-    category: { ru: '🗺️ Территории и контроль регионов', en: '🗺️ Territories & State Control' },
-    items: [
-      { code: 'controls_state = 123', desc: { ru: 'Контролирует регион с ID 123', en: 'Controls state with ID 123' } },
-      { code: 'owns_state = 123', desc: { ru: 'Владеет регионом с ID 123', en: 'Owns state with ID 123' } },
-      { code: 'all_core_state = { controls_state = yes }', desc: { ru: 'Контролирует все свои национальные регионы', en: 'Controls all of its core states' } },
-      { code: 'has_full_control_of_state = 123', desc: { ru: 'Имеет полный контроль над регионом 123', en: 'Has full control of state 123' } }
+    "category": {
+      "ru": "🗺️ Территории, регионы и границы",
+      "en": "🗺️ Territories, States & Borders"
+    },
+    "items": [
+      {
+        "code": "controls_state = 123",
+        "desc": {
+          "ru": "Контролирует регион с ID 123",
+          "en": "Controls state with ID 123"
+        }
+      },
+      {
+        "code": "owns_state = 123",
+        "desc": {
+          "ru": "Владеет регионом с ID 123 (де-юре)",
+          "en": "Owns state with ID 123"
+        }
+      },
+      {
+        "code": "all_core_state = { controls_state = yes }",
+        "desc": {
+          "ru": "Контролирует все свои национальные регионы",
+          "en": "Controls all of its core states"
+        }
+      },
+      {
+        "code": "has_full_control_of_state = 123",
+        "desc": {
+          "ru": "Полный контроль над регионом 123 (без оккупантов)",
+          "en": "Has full control of state 123"
+        }
+      },
+      {
+        "code": "controls_province = 456",
+        "desc": {
+          "ru": "Контролирует конкретную провинцию 456",
+          "en": "Controls province 456"
+        }
+      },
+      {
+        "code": "owns_province = 456",
+        "desc": {
+          "ru": "Владеет конкретной провинцией 456",
+          "en": "Owns province 456"
+        }
+      },
+      {
+        "code": "123 = { is_core_of = ROOT }",
+        "desc": {
+          "ru": "Регион 123 является национальным (core) для ROOT",
+          "en": "State 123 is a core of ROOT"
+        }
+      },
+      {
+        "code": "123 = { is_claimed_by = ROOT }",
+        "desc": {
+          "ru": "ROOT имеет претензию (claim) на регион 123",
+          "en": "ROOT has a claim on state 123"
+        }
+      },
+      {
+        "code": "123 = { is_coastal = yes }",
+        "desc": {
+          "ru": "Регион 123 имеет выход к морю (прибрежный)",
+          "en": "State 123 has coastal access"
+        }
+      },
+      {
+        "code": "num_of_controlled_states > 15",
+        "desc": {
+          "ru": "Контролирует более 15 регионов",
+          "en": "Controls more than 15 states"
+        }
+      },
+      {
+        "code": "num_of_owned_states > 15",
+        "desc": {
+          "ru": "Владеет более чем 15 регионами",
+          "en": "Owns more than 15 states"
+        }
+      },
+      {
+        "code": "capital_scope = { state = 123 }",
+        "desc": {
+          "ru": "Столица государства находится в регионе 123",
+          "en": "Capital of the country is in state 123"
+        }
+      },
+      {
+        "code": "any_neighbor_country = { tag = GER }",
+        "desc": {
+          "ru": "Граничит со страной с тегом GER",
+          "en": "Directly neighbors country GER"
+        }
+      },
+      {
+        "code": "123 = { infrastructure > 3 }",
+        "desc": {
+          "ru": "Инфраструктура региона 123 выше 3 уровня",
+          "en": "State 123 infrastructure is above level 3"
+        }
+      },
+      {
+        "code": "123 = { resistance < 10 }",
+        "desc": {
+          "ru": "Сопротивление в регионе 123 ниже 10%",
+          "en": "State 123 resistance is below 10%"
+        }
+      },
+      {
+        "code": "123 = { compliance > 50 }",
+        "desc": {
+          "ru": "Подчинение населения в регионе 123 выше 50%",
+          "en": "State 123 compliance is above 50%"
+        }
+      }
     ]
   },
   {
-    category: { ru: '🏛️ Политика, идеология и суверенитет', en: '🏛️ Politics, Ideology & Sovereignty' },
-    items: [
-      { code: 'is_puppet = no', desc: { ru: 'Не является марионеткой (независимое государство)', en: 'Is not a puppet' } },
-      { code: 'is_subject = no', desc: { ru: 'Не является субъектом другой державы', en: 'Is not a subject' } },
-      { code: 'has_government = fascism', desc: { ru: 'Правящая партия — Фашизм', en: 'Ruling party is Fascism' } },
-      { code: 'has_government = democratic', desc: { ru: 'Правящая партия — Демократия', en: 'Ruling party is Democratic' } },
-      { code: 'has_government = communism', desc: { ru: 'Правящая партия — Коммунизм', en: 'Ruling party is Communism' } },
-      { code: 'has_government = neutrality', desc: { ru: 'Правящая партия — Нейтралитет / авторитаризм', en: 'Ruling party is Neutrality / Non-aligned' } },
-      { code: 'has_stability > 0.50', desc: { ru: 'Стабильность страны выше 50%', en: 'Stability is greater than 50%' } },
-      { code: 'has_war_support > 0.50', desc: { ru: 'Поддержка войны выше 50%', en: 'War support is greater than 50%' } },
-      { code: 'has_political_power > 100', desc: { ru: 'Более 100 очков политической силы', en: 'Has more than 100 political power' } }
+    "category": {
+      "ru": "🏛️ Политика, идеология и суверенитет",
+      "en": "🏛️ Politics, Ideology & Sovereignty"
+    },
+    "items": [
+      {
+        "code": "is_puppet = no",
+        "desc": {
+          "ru": "Не является марионеткой (независимое государство)",
+          "en": "Is not a puppet"
+        }
+      },
+      {
+        "code": "is_subject = no",
+        "desc": {
+          "ru": "Не является чьим-либо субъектом",
+          "en": "Is not a subject"
+        }
+      },
+      {
+        "code": "is_puppet = yes",
+        "desc": {
+          "ru": "Является марионеткой",
+          "en": "Is a puppet"
+        }
+      },
+      {
+        "code": "is_puppet_of = GER",
+        "desc": {
+          "ru": "Является марионеткой конкретной державы (GER)",
+          "en": "Is a puppet of GER"
+        }
+      },
+      {
+        "code": "has_government = democratic",
+        "desc": {
+          "ru": "Правящая партия — Демократия",
+          "en": "Ruling party is Democratic"
+        }
+      },
+      {
+        "code": "has_government = fascism",
+        "desc": {
+          "ru": "Правящая партия — Фашизм",
+          "en": "Ruling party is Fascism"
+        }
+      },
+      {
+        "code": "has_government = communism",
+        "desc": {
+          "ru": "Правящая партия — Коммунизм",
+          "en": "Ruling party is Communism"
+        }
+      },
+      {
+        "code": "has_government = neutrality",
+        "desc": {
+          "ru": "Правящая партия — Нейтралитет / авторитаризм",
+          "en": "Ruling party is Neutrality / Non-aligned"
+        }
+      },
+      {
+        "code": "democratic > 0.50",
+        "desc": {
+          "ru": "Популярность демократии выше 50%",
+          "en": "Democratic popularity > 50%"
+        }
+      },
+      {
+        "code": "fascism > 0.50",
+        "desc": {
+          "ru": "Популярность фашизма выше 50%",
+          "en": "Fascism popularity > 50%"
+        }
+      },
+      {
+        "code": "communism > 0.50",
+        "desc": {
+          "ru": "Популярность коммунизма выше 50%",
+          "en": "Communism popularity > 50%"
+        }
+      },
+      {
+        "code": "neutrality > 0.50",
+        "desc": {
+          "ru": "Популярность нейтралитета выше 50%",
+          "en": "Neutrality popularity > 50%"
+        }
+      },
+      {
+        "code": "has_stability > 0.60",
+        "desc": {
+          "ru": "Стабильность государства выше 60%",
+          "en": "Stability is greater than 60%"
+        }
+      },
+      {
+        "code": "has_war_support > 0.50",
+        "desc": {
+          "ru": "Поддержка войны выше 50%",
+          "en": "War support is greater than 50%"
+        }
+      },
+      {
+        "code": "has_political_power > 100",
+        "desc": {
+          "ru": "Запас политической силы (PP) более 100",
+          "en": "Has more than 100 political power"
+        }
+      },
+      {
+        "code": "has_command_power > 50",
+        "desc": {
+          "ru": "Запас командного ресурса (CP) более 50",
+          "en": "Has more than 50 command power"
+        }
+      },
+      {
+        "code": "has_country_flag = my_custom_flag",
+        "desc": {
+          "ru": "У страны установлен флаг my_custom_flag",
+          "en": "Country has flag my_custom_flag"
+        }
+      },
+      {
+        "code": "has_global_flag = world_war_two",
+        "desc": {
+          "ru": "Установлен глобальный флаг world_war_two",
+          "en": "Global flag world_war_two is set"
+        }
+      },
+      {
+        "code": "has_idea = neutrality_idea",
+        "desc": {
+          "ru": "Активен национальный дух / закон neutrality_idea",
+          "en": "Has active idea neutrality_idea"
+        }
+      },
+      {
+        "code": "has_completed_focus = army_reform",
+        "desc": {
+          "ru": "Завершён национальный фокус army_reform",
+          "en": "Completed national focus army_reform"
+        }
+      },
+      {
+        "code": "has_civil_war = no",
+        "desc": {
+          "ru": "В стране отсутствует гражданская война",
+          "en": "Country is not in a civil war"
+        }
+      },
+      {
+        "code": "is_major = yes",
+        "desc": {
+          "ru": "Является великой державой (мажором)",
+          "en": "Country is a major power"
+        }
+      }
     ]
   },
   {
-    category: { ru: '⚔️ Война, альянсы и дипломатия', en: '⚔️ War, Factions & Diplomacy' },
-    items: [
-      { code: 'has_war = no', desc: { ru: 'Страна находится в состоянии мира (нет активных войн)', en: 'Country is not at war' } },
-      { code: 'is_in_faction = no', desc: { ru: 'Не состоит ни в каком альянсе', en: 'Is not in any faction' } },
-      { code: 'is_faction_leader = yes', desc: { ru: 'Является лидером своего альянса', en: 'Is the faction leader' } },
-      { code: 'surrender_progress < 0.05', desc: { ru: 'Прогресс капитуляции меньше 5%', en: 'Surrender progress is under 5%' } },
-      { code: 'threat > 0.25', desc: { ru: 'Мировая напряженность выше 25%', en: 'World tension is above 25%' } }
+    "category": {
+      "ru": "⚔️ Война, альянсы, дипломатия и напряжённость",
+      "en": "⚔️ War, Factions, Diplomacy & Tension"
+    },
+    "items": [
+      {
+        "code": "has_war = no",
+        "desc": {
+          "ru": "Страна находится в состоянии мира (нет войн)",
+          "en": "Country is at peace"
+        }
+      },
+      {
+        "code": "has_war = yes",
+        "desc": {
+          "ru": "Страна находится в состоянии войны",
+          "en": "Country is at war"
+        }
+      },
+      {
+        "code": "has_war_with = SOV",
+        "desc": {
+          "ru": "Ведёт войну против державы SOV",
+          "en": "Is at war with SOV"
+        }
+      },
+      {
+        "code": "is_in_faction = no",
+        "desc": {
+          "ru": "Не состоит ни в одном альянсе",
+          "en": "Is not in any faction"
+        }
+      },
+      {
+        "code": "is_in_faction = yes",
+        "desc": {
+          "ru": "Состоит в альянсе (фракции)",
+          "en": "Is a member of a faction"
+        }
+      },
+      {
+        "code": "is_faction_leader = yes",
+        "desc": {
+          "ru": "Является лидером своего альянса",
+          "en": "Is the faction leader"
+        }
+      },
+      {
+        "code": "is_in_faction_with = ENG",
+        "desc": {
+          "ru": "Состоит в одном альянсе с ENG",
+          "en": "Is in the same faction as ENG"
+        }
+      },
+      {
+        "code": "has_defensive_war = yes",
+        "desc": {
+          "ru": "Ведёт оборонительную войну (подверглась нападению)",
+          "en": "Is in a defensive war"
+        }
+      },
+      {
+        "code": "has_offensive_war = yes",
+        "desc": {
+          "ru": "Ведёт наступательную войну (агрессор)",
+          "en": "Is in an offensive war"
+        }
+      },
+      {
+        "code": "surrender_progress < 0.05",
+        "desc": {
+          "ru": "Прогресс капитуляции меньше 5%",
+          "en": "Surrender progress is under 5%"
+        }
+      },
+      {
+        "code": "has_capitulated = no",
+        "desc": {
+          "ru": "Страна не капитулировала",
+          "en": "Country has not capitulated"
+        }
+      },
+      {
+        "code": "threat > 0.25",
+        "desc": {
+          "ru": "Мировая напряженность выше 25% (0.25)",
+          "en": "World tension is above 25%"
+        }
+      },
+      {
+        "code": "has_non_aggression_pact_with = GER",
+        "desc": {
+          "ru": "Заключён пакт о ненападении с GER",
+          "en": "Has non-aggression pact with GER"
+        }
+      },
+      {
+        "code": "has_guaranteed = POL",
+        "desc": {
+          "ru": "Гарантирует независимость Польши (POL)",
+          "en": "Has guaranteed independence of POL"
+        }
+      },
+      {
+        "code": "is_guaranteed_by = FRA",
+        "desc": {
+          "ru": "Независимость гарантирована Францией (FRA)",
+          "en": "Independence is guaranteed by FRA"
+        }
+      },
+      {
+        "code": "has_military_access_to = ITA",
+        "desc": {
+          "ru": "Имеет военный проход через Италию (ITA)",
+          "en": "Has military access to ITA"
+        }
+      }
     ]
   },
   {
-    category: { ru: '🏭 Промышленность и армия', en: '🏭 Industry & Military' },
-    items: [
-      { code: 'num_of_factories > 50', desc: { ru: 'Общее число фабрик и заводов более 50', en: 'Total factory count is greater than 50' } },
-      { code: 'num_of_military_factories > 25', desc: { ru: 'Более 25 военных заводов', en: 'Has more than 25 military factories' } },
-      { code: 'has_army_manpower = { size > 250000 }', desc: { ru: 'Численность действующей армии более 250 000 человек', en: 'Fielded manpower is greater than 250,000' } }
+    "category": {
+      "ru": "🏭 Промышленность, заводы и ресурсы",
+      "en": "🏭 Industry, Factories & Resources"
+    },
+    "items": [
+      {
+        "code": "num_of_factories > 50",
+        "desc": {
+          "ru": "Общее число фабрик и заводов более 50",
+          "en": "Total factory count is greater than 50"
+        }
+      },
+      {
+        "code": "num_of_civilian_factories > 30",
+        "desc": {
+          "ru": "Более 30 гражданских фабрик",
+          "en": "Has more than 30 civilian factories"
+        }
+      },
+      {
+        "code": "num_of_military_factories > 25",
+        "desc": {
+          "ru": "Более 25 военных заводов",
+          "en": "Has more than 25 military factories"
+        }
+      },
+      {
+        "code": "num_of_naval_factories > 10",
+        "desc": {
+          "ru": "Более 10 верфей",
+          "en": "Has more than 10 dockyards"
+        }
+      },
+      {
+        "code": "num_of_available_civilian_factories > 15",
+        "desc": {
+          "ru": "Свободных фабрик для стройки/торговли > 15",
+          "en": "Available civilian factories > 15"
+        }
+      },
+      {
+        "code": "has_fuel > 100000",
+        "desc": {
+          "ru": "Запас топлива в хранилищах более 100 000",
+          "en": "Fuel reserves greater than 100,000"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = oil amount > 20 }",
+        "desc": {
+          "ru": "Добыча нефти внутри страны более 20 ед.",
+          "en": "Domestic oil production > 20"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = steel amount > 40 }",
+        "desc": {
+          "ru": "Добыча стали внутри страны более 40 ед.",
+          "en": "Domestic steel production > 40"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = aluminium amount > 20 }",
+        "desc": {
+          "ru": "Добыча алюминия внутри страны более 20 ед.",
+          "en": "Domestic aluminium production > 20"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = tungsten amount > 15 }",
+        "desc": {
+          "ru": "Добыча вольфрама внутри страны более 15 ед.",
+          "en": "Domestic tungsten production > 15"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = rubber amount > 10 }",
+        "desc": {
+          "ru": "Добыча резины внутри страны более 10 ед.",
+          "en": "Domestic rubber production > 10"
+        }
+      },
+      {
+        "code": "has_resources_in_country = { resource = chromium amount > 15 }",
+        "desc": {
+          "ru": "Добыча хрома внутри страны более 15 ед.",
+          "en": "Domestic chromium production > 15"
+        }
+      }
+    ]
+  },
+  {
+    "category": {
+      "ru": "🪖 Армия, Флот, Авиация и Склады",
+      "en": "🪖 Military, Fleet, Air & Equipment"
+    },
+    "items": [
+      {
+        "code": "has_army_manpower = { size > 250000 }",
+        "desc": {
+          "ru": "Армия на фронте насчитывает более 250 000 бойцов",
+          "en": "Fielded army manpower > 250,000"
+        }
+      },
+      {
+        "code": "manpower > 100000",
+        "desc": {
+          "ru": "Свободный пул призывников более 100 000",
+          "en": "Manpower reserve > 100,000"
+        }
+      },
+      {
+        "code": "num_divisions > 24",
+        "desc": {
+          "ru": "В строю более 24 дивизий",
+          "en": "Division count > 24"
+        }
+      },
+      {
+        "code": "army_experience > 50",
+        "desc": {
+          "ru": "Опыт сухопутных войск более 50",
+          "en": "Army experience > 50"
+        }
+      },
+      {
+        "code": "navy_experience > 50",
+        "desc": {
+          "ru": "Опыт военно-морского флота более 50",
+          "en": "Navy experience > 50"
+        }
+      },
+      {
+        "code": "air_experience > 50",
+        "desc": {
+          "ru": "Опыт военно-воздушных сил более 50",
+          "en": "Air experience > 50"
+        }
+      },
+      {
+        "code": "num_ships > 30",
+        "desc": {
+          "ru": "Количество боевых кораблей более 30",
+          "en": "Total warships > 30"
+        }
+      },
+      {
+        "code": "num_planes > 500",
+        "desc": {
+          "ru": "Количество боевых самолетов более 500",
+          "en": "Total military planes > 500"
+        }
+      },
+      {
+        "code": "has_equipment = { infantry_equipment > 5000 }",
+        "desc": {
+          "ru": "Винтовок на складе более 5 000",
+          "en": "Infantry weapons in stockpile > 5,000"
+        }
+      },
+      {
+        "code": "has_equipment = { artillery_equipment > 500 }",
+        "desc": {
+          "ru": "Артиллерии на складе более 500",
+          "en": "Artillery in stockpile > 500"
+        }
+      },
+      {
+        "code": "has_equipment = { motorized_equipment > 1000 }",
+        "desc": {
+          "ru": "Грузовиков на складе более 1 000",
+          "en": "Motorized trucks in stockpile > 1,000"
+        }
+      },
+      {
+        "code": "has_equipment = { medium_tank_chassis > 200 }",
+        "desc": {
+          "ru": "Средних танков на складе более 200",
+          "en": "Medium tanks in stockpile > 200"
+        }
+      }
+    ]
+  },
+  {
+    "category": {
+      "ru": "🔬 Наука, Технологии и Календарь",
+      "en": "🔬 Science, Technology & Date"
+    },
+    "items": [
+      {
+        "code": "date > 1939.9.1",
+        "desc": {
+          "ru": "Наступила дата 1 сентября 1939 года",
+          "en": "Date is after 1939.9.1"
+        }
+      },
+      {
+        "code": "date > 1941.6.22",
+        "desc": {
+          "ru": "Наступила дата 22 июня 1941 года",
+          "en": "Date is after 1941.6.22"
+        }
+      },
+      {
+        "code": "amount_research_slots > 3",
+        "desc": {
+          "ru": "Количество ячеек исследований более 3",
+          "en": "Research slots count > 3"
+        }
+      },
+      {
+        "code": "has_tech = atomic_research",
+        "desc": {
+          "ru": "Изучены ядерные исследования",
+          "en": "Has researched atomic technology"
+        }
+      },
+      {
+        "code": "has_tech = nukes",
+        "desc": {
+          "ru": "Изучено создание ядерных бомб",
+          "en": "Has researched nuclear weapons"
+        }
+      },
+      {
+        "code": "num_of_nukes > 0",
+        "desc": {
+          "ru": "В наличии хотя бы 1 готовая ядерная бомба",
+          "en": "Has at least 1 nuclear bomb"
+        }
+      },
+      {
+        "code": "has_tech = basic_train",
+        "desc": {
+          "ru": "Изучены поезда (базовая логистика)",
+          "en": "Has researched trains"
+        }
+      },
+      {
+        "code": "has_tech = interwar_artillery",
+        "desc": {
+          "ru": "Изучена межвоенная артиллерия",
+          "en": "Has researched interwar artillery"
+        }
+      },
+      {
+        "code": "has_tech = support_weapons",
+        "desc": {
+          "ru": "Изучено пехотное оружие поддержки",
+          "en": "Has researched support weapons"
+        }
+      }
     ]
   }
 ];
@@ -580,7 +1196,9 @@ function getTriggers() {
 }
 
 function openTriggersModal() {
-  renderTriggersCheat();
+  const inp = document.getElementById('triggerSearchInput');
+  if (inp) inp.value = '';
+  renderTriggersCheat('');
   const m = document.getElementById('triggersModal');
   if (m) {
     m.style.display = 'flex';
@@ -601,16 +1219,26 @@ function closeTriggersModal() {
   }
 }
 
-function renderTriggersCheat() {
+function renderTriggersCheat(filter = '') {
   const container = document.getElementById('triggersCheatBody');
   if (!container) return;
 
+  const q = (filter || '').toLowerCase().trim();
   let html = '';
   CHEAT_TRIGGERS.forEach(cat => {
     const title = cat.category[currentLang] || cat.category.ru;
+    const filteredItems = cat.items.filter(item => {
+      if (!q) return true;
+      const desc = (item.desc[currentLang] || item.desc.ru).toLowerCase();
+      const code = item.code.toLowerCase();
+      return desc.includes(q) || code.includes(q) || title.toLowerCase().includes(q);
+    });
+
+    if (filteredItems.length === 0) return;
+
     html += `<div class="cheat-category">`;
-    html += `<div class="cheat-category-title">${title}</div>`;
-    cat.items.forEach(item => {
+    html += `<div class="cheat-category-title">${title} (${filteredItems.length})</div>`;
+    filteredItems.forEach(item => {
       const desc = item.desc[currentLang] || item.desc.ru;
       html += `
         <div class="cheat-item">
@@ -626,6 +1254,10 @@ function renderTriggersCheat() {
     });
     html += `</div>`;
   });
+
+  if (!html) {
+    html = `<div style="text-align:center; padding:24px; color:var(--text-muted)">Ничего не найдено по запросу «${filter}»</div>`;
+  }
   container.innerHTML = html;
 }
 
@@ -656,7 +1288,9 @@ function getCustomEffects() {
 }
 
 function openEffectsModal() {
-  renderEffectsCheat();
+  const inp = document.getElementById('effectSearchInput');
+  if (inp) inp.value = '';
+  renderEffectsCheat('');
   const m = document.getElementById('effectsModal');
   if (m) {
     m.style.display = 'flex';
@@ -677,16 +1311,30 @@ function closeEffectsModal() {
   }
 }
 
-function renderEffectsCheat() {
+function renderEffectsCheat(filter = '') {
   const container = document.getElementById('effectsCheatBody');
   if (!container) return;
 
+  const allCats = (window.HOI4_ALL_EFFECTS && window.HOI4_ALL_EFFECTS.length)
+    ? window.HOI4_ALL_EFFECTS
+    : CHEAT_EFFECTS;
+
+  const q = (filter || '').toLowerCase().trim();
   let html = '';
-  CHEAT_EFFECTS.forEach(cat => {
+  allCats.forEach(cat => {
     const title = cat.category[currentLang] || cat.category.ru;
+    const filteredItems = cat.items.filter(item => {
+      if (!q) return true;
+      const desc = (item.desc[currentLang] || item.desc.ru).toLowerCase();
+      const code = item.code.toLowerCase();
+      return desc.includes(q) || code.includes(q) || title.toLowerCase().includes(q);
+    });
+
+    if (filteredItems.length === 0) return;
+
     html += `<div class="cheat-category">`;
-    html += `<div class="cheat-category-title">${title}</div>`;
-    cat.items.forEach(item => {
+    html += `<div class="cheat-category-title">${title} (${filteredItems.length})</div>`;
+    filteredItems.forEach(item => {
       const desc = item.desc[currentLang] || item.desc.ru;
       html += `
         <div class="cheat-item">
@@ -702,6 +1350,10 @@ function renderEffectsCheat() {
     });
     html += `</div>`;
   });
+
+  if (!html) {
+    html = `<div style="text-align:center; padding:24px; color:var(--text-muted)">Ничего не найдено по запросу «${filter}»</div>`;
+  }
   container.innerHTML = html;
 }
 
@@ -2127,3 +2779,10 @@ window.CosmeticCreator = {
 };
 
 })();
+
+window.cosm_filterTriggers = function(query) {
+  renderTriggersCheat(query);
+};
+window.cosm_filterEffects = function(query) {
+  renderEffectsCheat(query);
+};

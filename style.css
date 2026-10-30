@@ -37,72 +37,72 @@ html[data-theme="light"] {
   --c-acc-4: #EDAB7B;
   --c-acc-5: #EDBC99;
 
-  /* Surfaces & Structural Geometry */
-  --bg-body: #EEF4F3;
-  --bg-grid-dot: rgba(16, 89, 81, 0.12);
-  --bg-card: #FFFFFF;
-  --bg-card-elevated: #F6FAF9;
-  --bg-subtle: #E2ECE9;
-  --bg-input: #FFFFFF;
-  --bg-hover: #E5EFEF;
+  /* Surfaces & Structural Geometry — Muted, Eye-Comfortable Tactical Map Parchment */
+  --bg-body: #D3E0DD;            /* Мягкий неслепящий тон карты */
+  --bg-grid-dot: rgba(16, 89, 81, 0.18);
+  --bg-card: #E3EEEA;            /* Матовая плашка без резкого белого */
+  --bg-card-elevated: #EBF4F1;   /* Приподнятые элементы */
+  --bg-subtle: #C4D9D3;          /* Подложки списков и табов */
+  --bg-input: #EFF6F4;           /* Поля ввода */
+  --bg-hover: #B8D1CA;
 
   /* Tactical Borders */
-  --border-color: #C0D6D1;
-  --border-subtle: #D8E7E4;
+  --border-color: #98BCB5;       /* Чёткий контрастный контур */
+  --border-subtle: #B1CCC7;
   --border-hover: #32887F;
   --border-focus: #105951;
 
   /* Typography */
-  --text-main: #0B2421;
-  --text-muted: #356661;
-  --text-dim: #608680;
+  --text-main: #061A17;          /* Глубокий оттенок для 100% читаемости */
+  --text-muted: #224A45;         /* Контрастные подписи */
+  --text-dim: #456E68;
   --text-white: #FFFFFF;
 
   /* Primary Interactive Brand Elements */
   --primary: #105951;
   --primary-hover: #32887F;
-  --primary-light: #E0F2EF;
+  --primary-light: rgba(50, 136, 127, 0.18);
   --primary-text: #FFFFFF;
 
   --accent: #DB8B50;
   --accent-hover: #8F4C1B;
-  --accent-light: #FDF3E7;
+  --accent-light: rgba(219, 139, 80, 0.18);
 
   --danger: #DB5A50;
   --danger-hover: #8F231B;
-  --danger-light: #FDEEED;
-  --danger-border: #F7C0BA;
+  --danger-light: rgba(219, 90, 80, 0.18);
+  --danger-border: #DB5A50;
 
   --success: #3DA750;
   --success-hover: #146E24;
-  --success-light: #EBF7ED;
-  --success-border: #B7E4BD;
+  --success-light: rgba(61, 167, 80, 0.18);
+  --success-border: #3DA750;
 
   /* 4 Ideologies System (Authentic User Colors) */
-  --ideo-demo-bg: #E3F5F3;
+  --ideo-demo-bg: #CFE7E4;
   --ideo-demo-text: #105951;
-  --ideo-demo-border: #65C3B9;
+  --ideo-demo-border: #32887F;
 
-  --ideo-fascism-bg: #FDF2E7;
+  --ideo-fascism-bg: #EADBCB;
   --ideo-fascism-text: #8F4C1B;
-  --ideo-fascism-border: #EDAB7B;
+  --ideo-fascism-border: #DB8B50;
 
-  --ideo-comm-bg: #FDEEEC;
+  --ideo-comm-bg: #EAD8D5;
   --ideo-comm-text: #8F231B;
-  --ideo-comm-border: #ED847B;
+  --ideo-comm-border: #DB5A50;
 
-  --ideo-neutral-bg: #EDF7EE;
+  --ideo-neutral-bg: #D4E8D4;
   --ideo-neutral-text: #146E24;
-  --ideo-neutral-border: #6ED27F;
+  --ideo-neutral-border: #3DA750;
 
   /* Shadows & Backdrops */
-  --shadow-xs: 0 1px 2px rgba(16, 89, 81, 0.05);
-  --shadow-sm: 0 2px 6px rgba(16, 89, 81, 0.08), 0 1px 2px rgba(16, 89, 81, 0.04);
-  --shadow-md: 0 6px 18px rgba(16, 89, 81, 0.1);
-  --shadow-lg: 0 16px 42px rgba(16, 89, 81, 0.14);
-  --shadow-glow: 0 0 24px rgba(50, 136, 127, 0.22);
-  --backdrop-modal: rgba(11, 36, 33, 0.6);
-  --dock-bg: rgba(255, 255, 255, 0.88);
+  --shadow-xs: 0 1px 2px rgba(6, 26, 23, 0.08);
+  --shadow-sm: 0 2px 6px rgba(6, 26, 23, 0.12), 0 1px 2px rgba(6, 26, 23, 0.06);
+  --shadow-md: 0 6px 18px rgba(6, 26, 23, 0.14);
+  --shadow-lg: 0 16px 42px rgba(6, 26, 23, 0.18);
+  --shadow-glow: 0 0 24px rgba(50, 136, 127, 0.25);
+  --backdrop-modal: rgba(6, 26, 23, 0.65);
+  --dock-bg: rgba(227, 238, 234, 0.94);
 }
 
 /* --------------------------------------------------------------------------
@@ -1181,70 +1181,108 @@ canvas:hover {
   box-shadow: var(--shadow-sm);
 }
 
-/* Buttons (Universal Anti-slop Tactile Physics) */
+/* ==========================================================================
+   TACTICAL BUTTON DESIGN SYSTEM (Crisp, High-End, Proportional & Anti-Slop)
+   ========================================================================== */
+
 button,
 .btn-primary,
 .btn-secondary,
+.secondary-btn,
 .btn-add,
+.add-btn,
 .btn-generate,
 .btn-download {
   font-family: var(--font-main);
   font-size: 12.5px;
   font-weight: 600;
+  letter-spacing: -0.01em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
+  height: 36px;
+  padding: 0 16px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
   user-select: none;
+  text-decoration: none;
+  outline: none;
+  position: relative;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button:active,
 .btn-primary:active,
 .btn-secondary:active,
-.btn-add:active {
+.secondary-btn:active,
+.btn-add:active,
+.btn-generate:active {
   transform: translateY(1px) scale(0.98);
 }
 
+/* Primary Strategic Action & Generate Button */
 .btn-primary,
 .btn-generate {
-  background: var(--primary);
-  color: var(--primary-text);
-  border: 1px solid transparent;
-  padding: 8px 18px;
-  box-shadow: 0 2px 8px var(--primary-light), var(--shadow-xs);
+  height: 38px;
+  background: linear-gradient(180deg, var(--c-pri-1) 0%, var(--c-pri-3) 100%);
+  color: #FFFFFF;
+  border: 1px solid var(--c-pri-3);
+  box-shadow: 0 2px 6px rgba(16, 89, 81, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] .btn-generate {
+  background: linear-gradient(180deg, var(--c-pri-5) 0%, var(--c-pri-4) 100%);
+  color: #041412;
+  border: 1px solid var(--c-pri-4);
+  box-shadow: 0 2px 8px rgba(80, 175, 165, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  text-shadow: none;
 }
 
 .btn-primary:hover,
 .btn-generate:hover {
-  background: var(--primary-hover);
-  box-shadow: 0 4px 14px var(--primary-light);
+  background: linear-gradient(180deg, var(--c-pri-4) 0%, var(--c-pri-1) 100%);
+  border-color: var(--c-pri-1);
+  box-shadow: 0 4px 14px rgba(16, 89, 81, 0.35);
   transform: translateY(-1px);
 }
 
-.btn-secondary {
+html[data-theme="dark"] .btn-primary:hover,
+html[data-theme="dark"] .btn-generate:hover {
+  background: linear-gradient(180deg, #84D6CE 0%, var(--c-pri-5) 100%);
+  box-shadow: 0 4px 16px rgba(80, 175, 165, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Secondary Tactical Button */
+.btn-secondary,
+.secondary-btn {
+  height: 34px;
   background: var(--bg-card);
   color: var(--text-main);
-  border: 1px solid var(--border-color);
-  padding: 6px 12px;
-  box-shadow: var(--shadow-xs);
+  border: 1.5px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.secondary-btn:hover {
   background: var(--bg-hover);
   border-color: var(--border-hover);
+  color: var(--text-main);
   transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
+/* Danger Button (Crimson) */
 .btn-secondary.btn-danger,
 .secondary-btn.danger-btn,
 .danger-btn {
   background: var(--danger-light);
   color: var(--danger);
-  border-color: var(--danger-border);
+  border: 1.5px solid var(--danger-border);
 }
 
 .btn-secondary.btn-danger:hover,
@@ -1252,18 +1290,24 @@ button:active,
 .danger-btn:hover {
   background: var(--danger);
   color: #FFFFFF;
-  border-color: var(--danger);
+  border-color: var(--danger-hover);
+  box-shadow: 0 2px 8px rgba(219, 90, 80, 0.35);
+  transform: translateY(-1px);
 }
 
+/* Add Item Block Button */
 .btn-add,
 .add-btn {
   width: 100%;
-  padding: 11px 16px;
+  height: 42px;
   background: var(--bg-subtle);
-  border: 1px dashed var(--border-color);
+  border: 1.5px dashed var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   margin-top: 14px;
 }
 
@@ -1271,23 +1315,61 @@ button:active,
 .add-btn:hover {
   background: var(--primary-light);
   border-color: var(--primary);
-  color: var(--primary);
   border-style: solid;
+  color: var(--primary);
+  box-shadow: 0 2px 10px var(--primary-light);
   transform: translateY(-1px);
 }
 
+/* Compact Utility Action Button */
 .btn-sm {
-  padding: 4px 8px;
-  font-size: 11px;
+  height: 28px;
+  padding: 0 11px;
+  font-size: 11.5px;
+  font-weight: 600;
   background: var(--bg-card);
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-xs);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .btn-sm:hover {
-  color: var(--text-main);
-  border-color: var(--border-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+/* Download ZIP Button in Modal / Preview */
+.btn-download {
+  height: 38px;
+  background: linear-gradient(180deg, var(--c-sec-a4) 0%, var(--c-sec-a1) 100%);
+  color: #FFFFFF;
+  border: 1px solid var(--c-sec-a3);
+  box-shadow: 0 2px 6px rgba(61, 167, 80, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-download:hover {
+  background: linear-gradient(180deg, var(--c-sec-a5) 0%, var(--c-sec-a4) 100%);
+  box-shadow: 0 4px 14px rgba(61, 167, 80, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Search Box in Cheat Modals */
+.cheat-search-box {
+  margin-bottom: 14px;
+}
+
+.cheat-search-box .inp {
+  width: 100%;
+  height: 38px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
 }
 
 /* --------------------------------------------------------------------------
