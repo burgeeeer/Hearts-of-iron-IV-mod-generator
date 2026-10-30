@@ -1362,6 +1362,607 @@ function insertEffectFromCheat(code) {
   showToast('✓ ' + code);
 }
 
+// ─── INTERACTIVE HOI4 STATES MAP (1081 STATES) ──────────
+const REGION_COUNTRY_TAGS = {
+  EUROPE: new Set(['GER','FRA','ENG','ITA','POL','CZE','ROM','YUG','HUN','SWE','NOR','FIN','DEN','HOL','BEL','LUX','SPR','POR','GRE','BUL','ALB','LIT','LAT','EST','IRE','SWI','AUS','ICE']),
+  SOVIET: new Set(['SOV','TAN','MON']),
+  ASIA: new Set(['JAP','CHI','PRC','MAN','MEN','XSM','SIK','GXC','YUN','SHX','TIB','NEP','BHU','SIA','PHI','INS','MAL','RAJ','AFG','PER']),
+  AMERICA: new Set(['USA','CAN','MEX','CUB','HAI','DOM','GUA','HON','ELS','NIC','COS','PAN','COL','VEN','ECU','PRU','BOL','PAR','CHL','ARG','URU','BRA']),
+  AFRICA: new Set(['ETH','LIB','SAF']),
+  MIDDLE_EAST: new Set(['TUR','IRQ','SAU','YEM','OMA','PAL','JOR','SYR','LEB']),
+  OCEANIA: new Set(['AST','NZL'])
+};
+
+const COUNTRY_NAMES_RU = {
+  SOV: 'СССР (SOV)', GER: 'Германия (GER)', FRA: 'Франция (FRA)', ENG: 'Великобритания (ENG)',
+  ITA: 'Италия (ITA)', USA: 'США (USA)', JAP: 'Япония (JAP)', POL: 'Польша (POL)',
+  CZE: 'Чехословакия (CZE)', ROM: 'Румыния (ROM)', YUG: 'Югославия (YUG)', HUN: 'Венгрия (HUN)',
+  TUR: 'Турция (TUR)', SWE: 'Швеция (SWE)', FIN: 'Финляндия (FIN)', NOR: 'Норвегия (NOR)',
+  DEN: 'Дания (DEN)', HOL: 'Нидерланды (HOL)', BEL: 'Бельгия (BEL)', LUX: 'Люксембург (LUX)',
+  SPR: 'Испания (SPR)', POR: 'Португалия (POR)', GRE: 'Греция (GRE)', BUL: 'Болгария (BUL)',
+  ALB: 'Албания (ALB)', LIT: 'Литва (LIT)', LAT: 'Латвия (LAT)', EST: 'Эстония (EST)',
+  IRE: 'Ирландия (IRE)', SWI: 'Швейцария (SWI)', AUS: 'Австрия (AUS)', CAN: 'Канада (CAN)',
+  MEX: 'Мексика (MEX)', BRA: 'Бразилия (BRA)', ARG: 'Аргентина (ARG)', CHL: 'Чили (CHL)',
+  COL: 'Колумбия (COL)', VEN: 'Венесуэла (VEN)', PER: 'Перу (PRU)', BOL: 'Боливия (BOL)',
+  AST: 'Австралия (AST)', NZL: 'Новая Зеландия (NZL)', RAJ: 'Брит. Индия (RAJ)',
+  CHI: 'Китай (CHI)', PRC: 'КНР (PRC)', MAN: 'Маньчжоу-го (MAN)', MEN: 'Мэнцзян (MEN)',
+  SIK: 'Синьцзян (SIK)', TIB: 'Тибет (TIB)', SAF: 'ЮАС (SAF)', ETH: 'Эфиопия (ETH)',
+  IRQ: 'Ирак (IRQ)', IRN: 'Иран/Персия (PER)', PER: 'Персия (PER)', SAU: 'Сауд. Аравия (SAU)'
+};
+
+let mapTargetType = 'core'; // 'core' | 'trigger'
+let selectedMapStateIds = new Set();
+let mapActiveRegion = 'ALL';
+let mapActiveCountry = '';
+let mapSearchText = '';
+
+function openStatesMap(target = 'core') {
+  mapTargetType = target;
+  mapActiveRegion = 'ALL';
+  mapActiveCountry = '';
+  mapSearchText = '';
+
+  const searchInp = document.getElementById('mapStateSearchInput');
+  if (searchInp) searchInp.value = '';
+
+  // Pre-load currently selected IDs if target is core states
+  selectedMapStateIds.clear();
+  if (target === 'core') {
+    const curVal = (document.getElementById('core-states') || {}).value || '';
+    curVal.split(/[,\s]+/).forEach(v => {
+      const id = parseInt(v.trim(), 10);
+      if (!isNaN(id) && id > 0) selectedMapStateIds.add(id);
+    });
+  }
+
+  // Update header text based on target
+  const titleEl = document.getElementById('statesMapTitle');
+  const subEl = document.getElementById('statesMapSub');
+  const btnApply = document.getElementById('btnApplyStatesToTarget');
+
+  if (target === 'core') {
+    if (titleEl) titleEl.textContent = 'Интерактивная карта — Национальные регионы (Core States)';
+    if (subEl) subEl.textContent = 'Кликайте по регионам для выбора. Список автоматически обновит национальные регионы (add_core_of = ROOT)';
+    if (btnApply) btnApply.textContent = '✅ Применить в Core States';
+  } else {
+    if (titleEl) titleEl.textContent = 'Интерактивная карта — Контроль регионов (controls_state)';
+    if (subEl) subEl.textContent = 'Выберите необходимые регионы для победы или создания государства. Они добавятся в список условий (controls_state)';
+    if (btnApply) btnApply.textContent = '✅ Добавить в Условия (controls_state)';
+  }
+
+  populateCountrySelect();
+  updateRegionPillsUI();
+  renderStatesGrid();
+  updateDockUI();
+
+  const modal = document.getElementById('statesMapModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.MotionFX) window.MotionFX.animateModalOpen(modal);
+    // Initialize MapChart interactive SVG map
+    setTimeout(() => {
+      initMapChartInteractiveSvg();
+    }, 50);
+  }
+}
+
+// ─── MAPCHART-STYLE HOI4 INTERACTIVE SVG MAP ───────────────
+let mapChartSvgInited = false;
+let mapChartCurViewBox = { x: 0, y: 0, w: 1400.16, h: 600 };
+let mapChartIsDragging = false;
+let mapChartHasDragged = false;
+let mapChartDragStart = { x: 0, y: 0 };
+let mapChartDragViewBoxStart = { x: 0, y: 0 };
+
+function initMapChartInteractiveSvg() {
+  const container = document.getElementById('mapInteractiveContainer');
+  if (!container) return;
+
+  if (!mapChartSvgInited) {
+    if (window.HOI4_MAP_SVG_STRING) {
+      container.innerHTML = window.HOI4_MAP_SVG_STRING;
+      mapChartSvgInited = true;
+      setupMapChartEvents();
+    }
+  }
+
+  updateMapSvgSelections();
+}
+
+function setupMapChartEvents() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  const tooltip = document.getElementById('mapStateTooltip');
+  if (!svg) return;
+
+  svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+
+  // 1. Click to Select State (ignoring drag releases)
+  svg.addEventListener('click', (e) => {
+    if (mapChartHasDragged) return;
+    const path = e.target.closest('.hoi4-map-state-path');
+    if (!path) return;
+    const sid = parseInt(path.dataset.stateId, 10);
+    if (!isNaN(sid)) {
+      toggleState(sid);
+    }
+  });
+
+  // 2. Hover Tooltip
+  svg.addEventListener('mousemove', (e) => {
+    const path = e.target.closest('.hoi4-map-state-path');
+    if (path && tooltip) {
+      const sid = path.dataset.stateId || '?';
+      const ru = path.dataset.ru || '';
+      const en = path.dataset.en || path.id || '';
+      const tag = path.dataset.tag || '';
+      tooltip.innerHTML = `<strong>${ru || en}</strong> (${en}) <span class="tooltip-tag">#${sid} • ${tag}</span>`;
+      tooltip.style.display = 'block';
+
+      const wrap = document.getElementById('mapSvgWrap');
+      if (wrap) {
+        const wrapRect = wrap.getBoundingClientRect();
+        const left = e.clientX - wrapRect.left;
+        const top = e.clientY - wrapRect.top - 12;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+    } else if (tooltip && !path) {
+      tooltip.style.display = 'none';
+    }
+  });
+
+  svg.addEventListener('mouseleave', () => {
+    if (tooltip) tooltip.style.display = 'none';
+  });
+
+  // 3. Mouse Pan / Drag
+  svg.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    mapChartIsDragging = true;
+    mapChartHasDragged = false;
+    mapChartDragStart = { x: e.clientX, y: e.clientY };
+    mapChartDragViewBoxStart = { x: mapChartCurViewBox.x, y: mapChartCurViewBox.y };
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mapChartIsDragging) return;
+    const dx = e.clientX - mapChartDragStart.x;
+    const dy = e.clientY - mapChartDragStart.y;
+
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+      mapChartHasDragged = true;
+    }
+
+    const svgRect = svg.getBoundingClientRect();
+    const scaleX = mapChartCurViewBox.w / svgRect.width;
+    const scaleY = mapChartCurViewBox.h / svgRect.height;
+
+    mapChartCurViewBox.x = mapChartDragViewBoxStart.x - dx * scaleX;
+    mapChartCurViewBox.y = mapChartDragViewBoxStart.y - dy * scaleY;
+    svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+  });
+
+  window.addEventListener('mouseup', () => {
+    setTimeout(() => { mapChartIsDragging = false; }, 20);
+  });
+
+  // 4. Mouse Wheel Zoom centered on cursor
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY < 0 ? 0.85 : 1.18;
+    zoomMapAt(e.clientX, e.clientY, zoomFactor);
+  }, { passive: false });
+
+  // 5. Touch support for Mobile
+  let touchStartDist = 0;
+  let touchStartCenter = { x: 0, y: 0 };
+
+  svg.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      mapChartIsDragging = true;
+      mapChartHasDragged = false;
+      mapChartDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      mapChartDragViewBoxStart = { x: mapChartCurViewBox.x, y: mapChartCurViewBox.y };
+    } else if (e.touches.length === 2) {
+      mapChartIsDragging = false;
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      touchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      touchStartCenter = { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && mapChartIsDragging) {
+      const dx = e.touches[0].clientX - mapChartDragStart.x;
+      const dy = e.touches[0].clientY - mapChartDragStart.y;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) mapChartHasDragged = true;
+      const svgRect = svg.getBoundingClientRect();
+      const scaleX = mapChartCurViewBox.w / svgRect.width;
+      const scaleY = mapChartCurViewBox.h / svgRect.height;
+      mapChartCurViewBox.x = mapChartDragViewBoxStart.x - dx * scaleX;
+      mapChartCurViewBox.y = mapChartDragViewBoxStart.y - dy * scaleY;
+      svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+    } else if (e.touches.length === 2) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const curDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      if (touchStartDist > 0 && curDist > 0) {
+        const factor = touchStartDist / curDist;
+        zoomMapAt(touchStartCenter.x, touchStartCenter.y, factor);
+        touchStartDist = curDist;
+      }
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchend', () => {
+    mapChartIsDragging = false;
+    touchStartDist = 0;
+  });
+}
+
+function zoomMapAt(clientX, clientY, factor) {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+
+  const rect = svg.getBoundingClientRect();
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
+
+  const svgX = mapChartCurViewBox.x + (mouseX / rect.width) * mapChartCurViewBox.w;
+  const svgY = mapChartCurViewBox.y + (mouseY / rect.height) * mapChartCurViewBox.h;
+
+  const newW = Math.max(120, Math.min(2000, mapChartCurViewBox.w * factor));
+  const newH = Math.max(60, Math.min(900, mapChartCurViewBox.h * factor));
+
+  mapChartCurViewBox.x = svgX - (mouseX / rect.width) * newW;
+  mapChartCurViewBox.y = svgY - (mouseY / rect.height) * newH;
+  mapChartCurViewBox.w = newW;
+  mapChartCurViewBox.h = newH;
+
+  svg.setAttribute('viewBox', `${mapChartCurViewBox.x} ${mapChartCurViewBox.y} ${mapChartCurViewBox.w} ${mapChartCurViewBox.h}`);
+}
+
+function cosm_mapZoomIn() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  zoomMapAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 0.72);
+}
+
+function cosm_mapZoomOut() {
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  zoomMapAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.38);
+}
+
+function cosm_mapZoomReset() {
+  mapChartCurViewBox = { x: 0, y: 0, w: 1400.16, h: 600 };
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (svg) svg.setAttribute('viewBox', '0 0 1400.16 600');
+}
+
+function updateMapSvgSelections() {
+  const paths = document.querySelectorAll('.hoi4-map-state-path');
+  paths.forEach(p => {
+    const sid = parseInt(p.dataset.stateId, 10);
+    p.classList.toggle('selected', selectedMapStateIds.has(sid));
+  });
+}
+
+function closeStatesMap() {
+  const modal = document.getElementById('statesMapModal');
+  if (modal) {
+    if (window.MotionFX && typeof window.MotionFX.animateModalClose === 'function') {
+      window.MotionFX.animateModalClose(modal, () => { modal.style.display = 'none'; });
+    } else {
+      modal.style.display = 'none';
+    }
+  }
+}
+
+function populateCountrySelect() {
+  const select = document.getElementById('mapCountrySelect');
+  if (!select) return;
+
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  const tagCounts = {};
+  dataset.forEach(s => {
+    if (s.tag) tagCounts[s.tag] = (tagCounts[s.tag] || 0) + 1;
+  });
+
+  const sortedTags = Object.keys(tagCounts).sort((a,b) => (COUNTRY_NAMES_RU[a] || a).localeCompare(COUNTRY_NAMES_RU[b] || b, 'ru'));
+
+  let html = `<option value="">Все страны мира (${dataset.length} регионов)</option>`;
+  sortedTags.forEach(tag => {
+    const label = COUNTRY_NAMES_RU[tag] || tag;
+    const count = tagCounts[tag];
+    html += `<option value="${tag}">${label} [${count}]</option>`;
+  });
+  select.innerHTML = html;
+  select.value = mapActiveCountry;
+}
+
+function selectMapRegion(regionKey) {
+  mapActiveRegion = regionKey;
+  updateRegionPillsUI();
+  renderStatesGrid();
+
+  // Region ViewBox Presets
+  const regionViewBoxes = {
+    ALL: { x: 0, y: 0, w: 1400.16, h: 600 },
+    EUROPE: { x: 440, y: 30, w: 390, h: 260 },
+    SOVIET: { x: 530, y: 20, w: 580, h: 320 },
+    ASIA: { x: 740, y: 130, w: 460, h: 330 },
+    AMERICA: { x: 60, y: 40, w: 440, h: 520 },
+    AFRICA: { x: 440, y: 190, w: 340, h: 320 },
+    MIDDLE_EAST: { x: 590, y: 160, w: 260, h: 190 },
+    OCEANIA: { x: 860, y: 300, w: 420, h: 280 }
+  };
+
+  const targetVB = regionViewBoxes[regionKey] || regionViewBoxes.ALL;
+  mapChartCurViewBox = { ...targetVB };
+  const container = document.getElementById('mapInteractiveContainer');
+  const svg = container ? container.querySelector('svg') : null;
+  if (svg) {
+    if (window.MotionFX && typeof window.anime === 'function') {
+      const currentRaw = (svg.getAttribute('viewBox') || '0 0 1400.16 600').split(' ');
+      const vbObj = {
+        x: parseFloat(currentRaw[0]) || 0,
+        y: parseFloat(currentRaw[1]) || 0,
+        w: parseFloat(currentRaw[2]) || 1400.16,
+        h: parseFloat(currentRaw[3]) || 600
+      };
+      window.anime({
+        targets: vbObj,
+        x: targetVB.x,
+        y: targetVB.y,
+        w: targetVB.w,
+        h: targetVB.h,
+        duration: 450,
+        easing: 'easeOutCubic',
+        update: function() {
+          svg.setAttribute('viewBox', `${vbObj.x} ${vbObj.y} ${vbObj.w} ${vbObj.h}`);
+        }
+      });
+    } else {
+      svg.setAttribute('viewBox', `${targetVB.x} ${targetVB.y} ${targetVB.w} ${targetVB.h}`);
+    }
+  }
+}
+
+function updateRegionPillsUI() {
+  const pills = document.querySelectorAll('#mapRegionPills .region-tab');
+  pills.forEach(pill => {
+    const onclickAttr = pill.getAttribute('onclick') || '';
+    pill.classList.toggle('active', onclickAttr.includes("'" + mapActiveRegion + "'"));
+  });
+}
+
+function onMapCountryChange(tag) {
+  mapActiveCountry = tag || '';
+  renderStatesGrid();
+}
+
+function filterStatesMap() {
+  const inp = document.getElementById('mapStateSearchInput');
+  mapSearchText = (inp ? inp.value : '').toLowerCase().trim();
+  renderStatesGrid();
+}
+
+function clearStateSearch() {
+  mapSearchText = '';
+  const inp = document.getElementById('mapStateSearchInput');
+  if (inp) inp.value = '';
+  renderStatesGrid();
+}
+
+function getFilteredStates() {
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  return dataset.filter(state => {
+    // 1. Country filter
+    if (mapActiveCountry && state.tag !== mapActiveCountry) return false;
+
+    // 2. Region filter
+    if (mapActiveRegion !== 'ALL') {
+      const allowedTags = REGION_COUNTRY_TAGS[mapActiveRegion];
+      if (allowedTags && !allowedTags.has(state.tag)) return false;
+    }
+
+    // 3. Text search
+    if (mapSearchText) {
+      const idStr = String(state.id);
+      const tagStr = (state.tag || '').toLowerCase();
+      const ruStr = (state.ru || '').toLowerCase();
+      const enStr = (state.en || '').toLowerCase();
+      return idStr === mapSearchText || idStr.includes(mapSearchText) ||
+             tagStr.includes(mapSearchText) ||
+             ruStr.includes(mapSearchText) ||
+             enStr.includes(mapSearchText);
+    }
+    return true;
+  });
+}
+
+function renderStatesGrid() {
+  const container = document.getElementById('mapStatesGrid');
+  if (!container) return;
+
+  const filtered = getFilteredStates();
+  const counterEl = document.getElementById('mapFilteredCount');
+  if (counterEl) {
+    counterEl.textContent = `Показано ${filtered.length} регионов`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="map-no-results">По вашему запросу регионы не найдены. Попробуйте сбросить фильтры.</div>`;
+    return;
+  }
+
+  // Render cards (fast DOM batching)
+  let html = '';
+  filtered.forEach(state => {
+    const isSelected = selectedMapStateIds.has(state.id);
+    html += `
+      <div class="state-card ${isSelected ? 'selected' : ''}" onclick="cosm_toggleState(${state.id})" id="stateCard_${state.id}" title="#${state.id} ${state.ru} (${state.en})">
+        <div class="state-card-top">
+          <span class="state-card-id">#${state.id}</span>
+          <span class="state-card-tag">${state.tag || '???'}</span>
+        </div>
+        <div class="state-card-name-ru">${state.ru || 'Безымянный регион'}</div>
+        <div class="state-card-name-en">${state.en || ''}</div>
+        <div class="state-card-check">${isSelected ? '✓' : '+'}</div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+  if (window.MotionFX && typeof window.MotionFX.animateCardsEntrance === 'function') {
+    window.MotionFX.animateCardsEntrance(container);
+  }
+}
+
+function toggleState(id) {
+  if (selectedMapStateIds.has(id)) {
+    selectedMapStateIds.delete(id);
+  } else {
+    selectedMapStateIds.add(id);
+  }
+
+  const isSelected = selectedMapStateIds.has(id);
+
+  // Quick DOM toggle for state card
+  const card = document.getElementById('stateCard_' + id);
+  if (card) {
+    card.classList.toggle('selected', isSelected);
+    const checkEl = card.querySelector('.state-card-check');
+    if (checkEl) checkEl.textContent = isSelected ? '✓' : '+';
+    if (window.MotionFX) window.MotionFX.animateStateCard(card, isSelected);
+  }
+
+  // Quick DOM toggle for SVG Map path
+  const svgPath = document.querySelector(`.hoi4-map-state-path[data-state-id="${id}"]`);
+  if (svgPath) {
+    svgPath.classList.toggle('selected', isSelected);
+  }
+
+  updateDockUI();
+  if (window.MotionFX) window.MotionFX.animateCounterBump(document.getElementById('dockSelectedCount'));
+}
+
+function selectAllFilteredStates() {
+  const filtered = getFilteredStates();
+  filtered.forEach(s => selectedMapStateIds.add(s.id));
+  renderStatesGrid();
+  updateMapSvgSelections();
+  updateDockUI();
+  showToast(`✓ Добавлено ${filtered.length} регионов в выборку`);
+}
+
+function deselectAllFilteredStates() {
+  const filtered = getFilteredStates();
+  filtered.forEach(s => selectedMapStateIds.delete(s.id));
+  renderStatesGrid();
+  updateMapSvgSelections();
+  updateDockUI();
+  showToast('Снято выделение с показанных регионов');
+}
+
+function clearSelectedStates() {
+  selectedMapStateIds.clear();
+  renderStatesGrid();
+  updateMapSvgSelections();
+  updateDockUI();
+  showToast('Выборка очищена');
+}
+
+function updateDockUI() {
+  const countEl = document.getElementById('dockSelectedCount');
+  const previewEl = document.getElementById('dockTagsPreview');
+  const size = selectedMapStateIds.size;
+
+  if (countEl) countEl.textContent = size;
+
+  if (!previewEl) return;
+  if (size === 0) {
+    previewEl.innerHTML = `<span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>`;
+    return;
+  }
+
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+  const dataset = (window.HOI4_STATES_DB && window.HOI4_STATES_DB.length) ? window.HOI4_STATES_DB : [];
+  const stateMap = {};
+  dataset.forEach(s => { stateMap[s.id] = s; });
+
+  let chipsHtml = '';
+  // Show up to first 30 chips
+  sortedIds.slice(0, 30).forEach(id => {
+    const s = stateMap[id];
+    const name = s ? s.ru : ('ID ' + id);
+    chipsHtml += `
+      <span class="dock-chip" onclick="cosm_toggleState(${id})" title="Нажмите, чтобы удалить из выборки">
+        #${id} ${name} &times;
+      </span>
+    `;
+  });
+
+  if (sortedIds.length > 30) {
+    chipsHtml += `<span class="dock-chip-more">+ еще ${sortedIds.length - 30}...</span>`;
+  }
+
+  previewEl.innerHTML = chipsHtml;
+}
+
+function copySelectedStateIds() {
+  if (selectedMapStateIds.size === 0) {
+    showToast('Сначала выберите хотя бы один регион!');
+    return;
+  }
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+  const text = sortedIds.join(', ');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(`📋 Скопировано ${sortedIds.length} ID: ` + text);
+    });
+  } else {
+    showToast(`✓ IDs: ` + text);
+  }
+}
+
+function applySelectedStatesToTarget() {
+  if (selectedMapStateIds.size === 0) {
+    showToast('Сначала выберите хотя бы один регион!');
+    return;
+  }
+  const sortedIds = Array.from(selectedMapStateIds).sort((a,b) => a - b);
+
+  if (mapTargetType === 'core') {
+    const coreInp = document.getElementById('core-states');
+    if (coreInp) {
+      coreInp.value = sortedIds.join(', ');
+      handleCoreStatesInput(coreInp.value);
+      onFieldChange();
+    }
+    showToast(`✓ Назначено ${sortedIds.length} национальных регионов!`);
+  } else {
+    // Add controls_state triggers
+    sortedIds.forEach(id => {
+      addTrigger(`controls_state = ${id}`);
+    });
+    onFieldChange();
+    showToast(`✓ Добавлено ${sortedIds.length} условий controls_state!`);
+  }
+
+  closeStatesMap();
+}
+
+
+
 // ─── 4 IDEOLOGIES TABS ────────────────────────
 function showIdeology(ideo) {
   IDEOLOGIES.forEach(id => {
@@ -2740,6 +3341,23 @@ window.cosm_openEffectsModal = openEffectsModal;
 window.cosm_closeEffectsModal = closeEffectsModal;
 window.cosm_renderEffectsCheat = renderEffectsCheat;
 window.cosm_insertEffectFromCheat = insertEffectFromCheat;
+// State Map Exports
+window.cosm_openStatesMap = openStatesMap;
+window.cosm_closeStatesMap = closeStatesMap;
+window.cosm_filterStatesMap = filterStatesMap;
+window.cosm_clearStateSearch = clearStateSearch;
+window.cosm_selectMapRegion = selectMapRegion;
+window.cosm_onMapCountryChange = onMapCountryChange;
+window.cosm_toggleState = toggleState;
+window.cosm_selectAllFilteredStates = selectAllFilteredStates;
+window.cosm_deselectAllFilteredStates = deselectAllFilteredStates;
+window.cosm_clearSelectedStates = clearSelectedStates;
+window.cosm_copySelectedStateIds = copySelectedStateIds;
+window.cosm_applySelectedStatesToTarget = applySelectedStatesToTarget;
+window.cosm_mapZoomIn = cosm_mapZoomIn;
+window.cosm_mapZoomOut = cosm_mapZoomOut;
+window.cosm_mapZoomReset = cosm_mapZoomReset;
+
 window.cosm_showIdeology = showIdeology;
 window.cosm_handleFlagUpload = handleFlagUpload;
 window.cosm_clearFlag = clearFlag;

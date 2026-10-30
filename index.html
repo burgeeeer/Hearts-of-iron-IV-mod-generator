@@ -43,6 +43,7 @@
     <script src="decisions_assets.js"></script>
     <script src="assets/anime.min.js"></script>
     <script src="motion_fx.js"></script>
+    <script src="assets/hoi4_map_data.js"></script>
     <script src="cosmetic_app.js"></script>
 </head>
 <body>
@@ -537,6 +538,9 @@
             <button type="button" class="btn-primary" onclick="cosm_openTriggersModal()" data-t="btn_show_cheat">
               📜 Все доступные требования (справочник HoI4)
             </button>
+            <button type="button" class="btn-secondary btn-map-launch" onclick="cosm_openStatesMap('trigger')">
+              🗺️ Выбрать регионы для контроля на карте
+            </button>
           </div>
         </div>
       </div>
@@ -550,7 +554,12 @@
 
         <div class="form-grid-2">
           <div class="field">
-            <label data-t="f_core_states">Национальные регионы (Core States IDs)</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+              <label data-t="f_core_states" style="margin:0">Национальные регионы (Core States IDs)</label>
+              <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')">
+                🗺️ Выбрать на карте регионов
+              </button>
+            </div>
             <input type="text" id="core-states" class="inp" placeholder="10, 11, 85, 110, 142"
                    oninput="cosm_handleCoreStatesInput(this.value); cosm_onFieldChange()" />
             <div id="core-states-badges" class="tag-badges-wrap"></div>
@@ -974,6 +983,115 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn-secondary" onclick="cosm_closeEffectsModal()" data-t="btn_close">Закрыть</button>
+    </div>
+  </div>
+</div>
+<!-- ════════════ MODAL: INTERACTIVE HOI4 STATES MAP (1081 REGIONS) ════════════ -->
+<div class="modal-overlay" id="statesMapModal" style="display:none">
+  <div class="modal-backdrop" onclick="cosm_closeStatesMap()"></div>
+  <div class="modal-window modal-map-layout">
+    <div class="modal-header">
+      <div class="map-header-meta">
+        <span class="map-header-badge">🗺️ HoI4 State Selector</span>
+        <div>
+          <h3 id="statesMapTitle">Интерактивная карта регионов Hearts of Iron IV</h3>
+          <p class="modal-subtitle" id="statesMapSub">Кликайте по регионам для выбора • Автоматический сбор State ID для national cores или триггеров</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="cosm_closeStatesMap()">&times;</button>
+    </div>
+
+    <!-- Map Filter Bar -->
+    <div class="map-filter-bar">
+      <div class="map-filter-top">
+        <div class="map-search-input-wrap">
+          <input type="text" id="mapStateSearchInput" class="inp" placeholder="🔍 Поиск региона: название, ID или тег (например: Варшава, 10, POL, Москва, 219, Berlin, 64)..." oninput="cosm_filterStatesMap()" />
+          <button type="button" class="btn-clear-search" onclick="cosm_clearStateSearch()" title="Очистить поиск">✕</button>
+        </div>
+        <div class="map-country-filter-wrap">
+          <label class="map-label-inline">Страна (1936):</label>
+          <select id="mapCountrySelect" class="inp select-sm" onchange="cosm_onMapCountryChange(this.value)">
+            <option value="">Все страны мира (1081 регион)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Macro Region / Continent Tabs -->
+      <div class="map-region-tabs" id="mapRegionPills">
+        <button type="button" class="region-tab active" onclick="cosm_selectMapRegion('ALL')">🌍 Весь мир (<span id="countAllStates">1081</span>)</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('EUROPE')">🇪🇺 Европа</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('SOVIET')">🇷🇺 СССР и Восток</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('ASIA')">🌏 Азия</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AMERICA')">🇺🇸 Америка</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('AFRICA')">🌍 Африка</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('MIDDLE_EAST')">🕌 Ближний Восток</button>
+        <button type="button" class="region-tab" onclick="cosm_selectMapRegion('OCEANIA')">🏝️ Океания</button>
+      </div>
+    </div>
+
+    <!-- Map Workspace: Interactive Vector Minimap + States Grid -->
+    <div class="map-body-workspace">
+      <!-- Interactive MapChart HoI4 World Map (1081 States) -->
+      <div class="map-vector-card">
+        <div class="map-vector-header">
+          <div class="map-header-left">
+            <span class="map-vector-title">🗺️ Интерактивная карта Hearts of Iron IV</span>
+            <span class="map-vector-hint">Кликните по провинции на карте для выбора</span>
+          </div>
+          <div class="map-zoom-controls">
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomIn()" title="Приблизить">+</button>
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomOut()" title="Отдалить">−</button>
+            <button type="button" class="btn-sm btn-map-zoom" onclick="cosm_mapZoomReset()" title="Сбросить масштаб">⟲ Сброс</button>
+          </div>
+        </div>
+        <div class="map-svg-wrap" id="mapSvgWrap">
+          <div id="mapInteractiveContainer" class="map-interactive-container">
+            <!-- Injected by cosmetic_app.js using HOI4_MAP_SVG_STRING -->
+          </div>
+          <div id="mapStateTooltip" class="map-state-tooltip" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- States Cards List & Multi-Select View -->
+      <div class="map-cards-card">
+        <div class="map-cards-header">
+          <div class="map-cards-count-info">
+            <span class="map-count-badge" id="mapFilteredCount">1081 регион</span>
+            <span class="map-count-hint">Нажмите для выбора/снятия</span>
+          </div>
+          <div class="map-bulk-btns">
+            <button type="button" class="btn-sm btn-secondary" onclick="cosm_selectAllFilteredStates()">➕ Выбрать показанные</button>
+            <button type="button" class="btn-sm btn-secondary" onclick="cosm_deselectAllFilteredStates()">➖ Снять показанные</button>
+          </div>
+        </div>
+        <div class="map-states-scroll" id="mapStatesGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Dock with Selection Summary & Actions -->
+    <div class="map-bottom-dock">
+      <div class="dock-selection-summary">
+        <div class="dock-pill">
+          <span class="dock-pill-count" id="dockSelectedCount">0</span>
+          <span class="dock-pill-label">выбрано</span>
+        </div>
+        <div class="dock-chips-preview" id="dockTagsPreview">
+          <span class="dock-placeholder">Нажмите на карточки регионов выше, чтобы добавить их в выборку</span>
+        </div>
+      </div>
+      <div class="dock-action-buttons">
+        <button type="button" class="btn-secondary btn-sm" onclick="cosm_clearSelectedStates()" title="Очистить выборку">
+          🧹 Сбросить
+        </button>
+        <button type="button" class="btn-secondary" onclick="cosm_copySelectedStateIds()" title="Скопировать список ID в буфер обмена">
+          📋 Копировать IDs
+        </button>
+        <button type="button" class="btn-primary" id="btnApplyStatesToTarget" onclick="cosm_applySelectedStatesToTarget()">
+          ✅ Применить в решение
+        </button>
+      </div>
     </div>
   </div>
 </div>

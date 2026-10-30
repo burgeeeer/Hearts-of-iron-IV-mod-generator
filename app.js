@@ -954,13 +954,16 @@ function renderCountries() {
             ideoHtml += mkInput(i18n[currentLang].defName, 'c' + idx + '_' + ideo + '_def', d.def);
             ideoHtml += mkInput(i18n[currentLang].adjName, 'c' + idx + '_' + ideo + '_adj', d.adj);
             ideoHtml += '</div>';
+            var prefix = 'c' + idx + '_' + ideo;
+            var hasFlag = !!d.img;
             ideoHtml += '<div class="flag-preview-container">';
             ideoHtml += '<label>' + i18n[currentLang].uploadFlag + '</label>';
-            ideoHtml += '<input type="file" accept="image/png" onchange="handleFlag(event,' + idx + ',\'' + ideo + '\')" style="margin-bottom:8px">';
-            ideoHtml += '<div class="canvas-wrapper">';
-            ideoHtml += '<div class="canvas-item"><span>82\u00d752</span><canvas id="c' + idx + '_' + ideo + '_cn" width="82" height="52"></canvas></div>';
-            ideoHtml += '<div class="canvas-item"><span>41\u00d726</span><canvas id="c' + idx + '_' + ideo + '_cm" width="41" height="26"></canvas></div>';
-            ideoHtml += '<div class="canvas-item"><span>10\u00d77</span><canvas id="c' + idx + '_' + ideo + '_cs" width="10" height="7"></canvas></div>';
+            ideoHtml += '<input type="file" id="' + prefix + '_file" accept="image/png" onchange="handleFlag(event,' + idx + ',\'' + ideo + '\')" style="margin-bottom:8px">';
+            ideoHtml += '<div class="canvas-wrapper" id="' + prefix + '_cw"' + (hasFlag ? '' : ' style="display:none"') + '>';
+            ideoHtml += '<div class="canvas-item"><span>Normal (82\u00d752)</span><canvas id="' + prefix + '_cn" width="82" height="52"></canvas></div>';
+            ideoHtml += '<div class="canvas-item"><span>Medium (41\u00d726)</span><canvas id="' + prefix + '_cm" width="41" height="26"></canvas></div>';
+            ideoHtml += '<div class="canvas-item"><span>Small (Zoom 4\u00d7)</span><canvas id="' + prefix + '_cs" width="10" height="7"></canvas></div>';
+            ideoHtml += '<button type="button" class="btn-sm btn-secondary danger-btn" onclick="clearCountryFlag(' + idx + ',\'' + ideo + '\')" title="Удалить флаг" style="margin-left:auto; align-self:center">✕</button>';
             ideoHtml += '</div></div></div>';
         }
 
@@ -1011,6 +1014,7 @@ function restoreFlags(ci, co) {
 }
 
 function paintFlag(prefix, url) {
+    if (!url) return;
     var im = new Image();
     im.onload = function() {
         var pairs = [['cn', 82, 52], ['cm', 41, 26], ['cs', 10, 7]];
@@ -1022,6 +1026,8 @@ function paintFlag(prefix, url) {
             cx.clearRect(0, 0, pairs[i][1], pairs[i][2]);
             cx.drawImage(im, 0, 0, pairs[i][1], pairs[i][2]);
         }
+        var cw = document.getElementById(prefix + '_cw');
+        if (cw) cw.style.display = 'flex';
     };
     im.src = url;
 }
@@ -1088,6 +1094,8 @@ function handleFlag(ev, ci, ideo) {
             }
             var main = document.getElementById('c' + ci + '_' + ideo + '_cn');
             if (main) main.setAttribute('data-img', e.target.result);
+            var cw = document.getElementById('c' + ci + '_' + ideo + '_cw');
+            if (cw) cw.style.display = 'flex';
             pullCountriesFromDOM();
             saveData();
         };
@@ -1116,6 +1124,8 @@ function handlePuppetFlag(ev, pi, ideo) {
                 main.setAttribute('data-img', e.target.result);
                 puppetRules[pi].ideologies[ideo].img = e.target.result;
             }
+            var cw = document.getElementById('p' + pi + '_' + ideo + '_cw');
+            if (cw) cw.style.display = 'flex';
             saveData();
         };
         im.src = e.target.result;
@@ -1261,6 +1271,9 @@ function renderPuppetRules() {
 }
 
 function addPuppetIdeologyFlag(parent, puppetIndex, ideo, rule, t) {
+    var prefix = 'p' + puppetIndex + '_' + ideo;
+    var hasImg = !!(rule.ideologies[ideo] && rule.ideologies[ideo].img);
+
     var box = document.createElement('div');
     box.className = 'flag-preview-container';
     box.style.marginTop = '8px';
@@ -1271,6 +1284,7 @@ function addPuppetIdeologyFlag(parent, puppetIndex, ideo, rule, t) {
 
     var fileInp = document.createElement('input');
     fileInp.type = 'file';
+    fileInp.id = prefix + '_file';
     fileInp.accept = 'image/png';
     fileInp.style.marginBottom = '10px';
     fileInp.onchange = function(ev) { handlePuppetFlag(ev, puppetIndex, ideo); };
@@ -1278,25 +1292,39 @@ function addPuppetIdeologyFlag(parent, puppetIndex, ideo, rule, t) {
 
     var cw = document.createElement('div');
     cw.className = 'canvas-wrapper';
-    var sz = [['cn', 82, 52, 'Normal'], ['cm', 41, 26, 'Medium'], ['cs', 10, 7, 'Small']];
+    cw.id = prefix + '_cw';
+    if (!hasImg) cw.style.display = 'none';
+
+    var sz = [['cn', 82, 52, 'Normal (82×52)'], ['cm', 41, 26, 'Medium (41×26)'], ['cs', 10, 7, 'Small (Zoom 4×)']];
     for (var si = 0; si < sz.length; si++) {
         var ci2 = document.createElement('div');
         ci2.className = 'canvas-item';
         var sp = document.createElement('span');
-        sp.textContent = sz[si][3] + ' (' + sz[si][1] + 'x' + sz[si][2] + ')';
+        sp.textContent = sz[si][3];
         ci2.appendChild(sp);
         var cv = document.createElement('canvas');
-        cv.id = 'p' + puppetIndex + '_' + ideo + '_' + sz[si][0];
+        cv.id = prefix + '_' + sz[si][0];
         cv.width = sz[si][1];
         cv.height = sz[si][2];
         ci2.appendChild(cv);
         cw.appendChild(ci2);
     }
+
+    var delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'btn-sm btn-secondary danger-btn';
+    delBtn.textContent = '✕';
+    delBtn.title = 'Удалить флаг';
+    delBtn.style.alignSelf = 'center';
+    delBtn.style.marginLeft = 'auto';
+    delBtn.onclick = function() { clearPuppetFlag(puppetIndex, ideo); };
+    cw.appendChild(delBtn);
+
     box.appendChild(cw);
     parent.appendChild(box);
 
-    if (rule.ideologies[ideo] && rule.ideologies[ideo].img) {
-        paintFlag('p' + puppetIndex + '_' + ideo, rule.ideologies[ideo].img);
+    if (hasImg) {
+        paintFlag(prefix, rule.ideologies[ideo].img);
     }
 }
 
@@ -3369,3 +3397,44 @@ async function generateMod() {
     var blob = await zip.generateAsync({ type: 'blob' });
     saveAs(blob, modName + '.zip');
 }
+
+
+function clearCountryFlag(ci, ideo) {
+    var prefix = 'c' + ci + '_' + ideo;
+    var pairs = [['cn', 82, 52], ['cm', 41, 26], ['cs', 10, 7]];
+    for (var i = 0; i < pairs.length; i++) {
+        var cv = document.getElementById(prefix + '_' + pairs[i][0]);
+        if (!cv) continue;
+        cv.removeAttribute('data-img');
+        var cx = cv.getContext('2d');
+        cx.clearRect(0, 0, pairs[i][1], pairs[i][2]);
+    }
+    var cw = document.getElementById(prefix + '_cw');
+    if (cw) cw.style.display = 'none';
+    var finp = document.getElementById(prefix + '_file');
+    if (finp) finp.value = '';
+    pullCountriesFromDOM();
+    saveData();
+}
+
+function clearPuppetFlag(pi, ideo) {
+    var prefix = 'p' + pi + '_' + ideo;
+    var pairs = [['cn', 82, 52], ['cm', 41, 26], ['cs', 10, 7]];
+    for (var i = 0; i < pairs.length; i++) {
+        var cv = document.getElementById(prefix + '_' + pairs[i][0]);
+        if (!cv) continue;
+        cv.removeAttribute('data-img');
+        var cx = cv.getContext('2d');
+        cx.clearRect(0, 0, pairs[i][1], pairs[i][2]);
+    }
+    var cw = document.getElementById(prefix + '_cw');
+    if (cw) cw.style.display = 'none';
+    var finp = document.getElementById(prefix + '_file');
+    if (finp) finp.value = '';
+    if (puppetRules[pi] && puppetRules[pi].ideologies[ideo]) {
+        puppetRules[pi].ideologies[ideo].img = '';
+    }
+    saveData();
+}
+window.clearCountryFlag = clearCountryFlag;
+window.clearPuppetFlag = clearPuppetFlag;
