@@ -31,14 +31,16 @@ var i18n = {
     english: {
         title: "HoI4 Mod Generator",
         nav_gen_countries: "1. Countries & Flags",
-        nav_gen_puppets: "2. Puppets",
-        nav_gen_states: "3. States",
-        nav_gen_cities: "4. Cities",
+        nav_gen_puppets: "2. Puppets (Single)",
+        nav_gen_puppet_bulk: "3. Puppets for All Countries",
+        nav_gen_states: "4. States",
+        nav_gen_cities: "5. Cities",
         meta_engine: "Engine / Version",
         meta_encoding: "Localisation Encoding",
         meta_summary: "Mod Summary",
         meta_countries: "Countries",
         meta_puppets: "Puppets",
+        meta_puppet_bulk: "Puppet Templates",
         meta_states: "States",
         meta_cities: "Cities",
         meta_tree_caption: "Generated Archive Structure:",
@@ -65,8 +67,15 @@ var i18n = {
         uploadFlag: "Upload Flag (PNG):",
         genBtn: "Generate Mod",
         footerCoverBtn: "Make Cover",
-        puppetTitle: "Puppet Names & Flags",
+        puppetTitle: "2. Puppet Names & Flags (Single)",
         puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
+        puppetBulkTitle: "3. Puppet Names for All Countries (By Template)",
+        puppetBulkHeadDesc: "Auto-naming puppets worldwide without typing tags (German Hungary, Soviet Hungary...)",
+        puppetBulkDesc: "Specify the overlord tag and naming patterns (RU & EN): the generator automatically creates names for all 439 countries from Hearts of Iron IV game files or for selected tags.",
+        puppetBulkAddBtn: "＋ Add Template for Another Overlord",
+        puppetBannerTitle: "⚡ Don't want to type tags for every country manually?",
+        puppetBannerDesc: "Use the bulk puppet template generator (e.g. 'German Hungary', 'Soviet Hungary') for all countries worldwide at once.",
+        puppetBannerBtn: "Go to Templates for All Countries ➔",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
         puppetOverlordPlaceholder: "GER or EUR_UNIFIED",
         puppetTag: "Puppet tag:",
@@ -195,6 +204,21 @@ var i18n = {
     },
     russian: {
         title: "HOI4 Mod Generator",
+        nav_gen_countries: "1. Страны и флаги",
+        nav_gen_puppets: "2. Марионетки (поштучно)",
+        nav_gen_puppet_bulk: "3. Марионетки для всех стран",
+        nav_gen_states: "4. Регионы",
+        nav_gen_cities: "5. Города",
+        meta_engine: "Версия / Движок",
+        meta_encoding: "Кодировка локализации",
+        meta_summary: "Сводка мода",
+        meta_countries: "Стран",
+        meta_puppets: "Марионеток",
+        meta_puppet_bulk: "Шаблоны марионеток",
+        meta_states: "Регионов",
+        meta_cities: "Городов",
+        meta_tree_caption: "Структура архива мода:",
+        meta_tree_note: "(марионетки и регионы)",
         modName: "Название мода (на англ):",
         modNameDesc: "Используется для папки мода, дескриптора и файлов проекта.",
         countryLabel: "Страна",
@@ -213,8 +237,15 @@ var i18n = {
         uploadFlag: "Загрузить флаг (PNG):",
         genBtn: "Сгенерировать мод",
         footerCoverBtn: "Сделать обложку",
-        puppetTitle: "Названия и флаги марионеток",
+        puppetTitle: "2. Названия и флаги марионеток (поштучно)",
         puppetDesc: "Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).",
+        puppetBulkTitle: "3. Названия марионеток для всех стран (по шаблону)",
+        puppetBulkHeadDesc: "Авто-названия марионеток без ручного ввода тегов (Германская Венгрия, Советская Венгрия...)",
+        puppetBulkDesc: "Укажите тег сюзерена и шаблоны названий (RU и EN): генератор автоматически создаст имена для всех 439 стран из игры Hearts of Iron IV или для выбранных вами тегов.",
+        puppetBulkAddBtn: "＋ Добавить шаблон для другого сюзерена",
+        puppetBannerTitle: "⚡ Лень указывать теги всех стран вручную?",
+        puppetBannerDesc: "Используйте шаблоны авто-генерации («Германская Венгрия», «Советская Венгрия»...) сразу для всех 439 стран из файлов игры.",
+        puppetBannerBtn: "Перейти к шаблонам для всех стран ➔",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
         puppetOverlordPlaceholder: "GER или EUR_UNIFIED",
         puppetTag: "Тег марионетки:",
@@ -776,6 +807,15 @@ function loadSaved(d) {
         return { stateId: r.stateId || '', provinceId: r.provinceId || '', controllerTag: r.controllerTag || '', name: r.name || '' };
     }) : [mkEmptyCity()];
 
+    if (d.puppetBulkTemplates && d.puppetBulkTemplates.length) {
+        window.puppetBulkTemplates = d.puppetBulkTemplates;
+    } else if (typeof window.mkDefaultPuppetBulkTemplate === 'function') {
+        window.puppetBulkTemplates = [window.mkDefaultPuppetBulkTemplate('GER')];
+    }
+    if (typeof window.renderPuppetBulkSection === 'function') {
+        window.renderPuppetBulkSection();
+    }
+
     renderCoverPreview();
     updateProjectToolbar();
 }
@@ -911,9 +951,37 @@ function applyLang(lang) {
     var scl = document.getElementById('saveCurrentToLibBtnText');
     if (scl) scl.innerText = t.saveCurrentToLibBtnText;
 
+    var ngc = document.getElementById('navGenCountries');
+    if (ngc) ngc.textContent = t.nav_gen_countries;
+    var ngp = document.getElementById('navGenPuppets');
+    if (ngp) ngp.textContent = t.nav_gen_puppets;
+    var ngb = document.getElementById('navGenPuppetBulk');
+    if (ngb) ngb.textContent = t.nav_gen_puppet_bulk;
+    var ngs = document.getElementById('navGenStates');
+    if (ngs) ngs.textContent = t.nav_gen_states;
+    var ngci = document.getElementById('navGenCities');
+    if (ngci) ngci.textContent = t.nav_gen_cities;
+
     document.getElementById('puppetTitle').innerText = t.puppetTitle;
     document.getElementById('puppetDesc').innerText = t.puppetDesc;
     document.getElementById('puppetAddBtn').innerText = '＋ ' + t.addPuppet;
+
+    var pbt = document.getElementById('puppetBulkTitle');
+    if (pbt) pbt.innerText = t.puppetBulkTitle;
+    var pbhd = document.getElementById('puppetBulkHeadDesc');
+    if (pbhd) pbhd.innerText = t.puppetBulkHeadDesc;
+    var pbd = document.getElementById('puppetBulkDesc');
+    if (pbd) pbd.innerText = t.puppetBulkDesc;
+    var pbab = document.getElementById('puppetBulkAddBtn');
+    if (pbab) pbab.innerText = t.puppetBulkAddBtn;
+
+    var pbnTitle = document.getElementById('puppetBannerTitle');
+    if (pbnTitle) pbnTitle.innerText = t.puppetBannerTitle;
+    var pbnDesc = document.getElementById('puppetBannerDesc');
+    if (pbnDesc) pbnDesc.innerText = t.puppetBannerDesc;
+    var pbnBtn = document.getElementById('puppetBannerBtn');
+    if (pbnBtn) pbnBtn.innerText = t.puppetBannerBtn;
+
     document.getElementById('stateTitle').innerText = t.stateTitle;
     document.getElementById('stateDesc').innerText = t.stateDesc;
     document.getElementById('stateAddBtn').innerText = '＋ ' + t.addStateRule;
@@ -934,6 +1002,7 @@ function applyLang(lang) {
 
     renderCountries();
     renderPuppetRules();
+    if (typeof renderPuppetBulkSection === 'function') renderPuppetBulkSection();
     renderStateNameRules();
     renderCityNameRules();
     if (typeof renderCoverPreview === 'function') renderCoverPreview();
@@ -1524,6 +1593,7 @@ function saveData() {
         cover: modCoverData || null,
         countries: [],
         puppetRules: [],
+        puppetBulkTemplates: (window.puppetBulkTemplates || []),
         stateNameRules: [],
         cityNameRules: []
     };
@@ -2213,6 +2283,7 @@ function saveProjectToFile() {
         cover: modCoverData || null,
         countries: countries,
         puppetRules: puppetRules,
+        puppetBulkTemplates: (window.puppetBulkTemplates || []),
         stateNameRules: stateNameRules,
         cityNameRules: cityNameRules
     };
@@ -2627,7 +2698,7 @@ function saveCurrentToLibrary() {
         name: modName,
         savedAt: new Date().toLocaleString(),
         countryCount: countries.length,
-        puppetCount: puppetRules.length,
+        puppetCount: puppetRules.length + (window.puppetBulkTemplates ? window.puppetBulkTemplates.reduce(function(acc, t) { return acc + (typeof window.getEffectiveTags === "function" ? window.getEffectiveTags(t).length : 439); }, 0) : 0),
         cover: modCoverData || null,
         data: {
             version: "2.0",
@@ -2638,6 +2709,7 @@ function saveCurrentToLibrary() {
             cover: modCoverData || null,
             countries: countries,
             puppetRules: puppetRules,
+            puppetBulkTemplates: (window.puppetBulkTemplates || []),
             stateNameRules: stateNameRules,
             cityNameRules: cityNameRules
         }
@@ -2817,18 +2889,35 @@ function canvasToTGA(canvas) {
     return buf;
 }
 
-function buildPuppetOnActions(pRules) {
+function buildPuppetOnActions(pRules, pBulk) {
     var validRules = [];
     var seen = {};
-    for (var i = 0; i < pRules.length; i++) {
-        var r = pRules[i];
-        var ov = String(r.overlord || '').toUpperCase().trim();
-        var tg = String(r.tag || '').toUpperCase().trim();
-        if (!ov || !tg) continue;
+
+    function addRule(ov, tg) {
+        ov = String(ov || '').toUpperCase().trim();
+        tg = String(tg || '').toUpperCase().trim();
+        if (!ov || !tg) return;
         var key = tg + '_' + ov;
         if (!seen[key]) {
             seen[key] = true;
             validRules.push({ tag: tg, overlord: ov, cosTag: key });
+        }
+    }
+
+    if (pRules && pRules.length) {
+        for (var i = 0; i < pRules.length; i++) {
+            addRule(pRules[i].overlord, pRules[i].tag);
+        }
+    }
+
+    if (pBulk && pBulk.length) {
+        for (var b = 0; b < pBulk.length; b++) {
+            var bTmpl = pBulk[b];
+            var bOv = bTmpl.overlord;
+            if (!bOv || !bTmpl.selectedTags) continue;
+            for (var st = 0; st < bTmpl.selectedTags.length; st++) {
+                addRule(bOv, bTmpl.selectedTags[st]);
+            }
         }
     }
 
@@ -2939,45 +3028,55 @@ function buildPuppetOnActions(pRules) {
     lines.push('        }');
     lines.push('    }');
 
-    // Country-specific daily check for immediate response
+    // Country-specific daily check for immediate response (grouped by tag)
+    var tagDailyMap = {};
     for (var i = 0; i < validRules.length; i++) {
         var vr = validRules[i];
-        var ovConds = getOverlordCond(vr.overlord);
+        if (!tagDailyMap[vr.tag]) tagDailyMap[vr.tag] = [];
+        tagDailyMap[vr.tag].push(vr);
+    }
 
-        lines.push('    on_daily_' + vr.tag + ' = {');
+    for (var tg in tagDailyMap) {
+        var rulesForTag = tagDailyMap[tg];
+        lines.push('    on_daily_' + tg + ' = {');
         lines.push('        effect = {');
-        lines.push('            if = {');
-        lines.push('                limit = {');
-        lines.push('                    is_subject = yes');
-        lines.push('                    OVERLORD = {');
-        lines.push('                        OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                            ' + ovConds[c]);
+        for (var r = 0; r < rulesForTag.length; r++) {
+            var vr = rulesForTag[r];
+            var ovConds = getOverlordCond(vr.overlord);
+
+            lines.push('            if = {');
+            lines.push('                limit = {');
+            lines.push('                    is_subject = yes');
+            lines.push('                    OVERLORD = {');
+            lines.push('                        OR = {');
+            for (var c = 0; c < ovConds.length; c++) {
+                lines.push('                            ' + ovConds[c]);
+            }
+            lines.push('                        }');
+            lines.push('                    }');
+            lines.push('                    NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
+            lines.push('                }');
+            lines.push('                set_cosmetic_tag = ' + vr.cosTag);
+            lines.push('            }');
+            lines.push('            if = {');
+            lines.push('                limit = {');
+            lines.push('                    has_cosmetic_tag = ' + vr.cosTag);
+            lines.push('                    OR = {');
+            lines.push('                        is_subject = no');
+            lines.push('                        NOT = {');
+            lines.push('                            OVERLORD = {');
+            lines.push('                                OR = {');
+            for (var c = 0; c < ovConds.length; c++) {
+                lines.push('                                    ' + ovConds[c]);
+            }
+            lines.push('                                }');
+            lines.push('                            }');
+            lines.push('                        }');
+            lines.push('                    }');
+            lines.push('                }');
+            lines.push('                drop_cosmetic_tag = yes');
+            lines.push('            }');
         }
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                    NOT = { has_cosmetic_tag = ' + vr.cosTag + ' }');
-        lines.push('                }');
-        lines.push('                set_cosmetic_tag = ' + vr.cosTag);
-        lines.push('            }');
-        lines.push('            if = {');
-        lines.push('                limit = {');
-        lines.push('                    has_cosmetic_tag = ' + vr.cosTag);
-        lines.push('                    OR = {');
-        lines.push('                        is_subject = no');
-        lines.push('                        NOT = {');
-        lines.push('                            OVERLORD = {');
-        lines.push('                                OR = {');
-        for (var c = 0; c < ovConds.length; c++) {
-            lines.push('                                    ' + ovConds[c]);
-        }
-        lines.push('                                }');
-        lines.push('                            }');
-        lines.push('                        }');
-        lines.push('                    }');
-        lines.push('                }');
-        lines.push('                drop_cosmetic_tag = yes');
-        lines.push('            }');
         lines.push('        }');
         lines.push('    }');
     }
@@ -3124,9 +3223,9 @@ function buildOnActions(sRules, cRules) {
     return lines.join('\n');
 }
 
-function addLoc(arrRu, arrEn, key, val) {
+function addLoc(arrRu, arrEn, key, val, valEn) {
     addLocLine(arrRu, key, val);
-    addLocLine(arrEn, key, val);
+    addLocLine(arrEn, key, (valEn !== undefined ? valEn : val));
 }
 
 async function generateMod() {
@@ -3322,6 +3421,48 @@ async function generateMod() {
         }
     }
 
+    // 2b. Bulk Puppet Templates (Worldwide auto-naming)
+    if (typeof window.getPuppetBulkExportEntries === 'function') {
+        var bulkEntries = window.getPuppetBulkExportEntries();
+        for (var bi = 0; bi < bulkEntries.length; bi++) {
+            var be = bulkEntries[bi];
+            var bOv = be.overlord;
+            var bTg = be.tag;
+            if (!bOv || !bTg) continue;
+
+            hasCosmetic = true;
+            var bOvVariants = [bOv];
+            if (bOv === 'EUR' && bOvVariants.indexOf('EUR_UNIFIED') === -1) bOvVariants.push('EUR_UNIFIED');
+            if (bOv === 'EUR_UNIFIED' && bOvVariants.indexOf('EUR') === -1) bOvVariants.push('EUR');
+
+            // Fallback base keys
+            for (var bvi = 0; bvi < bOvVariants.length; bvi++) {
+                var boTag = bOvVariants[bvi];
+                addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag, be.nameRu, be.nameEn);
+                addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag + '_DEF', be.nameRu, be.nameEn);
+            }
+
+            // Ideologies and autonomy levels
+            for (var bii = 0; bii < be.ideologies.length; bii++) {
+                var bIdeo = be.ideologies[bii];
+                for (var bvi2 = 0; bvi2 < bOvVariants.length; bvi2++) {
+                    var boTag2 = bOvVariants[bvi2];
+                    addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_' + bIdeo, be.nameRu, be.nameEn);
+                    addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_' + bIdeo + '_DEF', be.nameRu, be.nameEn);
+
+                    for (var bak = 0; bak < autonomyLevels.length; bak++) {
+                        var bAl = autonomyLevels[bak];
+                        addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_' + bIdeo + '_autonomy_' + bAl, be.nameRu, be.nameEn);
+                        addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_' + bIdeo + '_autonomy_' + bAl + '_DEF', be.nameRu, be.nameEn);
+                        // Also autonomy fallback without ideology
+                        addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_autonomy_' + bAl, be.nameRu, be.nameEn);
+                        addLoc(cosmeticLocRu, cosmeticLocEn, bTg + '_' + boTag2 + '_autonomy_' + bAl + '_DEF', be.nameRu, be.nameEn);
+                    }
+                }
+            }
+        }
+    }
+
     // Save localisation files directly into target localisation folder with both languages
     if (hasNormal) {
         locFolder.file(fnRu, '\uFEFF' + normalLocRu.join('\n') + '\n');
@@ -3333,7 +3474,7 @@ async function generateMod() {
     }
 
     // Generate on_actions for puppets
-    var puppetOnAct = buildPuppetOnActions(puppetRules);
+    var puppetOnAct = buildPuppetOnActions(puppetRules, window.puppetBulkTemplates);
     if (puppetOnAct) {
         modFolder.folder('common/on_actions').file('custom_puppets.txt', puppetOnAct + '\n');
     }
@@ -3405,6 +3546,7 @@ async function generateMod() {
         locUseReplaceFolder: locUseReplaceFolder,
         countries: countries,
         puppetRules: puppetRules,
+        puppetBulkTemplates: (window.puppetBulkTemplates || []),
         stateNameRules: stateNameRules,
         cityNameRules: cityNameRules
     };

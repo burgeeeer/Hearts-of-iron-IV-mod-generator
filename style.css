@@ -3969,3 +3969,272 @@ html[data-theme="dark"] .add-btn:hover {
   transform: scale(1.04) !important;
   transition: all 0.15s ease !important;
 }
+
+
+/* ==========================================================================
+   PUPPET BULK & TEMPLATE GENERATOR STYLES
+   ========================================================================== */
+.puppet-shortcut-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-subtle, #f5f9f8);
+  border: 1px solid var(--border-color, #d0e2df);
+  border-left: 4px solid var(--primary, #1b7367);
+  border-radius: var(--radius, 8px);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+html[data-theme="dark"] .puppet-shortcut-banner {
+  background: #112623;
+  border-color: #204c45;
+  border-left-color: #3aa899;
+}
+.puppet-shortcut-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+.puppet-shortcut-info strong {
+  color: var(--text-main);
+  font-size: 13px;
+}
+.puppet-shortcut-info span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.puppet-bulk-card {
+  margin-bottom: 24px;
+}
+
+.puppet-help-box {
+  background: var(--bg-subtle, rgba(0,0,0,0.02));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+.puppet-help-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.puppet-help-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.puppet-help-box code {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  color: var(--primary, #1b7367);
+  font-weight: 700;
+}
+.puppet-examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 6px 12px;
+  margin-bottom: 8px;
+}
+.puppet-example-item {
+  font-size: 12px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.puppet-help-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.puppet-preview-box {
+  background: var(--bg-subtle, rgba(0,0,0,0.02));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.puppet-preview-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+.puppet-preview-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.puppet-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+.puppet-chip:hover {
+  border-color: var(--primary, #1b7367);
+}
+.puppet-chip-tag {
+  font-family: Consolas, monospace;
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--bg-subtle);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  color: var(--primary, #1b7367);
+}
+.puppet-chip-arrow {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.puppet-chip-val {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.puppet-bulk-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+.puppet-code-preview {
+  margin-top: 12px;
+  padding: 12px;
+  background: #181e24;
+  color: #79c0ff;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  border-radius: 6px;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #30363d;
+}
+
+/* Puppet Tag Selection & Picker */
+.puppet-tags-section {
+  margin-top: 14px;
+  background: var(--bg-subtle, rgba(0,0,0,0.015));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+.puppet-tag-mode-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.puppet-mode-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.puppet-mode-btn:hover {
+  color: var(--text-main);
+  border-color: var(--border-hover);
+}
+.puppet-mode-btn.active {
+  background: var(--primary, #1b7367);
+  color: #fff;
+  border-color: var(--primary, #1b7367);
+}
+.puppet-custom-tags-box {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+.puppet-picker-container {
+  margin-top: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+}
+.puppet-tags-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.puppet-tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.puppet-tag-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.puppet-tag-checkbox-item:hover {
+  border-color: var(--primary, #1b7367);
+}
+.puppet-tag-checkbox-item.selected {
+  background: rgba(27, 115, 103, 0.08);
+  border-color: var(--primary, #1b7367);
+}
+.puppet-tag-name-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.puppet-trans-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--primary, #1b7367);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.puppet-trans-btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--primary, #1b7367);
+}
