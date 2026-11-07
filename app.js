@@ -1690,6 +1690,7 @@ function saveData() {
         console.warn('LocalStorage save error:', e);
     }
     updateProjectToolbar();
+    if (typeof updateUnifiedSummaryText === 'function') updateUnifiedSummaryText();
     var stat = document.getElementById('autoSaveStatus');
     if (stat) stat.textContent = currentLang === 'russian' ? 'Сохранено' : 'Saved';
 }
@@ -3672,10 +3673,103 @@ async function generateMod() {
     zip.file('project.json', projectJsonStr);
     modFolder.file('project.json', projectJsonStr);
 
+    // Update preview tabs in Section 4 so code displays immediately
+    try {
+        var sumEl = document.getElementById('summary-content');
+        if (sumEl) {
+            var sumHtml = '<div style="padding:14px; line-height:1.6; font-size:12.5px;">';
+            sumHtml += '<div style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Сводка единого мода: ' + modName + '</div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Название мода: <strong style="color:var(--text-main);">' + modName + '</strong> (поддерживаемая версия HoI4: 1.19.*)</div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Кастомных стран и флагов (32-bit TGA): <strong style="color:var(--text-main);">' + (countries.length || 0) + ' шт.</strong></div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Правил марионеток: <strong style="color:var(--text-main);">' + ((puppetRules.length || 0) + (window.puppetBulkTemplates ? window.puppetBulkTemplates.reduce(function(a,b){return a+(b.selectedTags?b.selectedTags.length:0);},0) : 0)) + ' шт.</strong></div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Переименований регионов и городов: <strong style="color:var(--text-main);">' + (stateNameRules.length || 0) + ' рег., ' + (cityNameRules.length || 0) + ' гор.</strong></div>';
+            if (hasCosmeticMod && cosmeticFiles) {
+                sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Формируемые нации и решения: <strong style="color:var(--success);">ВКЛЮЧЕНЫ В МОД</strong> (решения, категории, косметический тег)</div>';
+            } else {
+                sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Формируемые решения: <em>не заполнялись (создан мод на страны и марионетки)</em></div>';
+            }
+            sumHtml += '<div style="margin-top:12px; color:var(--success); font-weight:600;">✓ Все файлы успешно упакованы в единый ZIP-архив ' + modName + '.zip</div>';
+            sumHtml += '</div>';
+            sumEl.innerHTML = sumHtml;
+        }
+
+        var locRuDisplay = document.getElementById('code-loc-ru');
+        if (locRuDisplay) locRuDisplay.textContent = normalLocRu.join('\n');
+
+        var locEnDisplay = document.getElementById('code-loc-en');
+        if (locEnDisplay) locEnDisplay.textContent = normalLocEn.join('\n');
+
+        var descDisplay = document.getElementById('code-descriptor');
+        if (descDisplay) descDisplay.textContent = rootDescriptor;
+
+        if (cosmeticFiles && cosmeticFiles.text) {
+            for (var fp in cosmeticFiles.text) {
+                if (fp.includes('decisions.txt')) {
+                    var decEl = document.getElementById('code-decisions');
+                    if (decEl) decEl.textContent = cosmeticFiles.text[fp];
+                }
+                if (fp.includes('categories.txt')) {
+                    var catEl = document.getElementById('code-categories');
+                    if (catEl) catEl.textContent = cosmeticFiles.text[fp];
+                }
+                if (fp.includes('cosmetic.txt')) {
+                    var cosmEl = document.getElementById('code-cosmetic');
+                    if (cosmEl) cosmEl.textContent = cosmeticFiles.text[fp];
+                }
+            }
+        }
+
+        var treeEl = document.getElementById('tree-content');
+        if (treeEl && zip && zip.files) {
+            var fileList = Object.keys(zip.files).sort();
+            var treeHtml = '<div class="file-tree-view" style="font-family:var(--font-mono); font-size:12px; line-height:1.7; padding:12px;">';
+            treeHtml += '<div style="color:var(--text-main); font-weight:700; margin-bottom:6px;">' + modName + '.zip/</div>';
+            for (var fi = 0; fi < fileList.length; fi++) {
+                var fpath = fileList[fi];
+                if (zip.files[fpath].dir) continue;
+                treeHtml += '<div style="color:var(--text-muted); padding-left:16px;">├── ' + fpath + '</div>';
+            }
+            treeHtml += '</div>';
+            treeEl.innerHTML = treeHtml;
+        }
+    } catch(e) { console.error('Error updating preview tabs:', e); }
+
     var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
     saveAs(blob, modName + '.zip');
     showToast(i18n[currentLang] ? (i18n[currentLang].modGeneratedToast || 'Мод успешно сгенерирован!') : 'Mod generated successfully!');
 }
+
+function updateUnifiedSummaryText() {
+    var el = document.getElementById('launchSummaryText');
+    if (!el) return;
+    var cCount = (countries ? countries.length : 0);
+    var pCount = (puppetRules ? puppetRules.length : 0);
+    if (window.puppetBulkTemplates && Array.isArray(window.puppetBulkTemplates)) {
+        pCount += window.puppetBulkTemplates.reduce(function(acc, t) {
+            return acc + (t.selectedTags ? t.selectedTags.length : 0);
+        }, 0);
+    }
+    var sCount = (stateNameRules ? stateNameRules.length : 0);
+    var cityCount = (cityNameRules ? cityNameRules.length : 0);
+    var hasCosm = (window.CosmeticCreator && typeof window.CosmeticCreator.hasCosmeticData === 'function' && window.CosmeticCreator.hasCosmeticData());
+
+    var parts = [];
+    if (currentLang === 'english') {
+        parts.push(cCount + ' countries');
+        parts.push(pCount + ' puppet rules');
+        if (sCount > 0) parts.push(sCount + ' state renames');
+        if (cityCount > 0) parts.push(cityCount + ' city renames');
+        if (hasCosm) parts.push('+ formable nation');
+    } else {
+        parts.push(cCount + ' стран(ы)');
+        parts.push(pCount + ' правил марионеток');
+        if (sCount > 0) parts.push(sCount + ' регионов');
+        if (cityCount > 0) parts.push(cityCount + ' городов');
+        if (hasCosm) parts.push('+ формируемая нация');
+    }
+    el.textContent = parts.join(' • ');
+}
+window.updateUnifiedSummaryText = updateUnifiedSummaryText;
 
 window.generateMod = generateMod;
 

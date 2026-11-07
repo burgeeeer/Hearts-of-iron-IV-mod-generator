@@ -2538,6 +2538,9 @@ function populateFormFromData(d) {
 // ─── AUTO-SAVE ON CHANGE & EXIT ───────────────
 
 function updateCosmeticDockSummary() {
+  if (typeof window.updateUnifiedSummaryText === 'function') {
+    window.updateUnifiedSummaryText();
+  }
   const summaryEl = document.getElementById('cosmLaunchSummaryText');
   if (!summaryEl) return;
 
@@ -3382,6 +3385,7 @@ async function downloadMod() {
 
 
 async function buildAndDownloadMod() {
+  return await window.generateMod();
   if (typeof window.generateMod === 'function') {
     return await window.generateMod();
   }
@@ -3623,7 +3627,9 @@ window.cosm_copyCode = copyCode;
 
 function hasCosmeticData() {
   const d = collectProjectData();
-  return Boolean(d && d.cosmeticTag && d.cosmeticTag.trim());
+  const hasTag = Boolean(d && d.cosmeticTag && d.cosmeticTag.trim());
+  const hasDec = Boolean(d && d.decisionName && d.decisionName.trim());
+  return hasTag || hasDec;
 }
 
 function resetToDefaultCosmeticState() {
