@@ -3,21 +3,33 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
     <url>
-        <loc>https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
+        <loc>https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/</loc>
         <xhtml:link rel="alternate" hreflang="ru" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=ru"/>
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
-        <changefreq>monthly</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/"/>
+        <lastmod>2026-11-07</lastmod>
+        <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 
     <url>
         <loc>https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=ru</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
         <xhtml:link rel="alternate" hreflang="ru" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=ru"/>
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
-        <changefreq>monthly</changefreq>
-        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="en" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/"/>
+        <lastmod>2026-11-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <url>
+        <loc>https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en</loc>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=ru"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/?lang=en"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/"/>
+        <lastmod>2026-11-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
     </url>
 
 </urlset>

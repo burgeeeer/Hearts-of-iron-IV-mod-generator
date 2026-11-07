@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/sitemap.xml

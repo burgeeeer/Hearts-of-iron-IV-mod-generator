@@ -3,31 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hearts of Iron IV Mod Generator & Studio</title>
-    <meta name="description" content="Visual mod development studio for Hearts of Iron IV (Clausewitz Engine). Create custom countries, flags (TGA), puppets across 11 autonomy tiers, decisions, formable nations, and select states on 1081-state interactive map.">
-    <meta name="keywords" content="hoi4 mod generator, hearts of iron 4 modding, clausewitz mod tool, formable nations generator, hoi4 flags tga converter, hoi4 puppet autonomy, hoi4 mapchart, hoi4 states map, hoi4 decisions generator">
+    <title>Hearts of Iron IV Mod Generator & Studio — Генератор модов HoI4</title>
+    <meta name="description" content="Онлайн-генератор модов для Hearts of Iron IV: переименование стран, динамические марионетки, формируемые нации, решения и флаги TGA. Экспорт мода за 1 клик.">
+    <meta name="keywords" content="hearts of iron iv mod generator, hoi4 mod generator, генератор модов hoi4, конструктор модов хои4, hearts of iron 4 modding tool, formable nations hoi4, hoi4 flags tga, переименование стран hoi4, марионетки hoi4, hoi4 mapchart">
     <meta name="author" content="burgeeeer">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/">
+
+    <!-- Favicon & Touch Icons (Google Search Compliant: 48px multiples + SVG) -->
+    <link rel="icon" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon.png">
+    <link rel="shortcut icon" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/apple-touch-icon.png">
 
     <!-- Open Graph / Facebook / Discord -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Hearts of Iron IV Mod Generator">
     <meta property="og:url" content="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/">
-    <meta property="og:title" content="Hearts of Iron IV Mod Generator & Studio">
-    <meta property="og:description" content="Visual mod development studio for Hearts of Iron IV. Create countries, 32-bit TGA flags, puppet rules, decisions, formable nations, with interactive 1081-state map.">
+    <meta property="og:title" content="Hearts of Iron IV Mod Generator & Studio — Генератор модов HoI4">
+    <meta property="og:description" content="Онлайн-генератор модов для Hearts of Iron IV: визуальное переименование стран, динамические марионетки, формируемые нации, решения и генерация флагов TGA.">
     <meta property="og:image" content="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/apple-touch-icon.png">
+    <meta property="og:image:width" content="180">
+    <meta property="og:image:height" content="180">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:locale:alternate" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:url" content="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/">
-    <meta name="twitter:title" content="Hearts of Iron IV Mod Generator & Studio">
-    <meta name="twitter:description" content="Visual mod development studio for Hearts of Iron IV with interactive 1081-state map and TGA flag converter.">
+    <meta name="twitter:title" content="Hearts of Iron IV Mod Generator & Studio — Генератор модов HoI4">
+    <meta name="twitter:description" content="Онлайн-генератор модов для Hearts of Iron IV: переименование стран, динамические марионетки, формируемые нации, решения и флаги TGA.">
     <meta name="twitter:image" content="https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/apple-touch-icon.png">
-    
-    <!-- Favicon & Touch Icons -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Structured Data (Schema.org JSON-LD for Google Search & Rich Snippets) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/#website",
+          "url": "https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/",
+          "name": "Hearts of Iron IV Mod Generator",
+          "alternateName": [
+            "HoI4 Mod Generator",
+            "Генератор модов HoI4",
+            "HoI4 Mod Studio"
+          ],
+          "description": "Онлайн-студия создания модов для Hearts of Iron IV: переименование стран, марионетки, формируемые нации и решения.",
+          "inLanguage": ["ru", "en"]
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/#app",
+          "name": "Hearts of Iron IV Mod Generator & Studio",
+          "alternateName": "Генератор модов HoI4",
+          "url": "https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/",
+          "applicationCategory": "GameApplication, Utility",
+          "operatingSystem": "All (Web Browser)",
+          "browserRequirements": "Requires JavaScript",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Бесплатный инструмент создания модов для Hearts of Iron IV. Позволяет настраивать названия стран для 4 идеологий, автономии марионеток, формируемые нации, решения, экспортировать флаги в TGA и скачивать готовый мод в ZIP.",
+          "featureList": [
+            "Переименование стран для 4 идеологий (демократия, фашизм, коммунизм, нейтралитет)",
+            "Динамические названия марионеток по 11 уровням автономии",
+            "Конструктор формируемых наций и решений с триггерами и наградами",
+            "Автоматическая конвертация флагов в 32-битный формат TGA (82x52, 41x26, 10x7)",
+            "Интерактивная карта 1081 региона HoI4 с поиском и мультивыбором",
+            "Экспорт готового мода в ZIP-архив с дескрипторами для Paradox Launcher"
+          ],
+          "author": {
+            "@type": "Person",
+            "name": "burgeeeer",
+            "url": "https://github.com/burgeeeer"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://burgeeeer.github.io/Hearts-of-iron-IV-mod-generator/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Как создать мод для Hearts of Iron IV без программирования?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Откройте генератор, укажите название мода, настройте названия стран, марионеток или формируемые решения, загрузите изображения флагов (генератор сам конвертирует их в TGA) и нажмите «Сгенерировать мод». Скачанный архив готов к установке."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Как установить полученный мод в Hearts of Iron IV?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Распакуйте содержимое скачанного ZIP-архива (папку мода и файл .mod) в папку модов игры: Документы/Paradox Interactive/Hearts of Iron IV/mod/ и включите мод в лаунчере Paradox в разделе «Наборы модификаций» (Playsets)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Поддерживаются ли формируемые нации и решения?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Да, встроенный конструктор формируемых наций позволяет задавать условия, национальные регионы, триггеры, награды политической силы и стабильности, косметические теги, цвета карты и флаги для всех идеологий."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     
     <!-- Clean Grotesque Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
