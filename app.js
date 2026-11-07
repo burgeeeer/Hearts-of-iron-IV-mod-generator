@@ -1692,8 +1692,14 @@ function saveData() {
 
 function onModNameChange() {
     var val = (document.getElementById('modName') || {}).value || '';
+    var mn2 = document.getElementById('mod-name');
+    if (mn2 && mn2.value !== val) {
+        mn2.value = val;
+    }
     var el = document.getElementById('projectActiveName');
     if (el) el.textContent = val.trim() || (i18n[currentLang] ? i18n[currentLang].projUnnamed : 'MyAwesomeMod');
+    var treeEl = document.getElementById('treeModDirName');
+    if (treeEl) treeEl.textContent = val.trim() || 'MyAwesomeMod';
     saveData();
 }
 
@@ -3268,8 +3274,23 @@ function addLoc(arrRu, arrEn, key, val, valEn) {
 
 async function generateMod() {
     pullCountriesFromDOM();
+    var modName = ((document.getElementById('modName') ? document.getElementById('modName').value.trim() : '') ||
+                   (document.getElementById('mod-name') ? document.getElementById('mod-name').value.trim() : '') ||
+                   'CustomMod').replace(/[^a-zA-Z0-9_\-]/g, '_');
+
+    // 0. Check if formable decisions / cosmetic tag data exists and generate it
+    var cosmeticFiles = null;
+    var hasCosmeticMod = false;
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.hasCosmeticData === 'function' && window.CosmeticCreator.hasCosmeticData()) {
+        cosmeticFiles = window.CosmeticCreator.generateFiles(modName);
+        if (!cosmeticFiles) {
+            // Validation failed in cosmetic mod, error was already alerted to user
+            return;
+        }
+        hasCosmeticMod = true;
+    }
+
     var zip = new JSZip();
-    var modName = document.getElementById('modName').value.trim() || 'CustomMod';
     var modFolder = zip.folder(modName);
 
     var fNorm = modFolder.folder('gfx/flags');
@@ -3559,22 +3580,73 @@ async function generateMod() {
         }
     }
 
+    // Merge cosmetic and formable decision files if generated
+    if (cosmeticFiles) {
+        if (cosmeticFiles.text) {
+            for (var p in cosmeticFiles.text) {
+                if (p.endsWith('.mod') || p.endsWith('descriptor.mod')) continue;
+                zip.file(p, cosmeticFiles.text[p]);
+            }
+        }
+        if (cosmeticFiles.tgaFlags) {
+            for (var tp in cosmeticFiles.tgaFlags) {
+                zip.file(tp, cosmeticFiles.tgaFlags[tp]);
+            }
+        }
+    }
+
+    var pictureLine = '';
+    if (modCoverData) {
+        try {
+            var coverBlob = dataURLToBlob(modCoverData);
+            modFolder.file('thumbnail.png', coverBlob);
+            pictureLine = 'picture="thumbnail.png"\n';
+        } catch(e) {}
+    }
+
+    var modTags = ['"Alternative History"', '"Graphics"'];
+    if (hasCosmeticMod) {
+        modTags.push('"Decisions"');
+        modTags.push('"National Focuses"');
+    }
+    var depLines =
+        'dependencies={\n' +
+        '\t"Paint_it"\n' +
+        '\t"Colored Puppets"\n' +
+        '\t"Always Color Puppets"\n' +
+        '\t"Country Customizer - Change Name & Flag In-Game"\n' +
+        '\t"The Road to 56"\n' +
+        '\t"Kaiserreich"\n' +
+        '\t"Millennium Dawn: Modern Day Mod"\n' +
+        '\t"awxe\'s Formable Nations"\n' +
+        '\t"Formable Nations"\n' +
+        '}\n';
+
     var rootDescriptor =
         'version="1.0"\n' +
-        'tags={\n' +
-        '\t"Alternative History"\n' +
-        '\t"Graphics"\n' +
-        '}\n' +
+        'tags={\n' + modTags.map(function(t) { return '\t' + t; }).join('\n') + '\n}\n' +
         'name="' + modName + '"\n' +
         'supported_version="1.19.*"\n' +
-        'path="mod/' + modName + '"\n';
+        'path="mod/' + modName + '"\n' +
+        pictureLine +
+        depLines;
 
     zip.file(modName + '.mod', rootDescriptor);
+
+    var internalDescriptor =
+        'version="1.0"\n' +
+        'tags={\n' + modTags.map(function(t) { return '\t' + t; }).join('\n') + '\n}\n' +
+        'name="' + modName + '"\n' +
+        'supported_version="1.19.*"\n' +
+        pictureLine +
+        depLines;
+
+    modFolder.file('descriptor.mod', internalDescriptor);
 
     // Embed project.json into both zip root and mod folder so any mod generated here can be reloaded and edited anytime!
     pullCountriesFromDOM();
     var projectData = {
-        version: "2.0",
+        version: "3.0",
         app: "HoI4ModGenerator",
         savedAt: new Date().toISOString(),
         lang: currentLang,
@@ -3582,19 +3654,26 @@ async function generateMod() {
         countryLocFileName: countryLocFileName,
         countryLocFileNameEn: countryLocFileNameEn,
         locUseReplaceFolder: locUseReplaceFolder,
+        cover: modCoverData || null,
         countries: countries,
         puppetRules: puppetRules,
         puppetBulkTemplates: (window.puppetBulkTemplates || []),
         stateNameRules: stateNameRules,
         cityNameRules: cityNameRules
     };
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.getProjectData === 'function') {
+        projectData.cosmetic = window.CosmeticCreator.getProjectData();
+    }
     var projectJsonStr = JSON.stringify(projectData, null, 2);
     zip.file('project.json', projectJsonStr);
     modFolder.file('project.json', projectJsonStr);
 
-    var blob = await zip.generateAsync({ type: 'blob' });
+    var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
     saveAs(blob, modName + '.zip');
+    showToast(i18n[currentLang] ? (i18n[currentLang].modGeneratedToast || 'Мод успешно сгенерирован!') : 'Mod generated successfully!');
 }
+
+window.generateMod = generateMod;
 
 
 function clearCountryFlag(ci, ideo) {

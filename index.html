@@ -255,7 +255,8 @@
                         <div class="tree-sub">├── descriptor.mod</div>
                         <div class="tree-sub">├── <span id="treeLocPath">localisation/replace/</span> <span class="muted-note" id="treeLocNote">(countries_l_russian.yml)</span></div>
                         <div class="tree-sub">├── gfx/flags/ <span class="muted-note">(82×52, 41×26, 10×7 TGA)</span></div>
-                        <div class="tree-sub">└── common/on_actions/ <span class="muted-note" id="metaTreeNote">(марионетки и регионы)</span></div>
+                        <div class="tree-sub" id="treePuppetsRow">├── common/on_actions/ <span class="muted-note" id="metaTreeNote">(марионетки и регионы)</span></div>
+                        <div class="tree-sub" id="treeDecisionsRow" style="display:none">└── common/decisions/ <span class="muted-note">(формируемые нации и решения)</span></div>
                     </div>
                 </div>
             </div>
@@ -1183,10 +1184,15 @@
                 if (elS) elS.textContent = sCount;
                 if (elV) elV.textContent = vCount;
 
+                var hasCosm = Boolean(window.CosmeticCreator && typeof window.CosmeticCreator.hasCosmeticData === 'function' && window.CosmeticCreator.hasCosmeticData());
                 var summaryText = document.getElementById('launchSummaryText');
                 if (summaryText) {
-                    summaryText.textContent = cCount + ' стран(ы) • ' + totalPCount + ' правил марионеток • ' + sCount + ' регионов • ' + vCount + ' городов';
+                    var parts = [cCount + ' стран(ы)', totalPCount + ' правил марионеток', sCount + ' регионов', vCount + ' городов'];
+                    if (hasCosm) parts.push('формируемые нации и решения');
+                    summaryText.textContent = parts.join(' • ');
                 }
+                var decRow = document.getElementById('treeDecisionsRow');
+                if (decRow) decRow.style.display = hasCosm ? 'block' : 'none';
             }
 
             document.addEventListener('input', function() {

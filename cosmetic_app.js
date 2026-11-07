@@ -2564,6 +2564,13 @@ function updateCosmeticDockSummary() {
 }
 
 function onFieldChange() {
+  const curModName = val('mod-name');
+  const mn1 = document.getElementById('modName');
+  if (mn1 && curModName && mn1.value !== curModName) {
+    mn1.value = curModName;
+    const treeEl = document.getElementById('treeModDirName');
+    if (treeEl) treeEl.textContent = curModName.trim() || 'MyAwesomeMod';
+  }
   updateCosmeticDockSummary();
   updateProjectToolbar();
 
@@ -2577,10 +2584,10 @@ function onFieldChange() {
 }
 
 function updateProjectToolbar() {
-  const nameDisplay = document.getElementById('cosm_projectActiveName');
-  const modName = val('mod-name');
-  if (nameDisplay) {
-    nameDisplay.textContent = modName || 'MyCosmeticMod';
+  const nameDisplay = document.getElementById('projectActiveName') || document.getElementById('cosm_projectActiveName');
+  const modName = val('mod-name') || (document.getElementById('modName') ? document.getElementById('modName').value : '');
+  if (nameDisplay && modName && modName.trim()) {
+    nameDisplay.textContent = modName.trim();
   }
 }
 
@@ -2788,15 +2795,15 @@ function validate() {
 }
 
 // ─── GENERATE PARADOX SCRIPT FILES ────────────
-function generateMod() {
+function generateMod(customModSlug) {
   const errs = validate();
   if (errs.length > 0) {
-    alert('Пожалуйста, заполните обязательные поля:\n\n• ' + errs.join('\n• '));
-    return;
+    alert('Пожалуйста, заполните обязательные поля для формируемой нации:\n\n• ' + errs.join('\n• '));
+    return null;
   }
 
   const data = collectProjectData();
-  const modSlug = slugify(data.modName);
+  const modSlug = customModSlug ? String(customModSlug).trim().replace(/[^a-zA-Z0-9_\-]/g, '_') : slugify(data.modName);
   const cosTag = data.cosmeticTag;
   const ownerTags = parseOwnerTags(data.ownerTag);
   let decId = '';
@@ -3197,14 +3204,17 @@ ${commonDependencies}`;
   if (fpDec) fpDec.textContent = `common/decisions/${modSlug}_decisions.txt`;
 
   buildSummary(baseName);
-  buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName);
+  buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile);
 
   document.getElementById('btn-download').style.display = 'inline-flex';
   showToast(t('generated_toast'));
   showTab('summary');
 
   // Scroll to results
-  document.getElementById('panel-summary').scrollIntoView({ behavior: 'smooth' });
+  if (document.getElementById('panel-summary')) {
+    document.getElementById('panel-summary').scrollIntoView({ behavior: 'smooth' });
+  }
+  return generatedFiles;
 }
 
 // ─── SUMMARY & FILE TREE ──────────────────────
@@ -3274,9 +3284,12 @@ function buildSummary(baseName) {
   `;
 }
 
-function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = null) {
+function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null) {
   const container = document.getElementById('tree-content');
   if (!container) return;
+
+  const actualLocRu = locRuFile || `${modSlug}_l_russian.yml`;
+  const actualLocEn = locEnFile || `${modSlug}_l_english.yml`;
 
   let flagEntries = '';
   IDEOLOGIES.forEach(i => {
@@ -3309,12 +3322,12 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
 │   ├── <span class="tree-dir">countries/</span>
 │   │   └── <span class="tree-f">cosmetic.txt</span> <span class="tree-sub">(цвета косметического тега)</span>
 ├── <span class="tree-dir">localisation/</span>
-│   ├── <span class="tree-f">${locRuFile}</span>
-│   ├── <span class="tree-f">${locEnFile}</span>
+│   ├── <span class="tree-f">${actualLocRu}</span>
+│   ├── <span class="tree-f">${actualLocEn}</span>
 │   ├── <span class="tree-dir">russian/</span>
-│   │   └── <span class="tree-f">${locRuFile}</span>
+│   │   └── <span class="tree-f">${actualLocRu}</span>
 │   └── <span class="tree-dir">english/</span>
-│       └── <span class="tree-f">${locEnFile}</span>
+│       └── <span class="tree-f">${actualLocEn}</span>
 ${gfxEntry}├── <span class="tree-dir">gfx/</span>
 ${decIconEntry}│   └── <span class="tree-dir">flags/</span>
 ${flagEntries || '│       └── (флаги не загружались)\n'}
@@ -3359,6 +3372,9 @@ async function downloadMod() {
 
 
 async function buildAndDownloadMod() {
+  if (typeof window.generateMod === 'function') {
+    return await window.generateMod();
+  }
   generateMod();
   await downloadMod();
 }
@@ -3590,9 +3606,15 @@ window.cosm_renderProjectsList = renderProjectsList;
 window.cosm_loadProjectFromLibrary = loadProjectFromLibrary;
 window.cosm_deleteProjectFromLibrary = deleteProjectFromLibrary;
 window.cosm_showTab = showTab;
-window.cosm_generateMod = generateMod;
-window.cosm_downloadMod = downloadMod;
+window.cosm_generateMod = function() { generateMod(); };
+window.cosm_downloadMod = buildAndDownloadMod;
+window.cosm_buildAndDownloadMod = buildAndDownloadMod;
 window.cosm_copyCode = copyCode;
+
+function hasCosmeticData() {
+  const d = collectProjectData();
+  return Boolean(d && d.cosmeticTag && d.cosmeticTag.trim());
+}
 
 function resetToDefaultCosmeticState() {
   populateFormFromData({
@@ -3649,6 +3671,11 @@ window.CosmeticCreator = {
     populateFormFromData(data);
     onFieldChange();
   },
-  resetProject: resetToDefaultCosmeticState
+  resetProject: resetToDefaultCosmeticState,
+  hasCosmeticData: hasCosmeticData,
+  generateFiles: function(customModSlug) {
+    return generateMod(customModSlug);
+  },
+  validate: validate
 };
 })();
