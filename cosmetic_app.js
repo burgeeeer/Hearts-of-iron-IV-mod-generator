@@ -3256,7 +3256,17 @@ function buildSummary(baseName) {
   }
   const buffsVal = buffsList.length > 0 ? buffsList.join(', ') : (currentLang === 'ru' ? 'Стандартные' : 'Standard');
 
+  const countriesCount = (window.countries && window.countries.length) || 0;
+  const puppetCount = (window.puppetRules && window.puppetRules.length) || 0;
+  const bulkCount = (window.puppetBulkTemplates ? window.puppetBulkTemplates.reduce(function(acc, t) { return acc + (t.selectedTags ? t.selectedTags.length : 0); }, 0) : 0);
+  const totalPuppets = puppetCount + bulkCount;
+  const stateRulesCount = (window.stateNameRules && window.stateNameRules.length) || 0;
+  const cityRulesCount = (window.cityNameRules && window.cityNameRules.length) || 0;
+
   const items = [
+    [currentLang === 'ru' ? 'Кастомных стран' : 'Custom Countries', countriesCount > 0 ? `${countriesCount} шт.` : (currentLang === 'ru' ? '—' : 'None')],
+    [currentLang === 'ru' ? 'Правил марионеток' : 'Puppet Rules', totalPuppets > 0 ? `${totalPuppets} шт.` : (currentLang === 'ru' ? '—' : 'None')],
+    [currentLang === 'ru' ? 'Регионы и города' : 'States & Cities', (stateRulesCount > 0 || cityRulesCount > 0) ? `${stateRulesCount} рег., ${cityRulesCount} гор.` : (currentLang === 'ru' ? '—' : 'None')],
     [currentLang === 'ru' ? 'Мод' : 'Mod', d.modName],
     [currentLang === 'ru' ? 'Версия' : 'Version', d.modVersion],
     [currentLang === 'ru' ? 'Версия HoI4' : 'HoI4 Version', d.hoi4version],

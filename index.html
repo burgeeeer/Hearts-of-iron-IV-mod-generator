@@ -232,6 +232,7 @@
             <a href="#puppet-bulk-section" id="navGenPuppetBulk" class="sub-nav-link">3. Марионетки для всех стран (Шаблоны)</a>
             <a href="#state-name-section" id="navGenStates" class="sub-nav-link">4. Регионы</a>
             <a href="#city-name-section" id="navGenCities" class="sub-nav-link">5. Города</a>
+            <a href="#cosm-section-preview" id="navGenPreview" class="sub-nav-link">6. Сборка и экспорт</a>
         </div>
     </nav>
     <nav class="sub-nav-bar" id="sub-nav-cosmetic" aria-label="Быстрый переход (Формируемые нации)" style="display: none;">
@@ -472,23 +473,6 @@
             </div>
         </section>
 
-        <!-- Sticky Bottom Bar -->
-        <div class="bottom-action-dock">
-            <div class="dock-container">
-                <div class="dock-summary">
-                    <span class="status-indicator-green"></span>
-                    <span id="launchSummaryText" class="dock-summary-text">1 страна • 1 правило марионетки • 1 регион</span>
-                </div>
-                <div class="dock-buttons">
-                    <button type="button" class="btn-secondary" onclick="saveProjectToFile()">
-                        <span id="btnExportJsonText">Экспорт .json</span>
-                    </button>
-                    <button id="generateBtn" onclick="generateMod()" class="btn-primary btn-generate">
-                        <span id="btnGenModText">Сгенерировать мод</span>
-                    </button>
-                </div>
-            </div>
-        </div>
         </div>
 
         <!-- View 2: Cosmetic Tag & Formable Nations Creator -->
@@ -970,7 +954,9 @@
         </div>
       </div>
 
-      <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
+      </div>
+
+    <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
       <div class="section collapsible" id="cosm-section-preview">
         <div class="section-head" onclick="toggleSection(this)">
           <div>
@@ -1064,9 +1050,6 @@
           </div>
         </div>
       </div>
-
-    
-    </div>
 
     </main>
 

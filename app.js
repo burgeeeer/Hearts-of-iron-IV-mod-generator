@@ -1031,6 +1031,8 @@ function applyLang(lang) {
     var lmg = document.getElementById('labelModeGeneral');
     if (lmg) lmg.textContent = isRu ? 'Страны и марионетки' : 'Countries & Puppets';
     var lmc = document.getElementById('labelModeCosmetic');
+    var ngp = document.getElementById('navGenPreview');
+    if (ngp) ngp.textContent = isRu ? '6. Сборка и экспорт' : '6. Build & Export';
     var fdl = document.getElementById('footerDesktopLink');
     if (fdl) fdl.textContent = isRu ? 'Скачать Desktop (.exe)' : 'Download Desktop (.exe)';
     if (lmc) lmc.textContent = isRu ? 'Формируемые нации и решения' : 'Formable Nations & Decisions';
