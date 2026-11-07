@@ -473,6 +473,25 @@
             </div>
         </section>
 
+        <!-- Action Dock for Countries & Puppets Mode -->
+        <div class="bottom-action-dock" id="genActionDock">
+            <div class="dock-container">
+                <div class="dock-summary">
+                    <span class="status-indicator-green"></span>
+                    <span id="launchSummaryText" class="dock-summary-text">1 страна • 1 правило марионетки • 1 регион</span>
+                </div>
+                <div class="dock-buttons">
+                    <button type="button" class="btn-secondary" onclick="saveProjectToFile()" title="Сохранить проект в .json">
+                        <span id="btnExportJsonText">Экспорт .json</span>
+                    </button>
+                    <button id="generateBtn" onclick="cosm_buildAndDownloadMod()" class="btn-primary btn-generate" title="Сгенерировать и скачать мод (.zip)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span id="btnGenModText">Сгенерировать мод (.zip)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         </div>
 
         <!-- View 2: Cosmetic Tag & Formable Nations Creator -->
@@ -955,6 +974,8 @@
       </div>
 
       </div>
+
+    </div>
 
     <!-- ════════════ SECTION 4: GENERATE & CODE ════════════ -->
       <div class="section collapsible" id="cosm-section-preview">
