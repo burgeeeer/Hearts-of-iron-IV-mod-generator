@@ -3291,12 +3291,14 @@ async function generateMod(downloadZip) {
     var cosmeticFiles = null;
     var hasCosmeticMod = false;
     if (window.CosmeticCreator && typeof window.CosmeticCreator.hasCosmeticData === 'function' && window.CosmeticCreator.hasCosmeticData()) {
-        cosmeticFiles = window.CosmeticCreator.generateFiles(modName);
-        if (!cosmeticFiles) {
-            // Validation failed in cosmetic mod, error was already alerted to user
-            return;
+        try {
+            cosmeticFiles = window.CosmeticCreator.generateFiles(modName);
+            if (cosmeticFiles) {
+                hasCosmeticMod = true;
+            }
+        } catch(e) {
+            console.warn('Formable decisions generation notice:', e);
         }
-        hasCosmeticMod = true;
     }
 
     var zip = new JSZip();
@@ -3692,20 +3694,71 @@ async function generateMod(downloadZip) {
             } else {
                 sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Формируемые решения: <em>не заполнялись (создан мод на страны и марионетки)</em></div>';
             }
-            sumHtml += '<div style="margin-top:12px; color:var(--success); font-weight:600;">✓ Все файлы успешно упакованы в единый ZIP-архив ' + modName + '.zip</div>';
+            if (downloadZip !== false) {
+                sumHtml += '<div style="margin-top:14px; padding:10px 14px; background:rgba(34,197,94,0.1); border:1px solid var(--success); border-radius:var(--radius-sm); color:var(--success); font-weight:600;">✓ Единый архив мода успешно сформирован и скачан: ' + modName + '.zip</div>';
+            } else {
+                sumHtml += '<div style="margin-top:14px; padding:10px 14px; background:rgba(34,197,94,0.1); border:1px solid var(--success); border-radius:var(--radius-sm); color:var(--success); font-weight:600;">✓ Файлы мода успешно сгенерированы! Проверьте вкладки ниже (decisions/, localisation/, countries/cosmetic.txt, descriptor.mod, Структура архива).</div>';
+                sumHtml += '<div style="margin-top:10px;"><button type="button" class="btn-primary" onclick="generateMod(true)" style="padding:7px 16px; font-size:12.5px; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Скачать готовый архив (.zip)</button></div>';
+            }
             sumHtml += '</div>';
             sumEl.innerHTML = sumHtml;
         }
 
+        // Combine all localisation sources into full preview
+        var previewLocRu = ['l_russian:'];
+        var previewLocEn = ['l_english:'];
+
+        if (normalLocRu && normalLocRu.length > 1) {
+            for (var i = 1; i < normalLocRu.length; i++) {
+                previewLocRu.push(normalLocRu[i]);
+                previewLocEn.push(normalLocEn[i]);
+            }
+        }
+        if (cosmeticLocRu && cosmeticLocRu.length > 1) {
+            for (var i = 1; i < cosmeticLocRu.length; i++) {
+                previewLocRu.push(cosmeticLocRu[i]);
+                previewLocEn.push(cosmeticLocEn[i]);
+            }
+        }
+        if (typeof sLocLinesRu !== 'undefined' && sLocLinesRu.length > 1) {
+            for (var i = 1; i < sLocLinesRu.length; i++) {
+                previewLocRu.push(sLocLinesRu[i]);
+                previewLocEn.push(sLocLinesEn[i]);
+            }
+        }
+        if (typeof vpLocLinesRu !== 'undefined' && vpLocLinesRu.length > 1) {
+            for (var i = 1; i < vpLocLinesRu.length; i++) {
+                previewLocRu.push(vpLocLinesRu[i]);
+                previewLocEn.push(vpLocLinesEn[i]);
+            }
+        }
+        if (cosmeticFiles && cosmeticFiles.text) {
+            for (var fpLoc in cosmeticFiles.text) {
+                if (fpLoc.includes('_l_russian.yml')) {
+                    var lnsRu = cosmeticFiles.text[fpLoc].split('\n');
+                    for (var li = 0; li < lnsRu.length; li++) {
+                        if (lnsRu[li].trim() && !lnsRu[li].startsWith('l_russian:')) previewLocRu.push(lnsRu[li]);
+                    }
+                }
+                if (fpLoc.includes('_l_english.yml')) {
+                    var lnsEn = cosmeticFiles.text[fpLoc].split('\n');
+                    for (var li2 = 0; li2 < lnsEn.length; li2++) {
+                        if (lnsEn[li2].trim() && !lnsEn[li2].startsWith('l_english:')) previewLocEn.push(lnsEn[li2]);
+                    }
+                }
+            }
+        }
+
         var locRuDisplay = document.getElementById('code-loc-ru');
-        if (locRuDisplay) locRuDisplay.textContent = normalLocRu.join('\n');
+        if (locRuDisplay) locRuDisplay.textContent = previewLocRu.join('\n');
 
         var locEnDisplay = document.getElementById('code-loc-en');
-        if (locEnDisplay) locEnDisplay.textContent = normalLocEn.join('\n');
+        if (locEnDisplay) locEnDisplay.textContent = previewLocEn.join('\n');
 
         var descDisplay = document.getElementById('code-descriptor');
         if (descDisplay) descDisplay.textContent = rootDescriptor;
 
+        var foundCosmeticTxt = false;
         if (cosmeticFiles && cosmeticFiles.text) {
             for (var fp in cosmeticFiles.text) {
                 if (fp.includes('decisions.txt')) {
@@ -3719,15 +3772,33 @@ async function generateMod(downloadZip) {
                 if (fp.includes('cosmetic.txt')) {
                     var cosmEl = document.getElementById('code-cosmetic');
                     if (cosmEl) cosmEl.textContent = cosmeticFiles.text[fp];
+                    foundCosmeticTxt = true;
                 }
             }
-        } else {
+        }
+
+        if (!hasCosmeticMod) {
             var decEl = document.getElementById('code-decisions');
             if (decEl) decEl.textContent = '# Решения не создавались (в шапке перейдите в режим "Формируемые нации и решения")';
             var catEl = document.getElementById('code-categories');
             if (catEl) catEl.textContent = '# Категории решений не создавались';
+        }
+
+        if (!foundCosmeticTxt) {
+            var cosmColorLines = [];
+            for (var ci = 0; ci < countries.length; ci++) {
+                if (countries[ci].tagType === 'cosmetic' && countries[ci].tag) {
+                    cosmColorLines.push(countries[ci].tag + ' = {\n\tcolor = rgb { 180 50 50 }\n}');
+                }
+            }
             var cosmEl = document.getElementById('code-cosmetic');
-            if (cosmEl) cosmEl.textContent = '# Косметические теги не задавались';
+            if (cosmEl) {
+                if (cosmColorLines.length > 0) {
+                    cosmEl.textContent = cosmColorLines.join('\n\n');
+                } else {
+                    cosmEl.textContent = '# Косметические теги не задавались\n# В шапке перейдите в "Формируемые нации и решения", чтобы задать цвет косметического тега';
+                }
+            }
         }
 
         var treeEl = document.getElementById('tree-content');

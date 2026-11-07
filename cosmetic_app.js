@@ -2333,7 +2333,12 @@ function clamp(v, min, max) {
 // ─── FORM VALUE EXTRACTORS ────────────────────
 function val(id) {
   const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
+  let v = el ? el.value.trim() : '';
+  if (!v && (id === 'mod-name' || id === 'modName')) {
+    const other = document.getElementById(id === 'mod-name' ? 'modName' : 'mod-name');
+    v = other ? other.value.trim() : '';
+  }
+  return v;
 }
 
 function slugify(str) {
@@ -2798,14 +2803,24 @@ function validate() {
 }
 
 // ─── GENERATE PARADOX SCRIPT FILES ────────────
-function generateMod(customModSlug) {
+function generateMod(customModSlug, skipAlert = false) {
   const errs = validate();
-  if (errs.length > 0) {
+  if (errs.length > 0 && !skipAlert) {
     alert('Пожалуйста, заполните обязательные поля для формируемой нации:\n\n• ' + errs.join('\n• '));
     return null;
   }
 
   const data = collectProjectData();
+  if (!data.cosmeticTag) data.cosmeticTag = 'FORMABLE_STATE';
+  if (!data.decisionName) data.decisionName = 'Создать ' + data.cosmeticTag;
+  if (currentScope === 'specific' && (!data.ownerTags || data.ownerTags.length === 0)) {
+    data.scope = 'all';
+  }
+  const hasIdeo = IDEOLOGIES.some(i => data.ideologies && data.ideologies[i] && data.ideologies[i].name);
+  if (!hasIdeo && data.ideologies && data.ideologies.democratic) {
+    data.ideologies.democratic.name = data.cosmeticTag;
+    data.ideologies.democratic.adj = data.cosmeticTag;
+  }
   const modSlug = customModSlug ? String(customModSlug).trim().replace(/[^a-zA-Z0-9_\-]/g, '_') : slugify(data.modName);
   const cosTag = data.cosmeticTag;
   const ownerTags = parseOwnerTags(data.ownerTag);
@@ -3209,7 +3224,8 @@ ${commonDependencies}`;
   buildSummary(baseName);
   buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile);
 
-  document.getElementById('btn-download').style.display = 'inline-flex';
+  const dlBtn = document.getElementById('btn-download');
+  if (dlBtn) dlBtn.style.display = 'inline-flex';
   showToast(t('generated_toast'));
   showTab('summary');
 
@@ -3705,7 +3721,7 @@ window.CosmeticCreator = {
   resetProject: resetToDefaultCosmeticState,
   hasCosmeticData: hasCosmeticData,
   generateFiles: function(customModSlug) {
-    return generateMod(customModSlug);
+    return generateMod(customModSlug, true);
   },
   validate: validate
 };
