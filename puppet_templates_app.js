@@ -73,12 +73,11 @@ function autoDeriveEnglishPattern(ruPattern, overlord) {
 
 function mkDefaultPuppetBulkTemplate(overlord) {
     var ov = overlord || 'GER';
-    var isSov = (ov === 'SOV');
     return {
         id: 'tmpl_' + Math.random().toString(36).substr(2, 9),
         overlord: ov,
-        patternRu: isSov ? 'Советская $TAG$' : 'Германская $TAG$',
-        patternEn: isSov ? 'Soviet $TAG$' : 'German $TAG$',
+        patternRu: '$TAG$ (Марионетка)',
+        patternEn: '$TAG$ (Puppet)',
         ideology: 'all',
         mode: 'all', // 'all' (all 439 game countries) or 'custom' (user specified tags)
         customTagsInput: '',
@@ -89,9 +88,10 @@ function mkDefaultPuppetBulkTemplate(overlord) {
 }
 
 function initPuppetBulkTemplates() {
-    if (!puppetBulkTemplates || !puppetBulkTemplates.length) {
-        puppetBulkTemplates = [mkDefaultPuppetBulkTemplate('GER')];
+    if (!puppetBulkTemplates || !Array.isArray(puppetBulkTemplates)) {
+        puppetBulkTemplates = [];
     }
+    _g.puppetBulkTemplates = puppetBulkTemplates;
 }
 
 function formatPuppetTagLoc(pattern, tag) {
@@ -173,11 +173,23 @@ function renderPuppetBulkSection() {
     var isRu = (window.currentLang !== 'english');
     var db = getCountriesDb();
 
+    if (puppetBulkTemplates.length === 0) {
+        var emptyNotice = document.createElement('div');
+        emptyNotice.className = 'empty-rules-hint';
+        emptyNotice.style.cssText = 'text-align:center; padding:28px 20px; color:var(--text-muted); border:1.5px dashed var(--border-color); border-radius:var(--radius-md); margin-bottom:16px; background:var(--bg-card);';
+        emptyNotice.innerHTML = isRu
+            ? '<div style="font-weight:600; margin-bottom:6px; color:var(--text-main);">Шаблоны авто-наименования марионеток не созданы</div><div style="font-size:12.5px;">Нажмите кнопку «＋ Добавить шаблон авто-наименования» ниже, чтобы создать шаблон для выбранного сюзерена.</div>'
+            : '<div style="font-weight:600; margin-bottom:6px; color:var(--text-main);">No puppet naming templates added yet</div><div style="font-size:12.5px;">Click "+ Add Puppet Naming Template" below to configure rules for a specific overlord.</div>';
+        box.appendChild(emptyNotice);
+        if (typeof window.updateUnifiedSummaryText === 'function') window.updateUnifiedSummaryText();
+        return;
+    }
+
     for (var i = 0; i < puppetBulkTemplates.length; i++) {
         (function(idx) {
             var tmpl = puppetBulkTemplates[idx];
             // Backward compatibility
-            if (!tmpl.patternRu) tmpl.patternRu = tmpl.pattern || 'Германская $TAG$';
+            if (!tmpl.patternRu) tmpl.patternRu = tmpl.pattern || '$TAG$ (Марионетка)';
             if (!tmpl.patternEn || tmpl.patternEn === '{country} (Puppet)' || tmpl.patternEn === '{adj} {country}') {
                 tmpl.patternEn = autoDeriveEnglishPattern(tmpl.patternRu, tmpl.overlord);
             }
@@ -208,18 +220,17 @@ function renderPuppetBulkSection() {
 
             hdr.appendChild(hLeft);
 
-            if (puppetBulkTemplates.length > 1) {
-                var delBtn = document.createElement('button');
-                delBtn.type = 'button';
-                delBtn.className = 'secondary-btn danger-btn';
-                delBtn.textContent = isRu ? 'Удалить шаблон' : 'Remove Template';
-                delBtn.onclick = function() {
-                    puppetBulkTemplates.splice(idx, 1);
-                    if (typeof window.saveData === 'function') window.saveData();
-                    renderPuppetBulkSection();
-                };
-                hdr.appendChild(delBtn);
-            }
+            var delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'secondary-btn danger-btn';
+            delBtn.textContent = isRu ? 'Удалить шаблон' : 'Remove Template';
+            delBtn.onclick = function() {
+                puppetBulkTemplates.splice(idx, 1);
+                if (typeof window.saveData === 'function') window.saveData();
+                renderPuppetBulkSection();
+                if (typeof window.updateUnifiedSummaryText === 'function') window.updateUnifiedSummaryText();
+            };
+            hdr.appendChild(delBtn);
             card.appendChild(hdr);
 
             // 2. Controls Grid
@@ -293,7 +304,7 @@ function renderPuppetBulkSection() {
             patRuInp.type = 'text';
             patRuInp.className = 'input-field';
             patRuInp.value = tmpl.patternRu || '';
-            patRuInp.placeholder = 'Германская $TAG$';
+            patRuInp.placeholder = '$TAG$ (Марионетка)';
             patRuInp.oninput = function() {
                 var oldRu = tmpl.patternRu;
                 tmpl.patternRu = this.value;
@@ -340,7 +351,7 @@ function renderPuppetBulkSection() {
             patEnInp.type = 'text';
             patEnInp.className = 'input-field';
             patEnInp.value = tmpl.patternEn || '';
-            patEnInp.placeholder = 'German $TAG$';
+            patEnInp.placeholder = '$TAG$ (Puppet)';
             patEnInp.oninput = function() {
                 tmpl.patternEn = this.value;
                 updateAll();
@@ -548,36 +559,20 @@ function renderPuppetBulkSection() {
             helpBox.className = 'puppet-help-box';
             if (isRu) {
                 helpBox.innerHTML =
-                    '<div class="puppet-help-title">Что можно указать в названии:</div>' +
+                    '<div class="puppet-help-title">Формат шаблона названия:</div>' +
                     '<p class="puppet-help-desc">' +
                     'Вставьте <code>$TAG$</code> туда, где должно стоять название страны. ' +
-                    'Движок HoI4 автоматически подставит в игре реальное название страны: <b>на русском языке</b> в русском клиенте и <b>на английском языке</b> в английском клиенте!' +
+                    'Движок HoI4 автоматически подставит в игре реальное название страны: <b>на русском языке</b> в русском клиенте и <b>на английском языке</b> в английском клиенте.' +
                     '</p>' +
-                    '<div class="puppet-examples-grid">' +
-                        '<div class="puppet-example-item">RU: <code>Германская $TAG$</code> | EN: <code>German $TAG$</code> -> в игре: <b>Германская Венгрия</b> / <b>German Hungary</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Советская $TAG$</code> | EN: <code>Soviet $TAG$</code> -> в игре: <b>Советская Польша</b> / <b>Soviet Poland</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Германская авт. область $TAG$</code> | EN: <code>German Autonomous Oblast of $TAG$</code></div>' +
-                        '<div class="puppet-example-item">RU: <code>Рейхскомиссариат $TAG$</code> | EN: <code>Reichskommissariat $TAG$</code> -> в игре: <b>Рейхскомиссариат Украина</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Протекторат $TAG$</code> | EN: <code>Protectorate of $TAG$</code> -> в игре: <b>Протекторат Богемия</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>$TAG$ (Марионетка)</code> | EN: <code>$TAG$ (Puppet)</code> -> в игре: <b>Франция (Марионетка)</b> / <b>France (Puppet)</b></div>' +
-                    '</div>' +
                     '<div class="puppet-help-note">Примечание: <i>Если вы не укажете <code>$TAG$</code>, тег страны автоматически добавится в конец. Поле EN генерирует названия для игроков с английским клиентом.</i></div>';
             } else {
                 helpBox.innerHTML =
-                    '<div class="puppet-help-title">What you can specify in the naming patterns:</div>' +
+                    '<div class="puppet-help-title">Naming Pattern Format:</div>' +
                     '<p class="puppet-help-desc">' +
                     'Insert <code>$TAG$</code> where the country name should appear. ' +
-                    'The HoI4 engine automatically inserts the localized country name: <b>in English</b> for English players and <b>in Russian</b> for Russian players!' +
+                    'The HoI4 engine automatically inserts the localized country name: <b>in English</b> for English players and <b>in Russian</b> for Russian players.' +
                     '</p>' +
-                    '<div class="puppet-examples-grid">' +
-                        '<div class="puppet-example-item">RU: <code>Германская $TAG$</code> | EN: <code>German $TAG$</code> -> in game: <b>German Hungary</b> / <b>Германская Венгрия</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Советская $TAG$</code> | EN: <code>Soviet $TAG$</code> -> in game: <b>Soviet Poland</b> / <b>Советская Польша</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Германская авт. область $TAG$</code> | EN: <code>German Autonomous Oblast of $TAG$</code></div>' +
-                        '<div class="puppet-example-item">RU: <code>Рейхскомиссариат $TAG$</code> | EN: <code>Reichskommissariat $TAG$</code> -> in game: <b>Reichskommissariat Ukraine</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>Протекторат $TAG$</code> | EN: <code>Protectorate of $TAG$</code> -> in game: <b>Protectorate of Bohemia</b></div>' +
-                        '<div class="puppet-example-item">RU: <code>$TAG$ (Марионетка)</code> | EN: <code>$TAG$ (Puppet)</code> -> in game: <b>France (Puppet)</b></div>' +
-                    '</div>' +
-                    '<div class="puppet-help-note">Примечание: <i>If you omit <code>$TAG$</code>, the country tag will be automatically appended to the end. The EN template is exported to countries_cosmetic_l_english.yml for English clients.</i></div>';
+                    '<div class="puppet-help-note">Note: <i>If you omit <code>$TAG$</code>, the country tag will be automatically appended to the end. The EN template is exported to countries_cosmetic_l_english.yml for English clients.</i></div>';
             }
             card.appendChild(helpBox);
 
@@ -587,7 +582,7 @@ function renderPuppetBulkSection() {
 
             var prevTitle = document.createElement('div');
             prevTitle.className = 'puppet-preview-title';
-            prevTitle.innerHTML = '' + (isRu ? 'Наглядный пример отображения в игре (RU и EN):' : 'In-game preview (RU and EN):');
+            prevTitle.innerHTML = '' + (isRu ? 'Предпросмотр названий в игре (RU / EN):' : 'In-game naming preview (RU / EN):');
             prevWrap.appendChild(prevTitle);
 
             var chipsBox = document.createElement('div');
@@ -603,7 +598,7 @@ function renderPuppetBulkSection() {
             var btnYml = document.createElement('button');
             btnYml.type = 'button';
             btnYml.className = 'secondary-btn';
-            btnYml.innerHTML = '' + (isRu ? 'Показать пример YAML локализации' : 'View YAML Snippet');
+            btnYml.innerHTML = '' + (isRu ? 'Предпросмотр YAML локализации' : 'View YAML Snippet');
 
             var codeBox = document.createElement('pre');
             codeBox.className = 'puppet-code-preview';
@@ -679,10 +674,14 @@ function renderPuppetBulkSection() {
 
 function addPuppetBulkTemplate() {
     initPuppetBulkTemplates();
-    var nextOv = puppetBulkTemplates.length === 1 ? 'SOV' : (puppetBulkTemplates.length === 2 ? 'RUS' : 'ENG');
+    var nextOv = 'GER';
+    if (puppetBulkTemplates.length === 1) nextOv = 'SOV';
+    else if (puppetBulkTemplates.length === 2) nextOv = 'RUS';
+    else if (puppetBulkTemplates.length >= 3) nextOv = 'ENG';
     puppetBulkTemplates.push(mkDefaultPuppetBulkTemplate(nextOv));
     if (typeof window.saveData === 'function') window.saveData();
     renderPuppetBulkSection();
+    if (typeof window.updateUnifiedSummaryText === 'function') window.updateUnifiedSummaryText();
 }
 
 function generateTemplateYamlPreview(tmpl) {

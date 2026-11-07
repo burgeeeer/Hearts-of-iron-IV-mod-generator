@@ -82,11 +82,11 @@ var i18n = {
         puppetTitle: "2. Puppet Names & Flags (Single)",
         puppetDesc: "Add puppet naming rules and custom flags. Overlord can be a regular tag (GER, ENG) or cosmetic tag (EUR_UNIFIED, EUR).",
         puppetBulkTitle: "3. Puppet Names for All Countries (By Template)",
-        puppetBulkHeadDesc: "Auto-naming puppets worldwide without typing tags (German Hungary, Soviet Hungary...)",
+        puppetBulkHeadDesc: "Auto-naming puppets worldwide by template without typing every country tag manually",
         puppetBulkDesc: "Specify the overlord tag and naming patterns (RU & EN): the generator automatically creates names for all 439 countries from Hearts of Iron IV game files or for selected tags.",
-        puppetBulkAddBtn: "＋ Add Template for Another Overlord",
+        puppetBulkAddBtn: "＋ Add Puppet Naming Template",
         puppetBannerTitle: "Don't want to type tags for every country manually?",
-        puppetBannerDesc: "Use the bulk puppet template generator (e.g. 'German Hungary', 'Soviet Hungary') for all countries worldwide at once.",
+        puppetBannerDesc: "Use bulk puppet template auto-generation for all countries worldwide at once.",
         puppetBannerBtn: "Go to Templates for All Countries",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
         puppetOverlordPlaceholder: "GER or EUR_UNIFIED",
@@ -252,11 +252,11 @@ var i18n = {
         puppetTitle: "2. Названия и флаги марионеток (поштучно)",
         puppetDesc: "Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).",
         puppetBulkTitle: "3. Названия марионеток для всех стран (по шаблону)",
-        puppetBulkHeadDesc: "Авто-названия марионеток без ручного ввода тегов (Германская Венгрия, Советская Венгрия...)",
+        puppetBulkHeadDesc: "Авто-названия марионеток по шаблону без ручного ввода каждого тега страны",
         puppetBulkDesc: "Укажите тег сюзерена и шаблоны названий (RU и EN): генератор автоматически создаст имена для всех 439 стран из игры Hearts of Iron IV или для выбранных вами тегов.",
-        puppetBulkAddBtn: "＋ Добавить шаблон для другого сюзерена",
+        puppetBulkAddBtn: "＋ Добавить шаблон авто-наименования",
         puppetBannerTitle: "Лень указывать теги всех стран вручную?",
-        puppetBannerDesc: "Используйте шаблоны авто-генерации («Германская Венгрия», «Советская Венгрия»...) сразу для всех 439 стран из файлов игры.",
+        puppetBannerDesc: "Используйте шаблоны авто-генерации марионеток по правилу сразу для всех стран мира.",
         puppetBannerBtn: "Перейти к шаблонам для всех стран",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
         puppetOverlordPlaceholder: "GER или EUR_UNIFIED",
@@ -658,11 +658,15 @@ window.onload = function() {
         puppetRules = [mkEmptyPuppet()];
         stateNameRules = [mkEmptyState()];
         cityNameRules = [mkEmptyCity()];
+        window.puppetBulkTemplates = [];
     }
 
     document.getElementById('app-content').style.display = 'block';
     applyLang(lang);
     onLocConfigChange();
+    if (typeof updateUnifiedSummaryText === 'function') {
+        updateUnifiedSummaryText();
+    }
     if (window.OnlineCounter && typeof window.OnlineCounter.init === 'function') {
         window.OnlineCounter.init();
     }
@@ -819,10 +823,14 @@ function loadSaved(d) {
         return { stateId: r.stateId || '', provinceId: r.provinceId || '', controllerTag: r.controllerTag || '', name: r.name || '' };
     }) : [mkEmptyCity()];
 
-    if (d.puppetBulkTemplates && d.puppetBulkTemplates.length) {
-        window.puppetBulkTemplates = d.puppetBulkTemplates;
-    } else if (typeof window.mkDefaultPuppetBulkTemplate === 'function') {
-        window.puppetBulkTemplates = [window.mkDefaultPuppetBulkTemplate('GER')];
+    if (d.puppetBulkTemplates && Array.isArray(d.puppetBulkTemplates)) {
+        if (d.puppetBulkTemplates.length === 1 && d.puppetBulkTemplates[0].overlord === 'GER' && (d.puppetBulkTemplates[0].patternRu === 'Германская $TAG$' || d.puppetBulkTemplates[0].pattern === 'Германская $TAG$')) {
+            window.puppetBulkTemplates = [];
+        } else {
+            window.puppetBulkTemplates = d.puppetBulkTemplates;
+        }
+    } else {
+        window.puppetBulkTemplates = [];
     }
     if (typeof window.renderPuppetBulkSection === 'function') {
         window.renderPuppetBulkSection();
@@ -2890,10 +2898,17 @@ function createNewProject() {
     puppetRules = [mkEmptyPuppet()];
     stateNameRules = [mkEmptyState()];
     cityNameRules = [mkEmptyCity()];
+    window.puppetBulkTemplates = [];
+    if (typeof window.renderPuppetBulkSection === 'function') {
+        window.renderPuppetBulkSection();
+    }
     if (window.CosmeticCreator && typeof window.CosmeticCreator.resetProject === 'function') {
         window.CosmeticCreator.resetProject();
     }
     applyLang(currentLang);
+    if (typeof updateUnifiedSummaryText === 'function') {
+        updateUnifiedSummaryText();
+    }
     showToast(i18n[currentLang] ? 'Новый проект готов' : 'New project ready');
 }
 

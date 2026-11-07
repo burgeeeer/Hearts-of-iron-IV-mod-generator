@@ -389,7 +389,7 @@
                     <div class="puppet-shortcut-banner">
                         <div class="puppet-shortcut-info">
                             <strong id="puppetBannerTitle">Лень указывать теги всех стран вручную?</strong>
-                            <span id="puppetBannerDesc">Используйте авто-генератор названий марионеток по шаблону («Германская Венгрия», «Советская Венгрия»...) сразу для всего мира.</span>
+                            <span id="puppetBannerDesc">Используйте шаблоны авто-генерации марионеток по правилу сразу для всех стран мира.</span>
                         </div>
                         <a href="#puppet-bulk-section" class="secondary-btn" id="puppetBannerBtn" onclick="openPuppetBulkSection()">Перейти к шаблонам</a>
                     </div>
@@ -411,7 +411,7 @@
                 <div class="section-head" onclick="toggleSection(this)">
                     <div>
                         <h2 id="puppetBulkTitle">3. Названия марионеток для всех стран (по шаблону)</h2>
-                        <p class="section-head-desc" id="puppetBulkHeadDesc">Автоматическое именование марионеток без ручного ввода тегов (Германская Венгрия, Советская Венгрия...)</p>
+                        <p class="section-head-desc" id="puppetBulkHeadDesc">Автоматическое именование марионеток по шаблону без ручного ввода каждого тега страны</p>
                     </div>
                     <span class="accordion-arrow">▼</span>
                 </div>
@@ -421,7 +421,7 @@
                     <div id="puppet-bulk-container" class="rules-list"></div>
                     
                     <button type="button" class="btn-add" id="puppetBulkAddBtn" onclick="addPuppetBulkTemplate()">
-                        ＋ Добавить шаблон для другого сюзерена
+                        ＋ Добавить шаблон авто-наименования
                     </button>
                 </div>
             </div>
@@ -972,7 +972,7 @@
         <div class="unified-generator-bar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:20px; padding:16px 20px; background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:var(--radius-md);">
           <div class="unified-generator-info" style="display:flex; align-items:center; gap:10px;">
             <span class="status-indicator-green" style="width:8px; height:8px; border-radius:50%; background:var(--success); box-shadow:0 0 6px var(--success); flex-shrink:0;"></span>
-            <span id="launchSummaryText" style="font-size:12.5px; font-weight:600; color:var(--text-main);">1 страна • 440 правил марионеток • 1 регион • 1 город</span>
+            <span id="launchSummaryText" style="font-size:12.5px; font-weight:600; color:var(--text-main);">1 стран(ы) • 1 правил марионеток • 1 регионов • 1 городов</span>
           </div>
           <div class="unified-generator-actions" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <button type="button" class="btn-secondary" onclick="saveProjectToFile()" title="Скачать единый проект (.json)">
