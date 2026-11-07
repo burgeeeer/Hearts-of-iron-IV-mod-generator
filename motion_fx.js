@@ -54,11 +54,6 @@
 
     // 2. Studio Mode Switcher Cross-Fade & Slide
     animateModeSwitch: function(targetMode, onMidpoint) {
-      if (!this.hasAnime()) {
-        if (typeof onMidpoint === 'function') onMidpoint();
-        return;
-      }
-
       const activeView = targetMode === 'general'
         ? document.getElementById('view-cosmetic-mod')
         : document.getElementById('view-general-mod');
@@ -67,37 +62,73 @@
         ? document.getElementById('view-general-mod')
         : document.getElementById('view-cosmetic-mod');
 
+      if (!this.hasAnime()) {
+        if (typeof onMidpoint === 'function') onMidpoint();
+        if (incomingView) {
+          incomingView.style.opacity = '';
+          incomingView.style.transform = '';
+        }
+        if (activeView) {
+          activeView.style.opacity = '';
+          activeView.style.transform = '';
+        }
+        return;
+      }
+
+      // Stop any pending animations on both views
+      window.anime.remove(activeView);
+      window.anime.remove(incomingView);
+
       // Slide out current view
       if (activeView && activeView.style.display !== 'none') {
         window.anime({
           targets: activeView,
-          translateX: [0, targetMode === 'general' ? 24 : -24],
+          translateX: [0, targetMode === 'general' ? 20 : -20],
           opacity: [1, 0],
-          duration: 200,
+          duration: 160,
           easing: 'easeInCubic',
           complete: function() {
+            if (activeView) {
+              activeView.style.opacity = '';
+              activeView.style.transform = '';
+            }
             if (typeof onMidpoint === 'function') onMidpoint();
 
             // Slide in incoming view
             if (incomingView) {
               incomingView.style.display = 'block';
+              incomingView.style.opacity = '0';
               window.anime({
                 targets: incomingView,
-                translateX: [targetMode === 'general' ? -24 : 24, 0],
+                translateX: [targetMode === 'general' ? -20 : 20, 0],
                 opacity: [0, 1],
-                duration: 380,
-                easing: 'easeOutCubic'
+                duration: 280,
+                easing: 'easeOutCubic',
+                complete: function() {
+                  incomingView.style.opacity = '';
+                  incomingView.style.transform = '';
+                }
               });
 
               // Stagger its child sections
-              window.anime({
-                targets: incomingView.querySelectorAll('.section, .card, .hoi4-gui-decision-preview-box'),
-                translateY: [20, 0],
-                opacity: [0, 1],
-                delay: window.anime.stagger(45, { start: 60 }),
-                duration: 520,
-                easing: 'easeOutQuart'
-              });
+              const animChildren = incomingView.querySelectorAll('.section-group, .section, .country-card, .hoi4-gui-decision-preview-box');
+              if (animChildren && animChildren.length > 0) {
+                window.anime.remove(animChildren);
+                window.anime({
+                  targets: animChildren,
+                  translateY: [14, 0],
+                  opacity: [0, 1],
+                  delay: window.anime.stagger(30, { start: 40 }),
+                  duration: 360,
+                  easing: 'easeOutQuart',
+                  complete: function(anim) {
+                    anim.animatables.forEach(function(a) {
+                      a.target.style.opacity = '';
+                      a.target.style.transform = '';
+                    });
+                  }
+                });
+              }
             }
           }
         });
@@ -105,11 +136,16 @@
         if (typeof onMidpoint === 'function') onMidpoint();
         if (incomingView) {
           incomingView.style.display = 'block';
+          incomingView.style.opacity = '0';
           window.anime({
             targets: incomingView,
             opacity: [0, 1],
-            duration: 320,
-            easing: 'easeOutCubic'
+            duration: 220,
+            easing: 'easeOutCubic',
+            complete: function() {
+              incomingView.style.opacity = '';
+              incomingView.style.transform = '';
+            }
           });
         }
       }

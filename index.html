@@ -1374,7 +1374,7 @@
             };
 
             // Studio Mode Switcher: 'general' | 'cosmetic'
-            window.switchStudioMode = function(mode) {
+            window.switchStudioMode = function(mode, instant) {
                 var isGeneral = (mode === 'general');
                 var viewGen = document.getElementById('view-general-mod');
                 var viewCosm = document.getElementById('view-cosmetic-mod');
@@ -1384,6 +1384,9 @@
                 var btnCosm = document.getElementById('btnModeCosmetic');
 
                 function applyState() {
+                    // Reset scroll to top so user is not stuck at the bottom of the other mode
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+
                     if (viewGen) viewGen.style.display = isGeneral ? 'block' : 'none';
                     if (viewCosm) viewCosm.style.display = isGeneral ? 'none' : 'block';
                     if (navGen) navGen.style.display = isGeneral ? 'block' : 'none';
@@ -1401,7 +1404,7 @@
                     }
                 }
 
-                if (window.MotionFX && typeof window.MotionFX.animateModeSwitch === 'function') {
+                if (!instant && window.MotionFX && typeof window.MotionFX.animateModeSwitch === 'function') {
                     window.MotionFX.animateModeSwitch(mode, applyState);
                 } else {
                     applyState();
@@ -1415,7 +1418,7 @@
                     savedMode = localStorage.getItem('hoi4_studio_mode') || 'general';
                 } catch(e) {}
                 if (savedMode === 'cosmetic') {
-                    switchStudioMode('cosmetic');
+                    switchStudioMode('cosmetic', true);
                 }
                 var curLang = window.currentLang === 'english' ? 'en' : 'ru';
                 if (window.CosmeticCreator && typeof window.CosmeticCreator.init === 'function') {
