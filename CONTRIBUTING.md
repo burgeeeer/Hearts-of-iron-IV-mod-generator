@@ -36,6 +36,6 @@ Thank you for your interest in contributing to the **Hearts of Iron IV Mod Gener
 
 ## Areas for Contribution
 - Adding new Clausewitz modifiers, triggers, and effects to `hoi4_effects_data.js`.
-- Updating HoI4 State definitions or borders in `hoi4_states_data.js` and `assets/hoi4_map.svg`.
+- Updating HoI4 State definitions or borders in `hoi4_states_data.js` and `assets/hoi4_map_data.js`.
 - Adding new localized country presets and historical formable nation templates.
 - Improving UI performance, accessibility, and translations.

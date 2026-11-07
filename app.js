@@ -1,3 +1,15 @@
+function saveAs(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
+}
+window.saveAs = saveAs;
+
 var ideologies = ['fascism', 'democratic', 'communism', 'neutrality'];
 var currentLang = 'english';
 var countries = [];

@@ -3356,6 +3356,12 @@ async function downloadMod() {
   URL.revokeObjectURL(url);
 }
 
+
+async function buildAndDownloadMod() {
+  generateMod();
+  await downloadMod();
+}
+
 // ─── COPY HELPER ──────────────────────────────
 function copyCode(elemId) {
   const el = document.getElementById(elemId);
@@ -3531,6 +3537,7 @@ window.toggleCheatCategory = toggleCheatCategory;
 window.collapseAllCategories = collapseAllCheatCategories;
 window.expandAllCategories = expandAllCheatCategories;
 window.buildAndDownloadMod = buildAndDownloadMod;
+window.cosm_buildAndDownloadMod = buildAndDownloadMod;
 
 window.cosm_addTrigger = addTrigger;
 window.cosm_getTriggers = getTriggers;
