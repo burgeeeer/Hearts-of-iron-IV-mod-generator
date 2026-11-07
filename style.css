@@ -498,7 +498,8 @@ body {
 }
 
 .theme-toggle-btn,
-.lang-btn {
+.lang-btn,
+.desktop-download-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -517,7 +518,8 @@ body {
 }
 
 .theme-toggle-btn:hover,
-.lang-btn:hover {
+.lang-btn:hover,
+.desktop-download-btn:hover {
   background: var(--bg-hover);
   border-color: var(--border-hover);
   transform: translateY(-1px);
@@ -4246,3 +4248,5 @@ html[data-theme="dark"] .puppet-shortcut-banner {
   background: var(--bg-subtle);
   border-color: var(--primary, #1b7367);
 }
+
+.desktop-download-btn { text-decoration: none; }

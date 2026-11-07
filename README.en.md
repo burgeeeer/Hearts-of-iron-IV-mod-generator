@@ -157,7 +157,7 @@ The downloaded ZIP archive is structured following the official Clausewitz engin
 ## Standalone Desktop Application
 
 For offline use without a web browser:
-- Executable: `HoI4_Mod_Generator.exe`
+- Executable: [`HoI4_Mod_Generator.exe`](HoI4_Mod_Generator.exe) (13.7 MB)
 - Features:
   - Runs in a clean native Windows window.
   - Powered by Microsoft Edge WebView2.

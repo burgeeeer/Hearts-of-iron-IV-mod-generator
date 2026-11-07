@@ -1031,6 +1031,8 @@ function applyLang(lang) {
     var lmg = document.getElementById('labelModeGeneral');
     if (lmg) lmg.textContent = isRu ? 'Страны и марионетки' : 'Countries & Puppets';
     var lmc = document.getElementById('labelModeCosmetic');
+    var fdl = document.getElementById('footerDesktopLink');
+    if (fdl) fdl.textContent = isRu ? 'Скачать Desktop (.exe)' : 'Download Desktop (.exe)';
     if (lmc) lmc.textContent = isRu ? 'Формируемые нации и решения' : 'Formable Nations & Decisions';
     if (window.CosmeticCreator && typeof window.CosmeticCreator.applyLang === 'function') {
         window.CosmeticCreator.applyLang(isRu ? 'ru' : 'en');
