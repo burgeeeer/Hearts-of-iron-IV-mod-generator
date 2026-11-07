@@ -439,8 +439,7 @@ body {
   gap: 7px;
 }
 
-.status-dot,
-.project-save-status {
+.status-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -448,6 +447,15 @@ body {
   display: inline-block;
   box-shadow: 0 0 6px var(--success);
   animation: tactical-pulse 2.2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+.project-save-status {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+  white-space: nowrap;
 }
 
 @keyframes tactical-pulse {

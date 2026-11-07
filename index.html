@@ -97,6 +97,7 @@
                     <span class="status-dot"></span>
                     <span class="project-toolbar-label" id="projectStatusIndicator">Проект:</span>
                     <strong class="project-title-display" id="projectActiveName">MyAwesomeMod</strong>
+                    <span class="project-save-status" id="autoSaveStatus">Сохранено</span>
                 </div>
                 <div class="project-toolbar-actions">
                     <button type="button" class="btn-secondary" onclick="saveProjectToFile()" id="btnSaveProjFile" title="Скачать проект (.json)">
@@ -291,10 +292,10 @@
                 <div class="section-body">
                     <div class="puppet-shortcut-banner">
                         <div class="puppet-shortcut-info">
-                            <strong id="puppetBannerTitle">⚡ Лень указывать теги всех стран вручную?</strong>
+                            <strong id="puppetBannerTitle">Лень указывать теги всех стран вручную?</strong>
                             <span id="puppetBannerDesc">Используйте авто-генератор названий марионеток по шаблону («Германская Венгрия», «Советская Венгрия»...) сразу для всего мира.</span>
                         </div>
-                        <a href="#puppet-bulk-section" class="secondary-btn" id="puppetBannerBtn" onclick="openPuppetBulkSection()">Перейти к шаблонам ➔</a>
+                        <a href="#puppet-bulk-section" class="secondary-btn" id="puppetBannerBtn" onclick="openPuppetBulkSection()">Перейти к шаблонам</a>
                     </div>
 
                     <p class="section-desc" id="puppetDesc">Добавляй правила и флаги для марионеток. Сюзереном может быть как обычная страна (GER, SOV), так и косметический тег (EUR_UNIFIED, EUR).</p>
@@ -404,30 +405,6 @@
 
 
 
-
-      <!-- Project Toolbar -->
-      <div class="project-toolbar">
-        <div class="project-toolbar-left">
-          <span class="project-toolbar-label" data-t="proj_label">Проект:</span>
-          <strong class="project-title-display" id="cosm_projectActiveName">MyCosmeticMod</strong>
-          <span class="project-save-status" id="autoSaveStatus" data-t="autosave_on">● Сохранено</span>
-        </div>
-        <div class="project-toolbar-actions">
-          <button type="button" class="secondary-btn" onclick="cosm_saveProjectToFile()" title="Скачать .json файл проекта">
-            <span data-t="btn_save_proj">Сохранить в файл</span>
-          </button>
-          <button type="button" class="secondary-btn" onclick="cosm_triggerLoadProjectFile()" title="Загрузить .json файл">
-            <span data-t="btn_load_proj">Загрузить из файла</span>
-          </button>
-          <button type="button" class="secondary-btn" onclick="cosm_openProjectsModal()" title="Библиотека проектов в браузере">
-            <span data-t="btn_lib_proj">Мои проекты</span>
-          </button>
-          <button type="button" class="secondary-btn danger-btn" onclick="cosm_createNewProject()" title="Начать новый проект">
-            <span data-t="btn_new_proj">+ Новый</span>
-          </button>
-        </div>
-        <input type="file" id="cosm_projectFileInput" accept=".json" style="display:none" onchange="cosm_handleProjectFileUpload(event)" />
-      </div>
 
       <!-- ════════════ SECTION 1: MOD INFO ════════════ -->
       <div class="section collapsible" id="cosm-section-info">
@@ -911,7 +888,7 @@
 
         <div style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap">
           <button type="button" class="btn-primary btn-generate" onclick="cosm_buildAndDownloadMod()" data-t="btn_build_and_download">
-            <span id="btnSection4DownloadText">⬇ Сгенерировать и скачать мод (.zip)</span>
+            <span id="btnSection4DownloadText">Сгенерировать и скачать мод (.zip)</span>
           </button>
           <button type="button" class="btn-secondary" onclick="cosm_generateMod()" data-t="btn_generate">
             <span id="btnSection4PreviewText">Обновить код в предпросмотре</span>
@@ -1159,34 +1136,7 @@
     </div>
   </div>
 </div>
-<!-- ════════════ MODAL: PROJECTS LIBRARY ════════════ -->
-<div class="modal-overlay" id="cosm_projectsModal" style="display:none">
-  <div class="modal-backdrop" onclick="cosm_closeProjectsModal()"></div>
-  <div class="modal-window">
-    <div class="modal-header">
-      <div>
-        <h3 data-t="lib_modal_title">Мои сохранённые проекты</h3>
-        <p class="hint" data-t="lib_modal_desc">Локальная библиотека проектов в вашем браузере</p>
-      </div>
-      <button type="button" class="modal-close-btn" onclick="cosm_closeProjectsModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div style="margin-bottom:14px">
-        <button type="button" class="btn-primary" onclick="cosm_saveCurrentToLibrary()" style="width:100%" data-t="btn_save_to_lib">
-          + Сохранить текущий проект в библиотеку
-        </button>
-      </div>
-      <div id="cosm_projectsListContainer" class="projects-list">
-        <!-- Injected by JS -->
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn-secondary" onclick="cosm_closeProjectsModal()" data-t="btn_close">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-    <!-- Toast Notification -->
+<!-- Toast Notification -->
     <div id="toastNotification" class="toast-box" role="status" aria-live="polite"></div>
 
     <!-- Clean Footer -->

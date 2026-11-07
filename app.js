@@ -85,9 +85,9 @@ var i18n = {
         puppetBulkHeadDesc: "Auto-naming puppets worldwide without typing tags (German Hungary, Soviet Hungary...)",
         puppetBulkDesc: "Specify the overlord tag and naming patterns (RU & EN): the generator automatically creates names for all 439 countries from Hearts of Iron IV game files or for selected tags.",
         puppetBulkAddBtn: "＋ Add Template for Another Overlord",
-        puppetBannerTitle: "⚡ Don't want to type tags for every country manually?",
+        puppetBannerTitle: "Don't want to type tags for every country manually?",
         puppetBannerDesc: "Use the bulk puppet template generator (e.g. 'German Hungary', 'Soviet Hungary') for all countries worldwide at once.",
-        puppetBannerBtn: "Go to Templates for All Countries ➔",
+        puppetBannerBtn: "Go to Templates for All Countries",
         puppetOverlord: "Overlord tag (regular or cosmetic):",
         puppetOverlordPlaceholder: "GER or EUR_UNIFIED",
         puppetTag: "Puppet tag:",
@@ -255,9 +255,9 @@ var i18n = {
         puppetBulkHeadDesc: "Авто-названия марионеток без ручного ввода тегов (Германская Венгрия, Советская Венгрия...)",
         puppetBulkDesc: "Укажите тег сюзерена и шаблоны названий (RU и EN): генератор автоматически создаст имена для всех 439 стран из игры Hearts of Iron IV или для выбранных вами тегов.",
         puppetBulkAddBtn: "＋ Добавить шаблон для другого сюзерена",
-        puppetBannerTitle: "⚡ Лень указывать теги всех стран вручную?",
+        puppetBannerTitle: "Лень указывать теги всех стран вручную?",
         puppetBannerDesc: "Используйте шаблоны авто-генерации («Германская Венгрия», «Советская Венгрия»...) сразу для всех 439 стран из файлов игры.",
-        puppetBannerBtn: "Перейти к шаблонам для всех стран ➔",
+        puppetBannerBtn: "Перейти к шаблонам для всех стран",
         puppetOverlord: "Тег сюзерена (обычный или косметический):",
         puppetOverlordPlaceholder: "GER или EUR_UNIFIED",
         puppetTag: "Тег марионетки:",
@@ -826,6 +826,12 @@ function loadSaved(d) {
     }
     if (typeof window.renderPuppetBulkSection === 'function') {
         window.renderPuppetBulkSection();
+    }
+
+    var isCosmOnly = (d.app === 'HoI4CosmeticTagCreator' || (d.cosmeticTag && !d.countries));
+    var cosmeticPayload = d.cosmetic || (isCosmOnly ? d : null);
+    if (cosmeticPayload && window.CosmeticCreator && typeof window.CosmeticCreator.loadProjectData === 'function') {
+        window.CosmeticCreator.loadProjectData(cosmeticPayload);
     }
 
     renderCoverPreview();
@@ -1671,12 +1677,17 @@ function saveData() {
         });
     }
 
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.getProjectData === 'function') {
+        out.cosmetic = window.CosmeticCreator.getProjectData();
+    }
     try {
         localStorage.setItem('hoi4modData', JSON.stringify(out));
     } catch(e) {
         console.warn('LocalStorage save error:', e);
     }
     updateProjectToolbar();
+    var stat = document.getElementById('autoSaveStatus');
+    if (stat) stat.textContent = currentLang === 'russian' ? 'Сохранено' : 'Saved';
 }
 
 function onModNameChange() {
@@ -2282,10 +2293,21 @@ function tgaToCanvas(buf) {
 
 function saveProjectToFile() {
     pullCountriesFromDOM();
-    var modName = ((document.getElementById('modName') || {}).value.trim()) || 'CustomMod';
+    var modName = ((document.getElementById('modName') || {}).value || '').trim();
+    if (!modName && window.CosmeticCreator && typeof window.CosmeticCreator.getProjectData === 'function') {
+        var cData = window.CosmeticCreator.getProjectData();
+        if (cData && cData.modName) modName = cData.modName.trim();
+    }
+    if (!modName) modName = 'CustomMod';
+
+    var cosmData = null;
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.getProjectData === 'function') {
+        cosmData = window.CosmeticCreator.getProjectData();
+    }
+
     var out = {
-        version: "2.0",
-        app: "HoI4ModGenerator",
+        version: "3.0",
+        app: "HoI4ModStudio",
         savedAt: new Date().toISOString(),
         lang: currentLang,
         modName: modName,
@@ -2297,7 +2319,8 @@ function saveProjectToFile() {
         puppetRules: puppetRules,
         puppetBulkTemplates: (window.puppetBulkTemplates || []),
         stateNameRules: stateNameRules,
-        cityNameRules: cityNameRules
+        cityNameRules: cityNameRules,
+        cosmetic: cosmData
     };
     var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json;charset=utf-8' });
     saveAs(blob, modName + '_project.json');
@@ -2767,7 +2790,7 @@ function renderProjectsList() {
             var h4 = document.createElement('h4');
             h4.textContent = item.name || 'CustomMod';
             var sp = document.createElement('span');
-            sp.textContent = (item.savedAt || '') + ' • ' + (item.countryCount || 0) + ' ' + (t.projCardCountries || 'стран') + ', ' + (item.puppetCount || 0) + ' ' + (t.projCardPuppets || 'марионеток');
+            var parts = [(item.savedAt || ''), (item.countryCount || 0) + ' ' + (t.projCardCountries || 'стран'), (item.puppetCount || 0) + ' ' + (t.projCardPuppets || 'марионеток')]; if (item.hasCosmetic || (item.data && item.data.cosmetic)) parts.push(currentLang === 'russian' ? 'решения' : 'decisions'); sp.textContent = parts.join(' • ');
             meta.appendChild(h4);
             meta.appendChild(sp);
 
@@ -2853,6 +2876,9 @@ function createNewProject() {
     puppetRules = [mkEmptyPuppet()];
     stateNameRules = [mkEmptyState()];
     cityNameRules = [mkEmptyCity()];
+    if (window.CosmeticCreator && typeof window.CosmeticCreator.resetProject === 'function') {
+        window.CosmeticCreator.resetProject();
+    }
     applyLang(currentLang);
     showToast(i18n[currentLang] ? 'Новый проект готов' : 'New project ready');
 }

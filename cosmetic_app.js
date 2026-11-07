@@ -18,7 +18,7 @@ const I18N = {
   ru: {
     header_sub: 'Генератор модов со сменой названий, флагов и решений',
     proj_label: 'Проект:',
-    autosave_on: '● Сохранено',
+    autosave_on: 'Сохранено',
     btn_save_proj: 'Сохранить в файл',
     btn_load_proj: 'Загрузить из файла',
     btn_lib_proj: 'Мои проекты',
@@ -176,7 +176,7 @@ const I18N = {
   en: {
     header_sub: 'Mod generator with country names, flags, and decisions',
     proj_label: 'Project:',
-    autosave_on: '● Saved',
+    autosave_on: 'Saved',
     btn_save_proj: 'Save to File',
     btn_load_proj: 'Load from File',
     btn_lib_proj: 'My Projects',
@@ -1122,7 +1122,8 @@ function applyTranslations() {
 
   renderTriggersCheat();
   renderEffectsCheat();
-  if (document.getElementById('cosm_projectsModal').style.display === 'flex') {
+  const cosmModal = document.getElementById('cosm_projectsModal');
+  if (cosmModal && cosmModal.style.display === 'flex') {
     renderProjectsList();
   }
 }
@@ -3578,11 +3579,11 @@ window.cosm_clearDecisionImage = clearDecisionImage;
 window.cosm_updateColorPreview = updateColorPreview;
 window.cosm_syncColorFromPicker = syncColorFromPicker;
 window.cosm_onFieldChange = onFieldChange;
-window.cosm_saveProjectToFile = saveProjectToFile;
-window.cosm_triggerLoadProjectFile = triggerLoadProjectFile;
+window.cosm_saveProjectToFile = function() { if (typeof window.saveProjectToFile === "function") window.saveProjectToFile(); else saveProjectToFile(); };
+window.cosm_triggerLoadProjectFile = function() { if (typeof window.triggerLoadProjectFile === "function") window.triggerLoadProjectFile(); else triggerLoadProjectFile(); };
 window.cosm_handleProjectFileUpload = handleProjectFileUpload;
-window.cosm_createNewProject = createNewProject;
-window.cosm_openProjectsModal = openProjectsModal;
+window.cosm_createNewProject = function() { if (typeof window.createNewProject === "function") window.createNewProject(); else createNewProject(); };
+window.cosm_openProjectsModal = function() { if (typeof window.openProjectsModal === "function") window.openProjectsModal(); else openProjectsModal(); };
 window.cosm_closeProjectsModal = closeProjectsModal;
 window.cosm_saveCurrentToLibrary = saveCurrentToLibrary;
 window.cosm_renderProjectsList = renderProjectsList;
@@ -3592,6 +3593,44 @@ window.cosm_showTab = showTab;
 window.cosm_generateMod = generateMod;
 window.cosm_downloadMod = downloadMod;
 window.cosm_copyCode = copyCode;
+
+function resetToDefaultCosmeticState() {
+  populateFormFromData({
+    modName: '',
+    modVersion: '1.0.0',
+    author: '',
+    hoi4version: '1.19.*',
+    modDescription: '',
+    customLocFileName: '',
+    scope: 'specific',
+    ownerTag: '',
+    cosmeticTag: '',
+    categoryMode: 'formation',
+    customCatId: '',
+    customCatName: '',
+    customCatDesc: '',
+    days: 45,
+    cost: 50,
+    fireOnlyOnce: true,
+    triggers: [],
+    customEffects: [],
+    rewardManpower: 0,
+    rewardPoliticalPower: 0,
+    rewardStability: 0,
+    rewardWarSupport: 0,
+    colorR: 64, colorG: 128, colorB: 0,
+    ideologies: {
+      democratic: { name: '', adj: '', img: '' },
+      fascism: { name: '', adj: '', img: '' },
+      communism: { name: '', adj: '', img: '' },
+      neutrality: { name: '', adj: '', img: '' }
+    },
+    decisionIcon: ''
+  });
+  updateColorPreview();
+  updateCosmeticDockSummary();
+  try { localStorage.removeItem('hoi4_cosm_current_draft'); } catch(e) {}
+}
 
 window.CosmeticCreator = {
   init: function(lang) {
@@ -3605,7 +3644,11 @@ window.CosmeticCreator = {
     updateColorPreview();
     updateProjectToolbar();
   },
-  getProjectData: collectProjectData
+  getProjectData: collectProjectData,
+  loadProjectData: function(data) {
+    populateFormFromData(data);
+    onFieldChange();
+  },
+  resetProject: resetToDefaultCosmeticState
 };
-
 })();
