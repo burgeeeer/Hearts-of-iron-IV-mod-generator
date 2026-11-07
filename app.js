@@ -1007,7 +1007,10 @@ function applyLang(lang) {
     document.getElementById('cityTitle').innerText = t.cityTitle;
     document.getElementById('cityDesc').innerText = t.cityDesc;
     document.getElementById('cityAddBtn').innerText = '＋ ' + t.addCityRule;
-    document.getElementById('generateBtn').innerText = t.genBtn;
+    var bgd = document.getElementById('btnSection4DownloadText');
+    if (bgd) bgd.innerText = (lang === 'english' ? 'Generate Unified Mod (.zip)' : 'Сгенерировать единый мод (.zip)');
+    var bgf = document.getElementById('btnGenFilesText');
+    if (bgf) bgf.innerText = (lang === 'english' ? 'Generate Mod Files' : 'Сгенерировать файлы мода');
 
     var fwl = document.getElementById('footerWorkshopLink');
     var fsl = document.getElementById('footerSourceLink');
@@ -3277,7 +3280,8 @@ function addLoc(arrRu, arrEn, key, val, valEn) {
     addLocLine(arrEn, key, (valEn !== undefined ? valEn : val));
 }
 
-async function generateMod() {
+async function generateMod(downloadZip) {
+    if (downloadZip === undefined) downloadZip = true;
     pullCountriesFromDOM();
     var modName = ((document.getElementById('modName') ? document.getElementById('modName').value.trim() : '') ||
                    (document.getElementById('mod-name') ? document.getElementById('mod-name').value.trim() : '') ||
@@ -3717,6 +3721,13 @@ async function generateMod() {
                     if (cosmEl) cosmEl.textContent = cosmeticFiles.text[fp];
                 }
             }
+        } else {
+            var decEl = document.getElementById('code-decisions');
+            if (decEl) decEl.textContent = '# Решения не создавались (в шапке перейдите в режим "Формируемые нации и решения")';
+            var catEl = document.getElementById('code-categories');
+            if (catEl) catEl.textContent = '# Категории решений не создавались';
+            var cosmEl = document.getElementById('code-cosmetic');
+            if (cosmEl) cosmEl.textContent = '# Косметические теги не задавались';
         }
 
         var treeEl = document.getElementById('tree-content');
@@ -3735,9 +3746,18 @@ async function generateMod() {
     } catch(e) { console.error('Error updating preview tabs:', e); }
 
     var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-    saveAs(blob, modName + '.zip');
-    showToast(i18n[currentLang] ? (i18n[currentLang].modGeneratedToast || 'Мод успешно сгенерирован!') : 'Mod generated successfully!');
+    if (downloadZip !== false) {
+        saveAs(blob, modName + '.zip');
+        showToast(i18n[currentLang] ? (i18n[currentLang].modGeneratedToast || 'Мод успешно сгенерирован!') : 'Мод успешно сгенерирован!');
+    } else {
+        showToast(currentLang === 'english' ? 'Mod files generated! Check tabs below.' : 'Файлы мода сгенерированы! Проверьте вкладки ниже.');
+    }
 }
+
+window.generateMod = generateMod;
+window.generateModFilesOnly = function() {
+    return generateMod(false);
+};
 
 function updateUnifiedSummaryText() {
     var el = document.getElementById('launchSummaryText');

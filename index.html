@@ -979,7 +979,11 @@
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
               <span id="btnExportJsonText">Экспорт .json</span>
             </button>
-            <button type="button" id="generateBtn" class="btn-primary btn-generate" onclick="generateMod()" style="font-size:13.5px; font-weight:700; height:38px; padding:0 20px; box-shadow:0 2px 8px rgba(34,197,94,0.3);" title="Собрать и скачать единый мод со всеми странами, марионетками и решениями">
+            <button type="button" id="btnGenFilesOnly" class="btn-secondary" onclick="generateModFilesOnly()" title="Сгенерировать скрипты Paradox и показать их во вкладках ниже без скачивания">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span id="btnGenFilesText">Сгенерировать файлы мода</span>
+            </button>
+            <button type="button" id="generateBtn" class="btn-primary btn-generate" onclick="generateMod()" style="font-size:13.5px; font-weight:700; height:38px; padding:0 20px; box-shadow:0 2px 8px rgba(34,197,94,0.3);" title="Собрать и скачать единый мод (.zip) со всеми странами, марионетками и решениями">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span id="btnSection4DownloadText">Сгенерировать единый мод (.zip)</span>
             </button>

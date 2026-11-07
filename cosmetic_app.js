@@ -3620,9 +3620,24 @@ window.cosm_renderProjectsList = renderProjectsList;
 window.cosm_loadProjectFromLibrary = loadProjectFromLibrary;
 window.cosm_deleteProjectFromLibrary = deleteProjectFromLibrary;
 window.cosm_showTab = showTab;
-window.cosm_generateMod = function() { generateMod(); };
-window.cosm_downloadMod = buildAndDownloadMod;
-window.cosm_buildAndDownloadMod = buildAndDownloadMod;
+window.cosm_generateMod = function() {
+  if (typeof window.generateModFilesOnly === 'function') {
+    return window.generateModFilesOnly();
+  }
+  generateMod();
+};
+window.cosm_downloadMod = function() {
+  if (typeof window.generateMod === 'function') {
+    return window.generateMod(true);
+  }
+  return buildAndDownloadMod();
+};
+window.cosm_buildAndDownloadMod = function() {
+  if (typeof window.generateMod === 'function') {
+    return window.generateMod(true);
+  }
+  return buildAndDownloadMod();
+};
 window.cosm_copyCode = copyCode;
 
 function hasCosmeticData() {
