@@ -617,12 +617,22 @@
         </div>
 
         <div class="form-grid-2" style="margin-top:14px">
-          <div class="field">
-            <label style="display:flex; align-items:center; gap:6px">
-              <span>Иллюстрация категории (Баннер над решением, как у Бенилюкса / ЕС)</span>
-            </label>
+          <div class="field" id="category-picture-field">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px">
+              <label style="display:flex; align-items:center; gap:6px; margin:0">
+                <span>Иллюстрация категории (Баннер 500×120 px)</span>
+              </label>
+              <button type="button" class="btn-sm btn-secondary" onclick="document.getElementById('category-picture-file').click()" title="Загрузить свою картинку баннера (PNG, JPG, WEBP, TGA)" style="display:inline-flex; align-items:center; gap:5px; font-size:11.5px; padding:3px 10px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Загрузить свою картинку (GFX)
+              </button>
+            </div>
+
+            <input type="file" id="category-picture-file" accept="image/*,.dds,.tga" style="display:none" onchange="cosm_handleCategoryPictureUpload(event)" />
+
             <select id="category-picture-select" class="inp" onchange="cosm_onCategoryPictureSelect(this.value); cosm_onFieldChange()">
               <option value="">Без картинки (обычный список решений)</option>
+              <option value="uploaded">📷 Своя загруженная картинка (авто-TGA 500×120 + GFX)</option>
               <option value="GFX_decision_cat_picture_hol_annul_the_treaty_of_london">Нидерланды / Бенилюкс (Аннулировать Лондонский договор)</option>
               <option value="GFX_decision_cat_picture_form_european_union">Европейский Союз (Звёзды / карта ЕС)</option>
               <option value="GFX_decision_cat_picture_form_roman_empire">Римская Империя (Орёл / легионы)</option>
@@ -634,7 +644,28 @@
               <option value="custom">Указать свой спрайт GFX_...</option>
             </select>
             <input type="text" id="category-picture-custom" class="inp" placeholder="Например: GFX_decision_cat_picture_my_banner" style="display:none; margin-top:6px" oninput="cosm_onFieldChange()" />
-            <div class="hint">Добавляет стильную иллюстрацию в шапку категории решений, как на вашем скриншоте.</div>
+
+            <!-- Custom uploaded banner preview card -->
+            <div id="category-picture-preview-wrap" style="display:none; margin-top:10px; padding:10px; background:var(--bg-card, #131b26); border:1px solid var(--border-color, rgba(255,255,255,0.1)); border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11.5px; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">HoI4 Баннер 500×120:</span>
+                  <span id="cat-pic-file-name" style="font-size:11.5px; color:var(--text-muted);">custom_banner.png</span>
+                </div>
+                <button type="button" class="btn-sm danger-btn" onclick="cosm_clearCategoryPicture()" style="padding:2px 10px; font-size:11px;">
+                  ✕ Удалить картинку
+                </button>
+              </div>
+              <div style="width:100%; max-width:500px; aspect-ratio:500/120; border:1px solid var(--border-color); border-radius:6px; overflow:hidden; background:#0d1117; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 12px rgba(0,0,0,0.5);">
+                <canvas id="cv-category-banner" width="500" height="120" style="width:100%; height:100%; object-fit:cover; display:block;"></canvas>
+              </div>
+              <div style="margin-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <label style="font-size:11.5px; color:var(--text-muted); margin:0;">Имя GFX-спрайта:</label>
+                <input type="text" id="category-picture-custom-sprite" class="inp" style="flex:1; height:32px !important; min-height:32px !important; font-size:12px; padding:0 8px;" placeholder="GFX_decision_cat_picture_..." oninput="cosm_onFieldChange()" />
+              </div>
+            </div>
+
+            <div class="hint">Добавляет стильную иллюстрацию в шапку категории решений, как у Бенилюкса или ЕС на ваших скриншотах. Можно загрузить любое изображение (PNG, JPG) — оно автоматически конвертируется в формат 500×120 TGA и зарегистрируется в .gfx.</div>
           </div>
           <div class="field">
             <label>Исторический текст описания категории (справа от картинки)</label>
@@ -691,7 +722,7 @@
             </div>
           </div>
 
-          <label class="check-label" style="display:flex; align-items:center; gap:8px; margin:8px 0 12px 0; font-size:12px; cursor:pointer">
+          <label class="check-label">
             <input type="checkbox" id="compact-states-tooltip" checked onchange="cosm_onFieldChange()" />
             <span><strong>Сворачивать длинные списки регионов в игре:</strong> заменяет простыню из 100+ строк на 1 краткую подсказку и <strong>подсвечивает на карте только недостающие регионы</strong></span>
           </label>
@@ -738,7 +769,7 @@
             <input type="text" id="core-states" class="inp" placeholder="10, 11, 85, 110, 142"
                    oninput="cosm_handleCoreStatesInput(this.value); cosm_onFieldChange()" />
             <div id="core-states-badges" class="tag-badges-wrap"></div>
-            <label class="check-label" style="display:flex; align-items:center; gap:8px; margin-top:6px; font-size:12px; cursor:pointer">
+            <label class="check-label">
               <input type="checkbox" id="auto-core-all-triggers" checked onchange="cosm_onFieldChange()" />
               <span><strong>Автоматически национализировать все регионы контроля</strong> (add_core_of = ROOT) при принятии решения</span>
             </label>
@@ -1085,6 +1116,11 @@
               <button type="button" class="btn-sm" onclick="cosm_copyCode('code-decisions')" data-t="btn_copy">Копировать</button>
             </div>
             <pre class="code-display" id="code-decisions"></pre>
+            <div id="code-gfx-bar" class="code-file-bar" style="margin-top:14px; display:none;">
+              <span id="fp-gfx">interface/decisions.gfx (Регистрация спрайтов GFX)</span>
+              <button type="button" class="btn-sm" onclick="cosm_copyCode('code-gfx')" data-t="btn_copy">Копировать</button>
+            </div>
+            <pre class="code-display" id="code-gfx" style="display:none;"></pre>
           </div>
 
           <!-- Localisation Tab -->

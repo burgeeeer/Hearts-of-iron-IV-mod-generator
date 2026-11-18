@@ -1117,6 +1117,9 @@ const flagsData = {
 let decisionImageData = null;
 let decisionImageTga = null;
 let decisionImagePreviewUrl = null;
+let categoryImageData = null;
+let categoryImageTga = null;
+let categoryImagePreviewUrl = null;
 let generatedFiles = null;
 let autoSaveTimer = null;
 
@@ -1142,6 +1145,7 @@ function initApp(lang) {
   restoreDraft();
   handleOwnerTagsInput(val('owner-tag'));
   handleCoreStatesInput(val('core-states'));
+  setupCategoryPictureDrop();
 }
 
 function switchLang() {
@@ -1303,8 +1307,22 @@ function sanitizeTrigger(rawTr) {
 
 function onCategoryPictureSelect(val) {
   const customInp = document.getElementById('category-picture-custom');
-  if (customInp) {
-    customInp.style.display = (val === 'custom') ? 'block' : 'none';
+  const fileInp = document.getElementById('category-picture-file');
+  const pWrap = document.getElementById('category-picture-preview-wrap');
+
+  if (val === 'custom') {
+    if (customInp) customInp.style.display = 'block';
+    if (pWrap) pWrap.style.display = 'none';
+  } else if (val === 'uploaded') {
+    if (customInp) customInp.style.display = 'none';
+    if (categoryImagePreviewUrl && pWrap) {
+      pWrap.style.display = 'block';
+    } else if (fileInp) {
+      fileInp.click();
+    }
+  } else {
+    if (customInp) customInp.style.display = 'none';
+    if (pWrap) pWrap.style.display = 'none';
   }
 }
 window.cosm_onCategoryPictureSelect = onCategoryPictureSelect;
@@ -2428,6 +2446,123 @@ function clearDecisionImage() {
   onFieldChange();
 }
 
+function handleCategoryPictureUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const img = new Image();
+    img.onload = function() {
+      // 500x120 is the official HoI4 category picture size (banner in decision window)
+      const cv = document.getElementById('cv-category-banner');
+      if (cv) {
+        cv.width = 500;
+        cv.height = 120;
+        const ctx = cv.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.clearRect(0, 0, 500, 120);
+
+        // Smart cover-fit preserving aspect ratio
+        const scale = Math.max(500 / img.width, 120 / img.height);
+        const nw = img.width * scale;
+        const nh = img.height * scale;
+        const nx = (500 - nw) / 2;
+        const ny = (120 - nh) / 2;
+        ctx.drawImage(img, nx, ny, nw, nh);
+
+        // Convert to 32-bit TGA (BGRA)
+        categoryImageTga = canvasToTGA(cv);
+        categoryImagePreviewUrl = cv.toDataURL('image/png');
+      }
+
+      categoryImageData = {
+        name: file.name.replace(/\.[^/.]+$/, "") + ".tga",
+        rawName: file.name
+      };
+
+      const fnEl = document.getElementById('cat-pic-file-name');
+      if (fnEl) fnEl.textContent = file.name;
+
+      const pWrap = document.getElementById('category-picture-preview-wrap');
+      if (pWrap) pWrap.style.display = 'block';
+
+      const catSel = document.getElementById('category-picture-select');
+      if (catSel) catSel.value = 'uploaded';
+
+      const customInp = document.getElementById('category-picture-custom');
+      if (customInp) customInp.style.display = 'none';
+
+      // Auto-suggest sprite name
+      const spriteInp = document.getElementById('category-picture-custom-sprite');
+      if (spriteInp && !spriteInp.value.trim()) {
+        const cosTag = (document.getElementById('cosmetic-tag')?.value || 'custom').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+        spriteInp.value = `GFX_decision_cat_picture_${cosTag}`;
+      }
+
+      showToast(currentLang === 'ru' ? 'Баннер категории (500×120) сконвертирован в TGA и будет добавлен в .gfx!' : 'Category banner (500x120) converted to TGA and registered in .gfx!');
+      onFieldChange();
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearCategoryPicture() {
+  categoryImageData = null;
+  categoryImageTga = null;
+  categoryImagePreviewUrl = null;
+
+  const fileInp = document.getElementById('category-picture-file');
+  if (fileInp) fileInp.value = '';
+
+  const pWrap = document.getElementById('category-picture-preview-wrap');
+  if (pWrap) pWrap.style.display = 'none';
+
+  const cv = document.getElementById('cv-category-banner');
+  if (cv) {
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+  }
+
+  const catSel = document.getElementById('category-picture-select');
+  if (catSel && catSel.value === 'uploaded') {
+    catSel.value = '';
+  }
+
+  onFieldChange();
+}
+
+function setupCategoryPictureDrop() {
+  const dropArea = document.getElementById('category-picture-field');
+  if (!dropArea || dropArea.dataset.dropBound) return;
+  dropArea.dataset.dropBound = 'true';
+
+  dropArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropArea.style.borderColor = '#38bdf8';
+  });
+
+  dropArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropArea.style.borderColor = '';
+  });
+
+  dropArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dropArea.style.borderColor = '';
+    const files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleCategoryPictureUpload({ target: { files: files } });
+    }
+  });
+}
+
 // ─── MAP COLOR PREVIEW ────────────────────────
 function updateColorPreview() {
   const rEl = document.getElementById('color-r');
@@ -2532,9 +2667,17 @@ function collectProjectData() {
     customCatName: val('custom-cat-name'),
     categoryPicture: (function() {
       const sel = val('category-picture-select');
+      if (sel === 'uploaded') {
+        const spriteInp = val('category-picture-custom-sprite').trim();
+        return spriteInp || (categoryImageData ? `GFX_decision_cat_picture_${categoryImageData.name.replace(/\.[^/.]+$/, "")}` : '');
+      }
       if (sel === 'custom') return val('category-picture-custom').trim();
       return sel || '';
     })(),
+    categoryPictureMode: val('category-picture-select'),
+    categoryCustomSpriteName: val('category-picture-custom-sprite'),
+    categoryImageData: categoryImageData,
+    categoryImagePreviewUrl: categoryImagePreviewUrl,
     categoryDesc: val('category-desc'),
 
     cost: parseInt(val('decision-cost'), 10) || 50,
@@ -2617,19 +2760,51 @@ function populateFormFromData(d) {
 
   const catSel = document.getElementById('category-picture-select');
   const catCust = document.getElementById('category-picture-custom');
-  if (catSel) {
+  const pWrap = document.getElementById('category-picture-preview-wrap');
+  const spriteInp = document.getElementById('category-picture-custom-sprite');
+
+  if (spriteInp && d.categoryCustomSpriteName) {
+    spriteInp.value = d.categoryCustomSpriteName;
+  }
+
+  if (d.categoryImagePreviewUrl) {
+    categoryImagePreviewUrl = d.categoryImagePreviewUrl;
+    categoryImageData = d.categoryImageData || null;
+
+    const img = new Image();
+    img.onload = function() {
+      const cv = document.getElementById('cv-category-banner');
+      if (cv) {
+        cv.width = 500;
+        cv.height = 120;
+        const ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, 500, 120);
+        ctx.drawImage(img, 0, 0, 500, 120);
+        categoryImageTga = canvasToTGA(cv);
+      }
+      if (pWrap) pWrap.style.display = 'block';
+      if (catSel) catSel.value = 'uploaded';
+      if (catCust) catCust.style.display = 'none';
+      const fnEl = document.getElementById('cat-pic-file-name');
+      if (fnEl && categoryImageData) fnEl.textContent = categoryImageData.rawName || categoryImageData.name;
+    };
+    img.src = d.categoryImagePreviewUrl;
+  } else if (catSel) {
     if (d.categoryPicture && catSel.querySelector(`option[value="${d.categoryPicture}"]`)) {
       catSel.value = d.categoryPicture;
       if (catCust) catCust.style.display = 'none';
+      if (pWrap) pWrap.style.display = 'none';
     } else if (d.categoryPicture) {
       catSel.value = 'custom';
       if (catCust) {
         catCust.style.display = 'block';
         catCust.value = d.categoryPicture;
       }
+      if (pWrap) pWrap.style.display = 'none';
     } else {
       catSel.value = '';
       if (catCust) catCust.style.display = 'none';
+      if (pWrap) pWrap.style.display = 'none';
     }
   }
   setVal('category-desc', d.categoryDesc || '');
@@ -3070,47 +3245,59 @@ function generateMod(customModSlug, skipAlert = false) {
     decVisibleBlock = `\t\tOR = {\n${orLines}\n\t\t}\n${notCosmetics}`;
   }
 
+  // 4. Decision Sprites & GFX Registration
+  let decisionIcon = 'generic_form_nation';
+  let customIconFileName = null;
+  let categorySpriteName = null;
+  let categoryImageFileName = null;
+  const spriteEntries = [];
+
+  // 4a. Category Banner Picture Sprite (500x120 TGA)
+  const isUploadedCategoryPic = (data.categoryPictureMode === 'uploaded') || (categoryImageTga !== null);
+  if (categoryImageTga && isUploadedCategoryPic) {
+    const rawPicName = (data.categoryCustomSpriteName || `cat_picture_${scriptSlug}`).replace(/[^a-zA-Z0-9_]/g, '');
+    categorySpriteName = rawPicName.startsWith('GFX_') ? rawPicName : `GFX_${rawPicName}`;
+    categoryImageFileName = `decision_${rawPicName.replace(/^GFX_decision_|^GFX_/, '')}.tga`;
+
+    spriteEntries.push(`\tspriteType = {\n\t\tname = "${categorySpriteName}"\n\t\ttexturefile = "gfx/interface/decisions/${categoryImageFileName}"\n\t}`);
+  } else if (data.categoryPicture && (data.categoryPicture.startsWith('GFX_custom_') || data.categoryPictureMode === 'custom')) {
+    categorySpriteName = data.categoryPicture.startsWith('GFX_') ? data.categoryPicture : `GFX_${data.categoryPicture}`;
+    const texName = categorySpriteName.replace(/^GFX_/, '');
+    spriteEntries.push(`\tspriteType = {\n\t\tname = "${categorySpriteName}"\n\t\ttexturefile = "gfx/interface/decisions/${texName}.dds"\n\t}`);
+  } else if (data.categoryPicture) {
+    categorySpriteName = data.categoryPicture;
+  }
+
   // 3. Category Definition File (00_${modSlug}_categories.txt)
-  const catPictureLine = data.categoryPicture ? `\n\tpicture = ${data.categoryPicture}` : '';
+  const effectiveCatPicture = categorySpriteName || data.categoryPicture || '';
+  const catPictureLine = effectiveCatPicture ? `\n\tpicture = ${effectiveCatPicture}` : '';
   const catContent = `${categoryId} = {
 \ticon = generic_formable_nations${catPictureLine}
 \tpriority = 90
 }
 `;
 
-  // 4. Decision Icon & GFX Registration (Standard 32x32 TGA)
-  let decisionIcon = 'generic_form_nation';
-  let gfxFileContent = null;
-  let customIconFileName = null;
-
+  // 4b. Decision Icon (32x32 TGA)
   if (decisionImageTga) {
     const cleanPicName = (data.decisionPictureName || `decision_${cosTag.toLowerCase()}`).replace(/[^a-zA-Z0-9_]/g, '');
     const spriteName = cleanPicName.startsWith('GFX_') ? cleanPicName : `GFX_${cleanPicName}`;
     customIconFileName = `${cleanPicName}.tga`;
     decisionIcon = spriteName;
 
-    gfxFileContent = `spriteTypes = {
-\tspriteType = {
-\t\tname = "${spriteName}"
-\t\ttexturefile = "gfx/interface/decisions/${customIconFileName}"
-\t}
-}
-`;
+    spriteEntries.push(`\tspriteType = {\n\t\tname = "${spriteName}"\n\t\ttexturefile = "gfx/interface/decisions/${customIconFileName}"\n\t}`);
   } else if (data.decisionPictureName && data.decisionPictureName.trim() !== '') {
     const cleanName = data.decisionPictureName.trim();
     if (cleanName.startsWith('GFX_') || cleanName.startsWith('generic_')) {
       decisionIcon = cleanName;
     } else {
       decisionIcon = `GFX_${cleanName}`;
-      gfxFileContent = `spriteTypes = {
-\tspriteType = {
-\t\tname = "GFX_${cleanName}"
-\t\ttexturefile = "gfx/interface/decisions/${cleanName}.dds"
-\t}
-}
-`;
+      spriteEntries.push(`\tspriteType = {\n\t\tname = "GFX_${cleanName}"\n\t\ttexturefile = "gfx/interface/decisions/${cleanName}.dds"\n\t}`);
     }
   }
+
+  const gfxFileContent = spriteEntries.length > 0
+    ? `spriteTypes = {\n${spriteEntries.join('\n')}\n}\n`
+    : null;
 
   // 5. Decision File (common/decisions/)
   const costLine = data.cost > 0 ? `\n\t\tcost = ${data.cost}` : '';
@@ -3417,6 +3604,10 @@ ${commonDependencies}`;
     generatedFiles.text[`${modFolder}/interface/${scriptSlug}_decisions.gfx`] = gfxFileContent;
   }
 
+  if (categoryImageTga && categoryImageFileName) {
+    generatedFiles.tgaFlags[`${modFolder}/gfx/interface/decisions/${categoryImageFileName}`] = categoryImageTga;
+  }
+
   if (decisionImageTga && customIconFileName) {
     generatedFiles.tgaFlags[`${modFolder}/gfx/interface/decisions/${customIconFileName}`] = decisionImageTga;
   }
@@ -3476,8 +3667,23 @@ ${commonDependencies}`;
   const fpDec = document.getElementById('fp-decisions');
   if (fpDec) fpDec.textContent = `common/decisions/${scriptSlug}_decisions.txt`;
 
+  const elGfx = document.getElementById('code-gfx');
+  const elGfxBar = document.getElementById('code-gfx-bar');
+  const fpGfx = document.getElementById('fp-gfx');
+  if (elGfx && elGfxBar) {
+    if (gfxFileContent) {
+      elGfx.textContent = gfxFileContent;
+      elGfx.style.display = 'block';
+      elGfxBar.style.display = 'flex';
+      if (fpGfx) fpGfx.textContent = `interface/${scriptSlug}_decisions.gfx (Регистрация спрайтов GFX)`;
+    } else {
+      elGfx.style.display = 'none';
+      elGfxBar.style.display = 'none';
+    }
+  }
+
   buildSummary(baseName);
-  buildFileTree(modFolder, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile, scriptSlug);
+  buildFileTree(modFolder, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile, scriptSlug, categoryImageFileName);
 
   const dlBtn = document.getElementById('btn-download');
   if (dlBtn) dlBtn.style.display = 'inline-flex';
@@ -3568,7 +3774,7 @@ function buildSummary(baseName) {
   `;
 }
 
-function buildFileTree(modFolder, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null, scriptSlug = null) {
+function buildFileTree(modFolder, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null, scriptSlug = null, categoryImageFileName = null) {
   const container = document.getElementById('tree-content');
   if (!container) return;
 
@@ -3589,11 +3795,18 @@ function buildFileTree(modFolder, cosTag, hasGfx = false, customIconFileName = n
   }
 
   const gfxEntry = hasGfx
-    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${sSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайта иконки)</span>\n`
+    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${sSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайтов GFX)</span>\n`
     : '';
 
-  const decIconEntry = (decisionImageTga && customIconFileName)
-    ? `│   ├── <span class="tree-dir">interface/</span>\n│   │   └── <span class="tree-dir">decisions/</span>\n│   │       └── <span class="tree-f">${customIconFileName}</span> <span class="tree-sub">(32×32 TGA)</span>\n`
+  let decFiles = '';
+  if (categoryImageFileName) {
+    decFiles += `│   │       ├── <span class="tree-f">${categoryImageFileName}</span> <span class="tree-sub">(баннер категории 500×120 TGA)</span>\n`;
+  }
+  if (decisionImageTga && customIconFileName) {
+    decFiles += `│   │       └── <span class="tree-f">${customIconFileName}</span> <span class="tree-sub">(иконка решения 32×32 TGA)</span>\n`;
+  }
+  const decIconEntry = decFiles
+    ? `│   ├── <span class="tree-dir">interface/</span>\n│   │   └── <span class="tree-dir">decisions/</span>\n${decFiles}`
     : '';
 
   container.innerHTML = `
@@ -3882,6 +4095,10 @@ window.cosm_handleFlagUpload = handleFlagUpload;
 window.cosm_clearFlag = clearFlag;
 window.cosm_handleDecisionImageUpload = handleDecisionImageUpload;
 window.cosm_clearDecisionImage = clearDecisionImage;
+window.cosm_handleCategoryPictureUpload = handleCategoryPictureUpload;
+window.cosm_clearCategoryPicture = clearCategoryPicture;
+window.handleCategoryPictureUpload = handleCategoryPictureUpload;
+window.clearCategoryPicture = clearCategoryPicture;
 window.cosm_updateColorPreview = updateColorPreview;
 window.cosm_syncColorFromPicker = syncColorFromPicker;
 window.cosm_onFieldChange = onFieldChange;
@@ -3972,6 +4189,7 @@ window.CosmeticCreator = {
   onActivate: function() {
     updateColorPreview();
     updateProjectToolbar();
+    setupCategoryPictureDrop();
   },
   getProjectData: collectProjectData,
   loadProjectData: function(data) {
