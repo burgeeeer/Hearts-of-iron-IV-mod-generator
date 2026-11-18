@@ -632,7 +632,7 @@
 
             <select id="category-picture-select" class="inp" onchange="cosm_onCategoryPictureSelect(this.value); cosm_onFieldChange()">
               <option value="">Без картинки (обычный список решений)</option>
-              <option value="uploaded">📷 Своя загруженная картинка (авто-TGA 500×120 + GFX)</option>
+              <option value="uploaded">Своя загруженная картинка (авто-TGA 500×120 + GFX)</option>
               <option value="GFX_decision_cat_picture_hol_annul_the_treaty_of_london">Нидерланды / Бенилюкс (Аннулировать Лондонский договор)</option>
               <option value="GFX_decision_cat_picture_form_european_union">Европейский Союз (Звёзды / карта ЕС)</option>
               <option value="GFX_decision_cat_picture_form_roman_empire">Римская Империя (Орёл / легионы)</option>
@@ -653,7 +653,7 @@
                   <span id="cat-pic-file-name" style="font-size:11.5px; color:var(--text-muted);">custom_banner.png</span>
                 </div>
                 <button type="button" class="btn-sm danger-btn" onclick="cosm_clearCategoryPicture()" style="padding:2px 10px; font-size:11px;">
-                  ✕ Удалить картинку
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-1px; margin-right:3px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Удалить картинку
                 </button>
               </div>
               <div style="width:100%; max-width:500px; aspect-ratio:500/120; border:1px solid var(--border-color); border-radius:6px; overflow:hidden; background:#0d1117; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 12px rgba(0,0,0,0.5);">
@@ -728,7 +728,7 @@
           </label>
 
           <div id="triggers-collapsed-banner" class="triggers-collapsed-banner" onclick="cosm_toggleTriggersCollapse()">
-            📁 <strong id="triggers-collapsed-text">Список условий свернут (0 шт.)</strong> — <span style="color:#38bdf8; text-decoration:underline">нажмите, чтобы развернуть для редактирования</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><strong id="triggers-collapsed-text">Список условий свернут (0 шт.)</strong> — <span style="color:#38bdf8; text-decoration:underline">нажмите, чтобы развернуть для редактирования</span>
           </div>
 
           <div id="triggers-list" class="triggers-list"></div>
@@ -759,7 +759,7 @@
               <label data-t="f_core_states" style="margin:0">Национальные регионы (Core States IDs)</label>
               <div style="display:flex; gap:6px; flex-wrap:wrap">
                 <button type="button" class="btn-primary btn-sm" id="btn-copy-triggers-to-cores" onclick="cosm_copyTriggersToCores()" title="Скопировать все ID регионов из блока условий в национальные территории">
-                  ⚡ Сделать регионы из условий национальными
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-1px; margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>Сделать регионы из условий национальными
                 </button>
                 <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')" data-t="btn_map_core">
                   Выбрать на карте
