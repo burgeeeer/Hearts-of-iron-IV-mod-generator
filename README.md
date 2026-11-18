@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/github/forks/burgeeeer/Hearts-of-iron-IV-mod-generator?style=flat-square&color=64748b" alt="GitHub Forks">
   <img src="https://img.shields.io/github/issues/burgeeeer/Hearts-of-iron-IV-mod-generator?style=flat-square&color=ef4444" alt="GitHub Issues">
   <img src="https://img.shields.io/badge/Status-Active_Development-10b981?style=flat-square" alt="Status">
-  <img src="https://img.shields.io/badge/Desktop_App-Windows_x64-8b5cf6?style=flat-square&logo=windows&logoColor=white" alt="Desktop App">
+  <a href="https://github.com/burgeeeer/Hearts-of-iron-IV-mod-generator/releases/download/ModGeneratorExe/HoI4_Mod_Generator.exe"><img src="https://img.shields.io/badge/Desktop_App-Windows_x64-8b5cf6?style=flat-square&logo=windows&logoColor=white" alt="Desktop App">
 </p>
 
 Hearts of Iron IV Mod Generator — профессиональный визуальный редактор и генератор модификаций для **Hearts of Iron IV** (Clausewitz Engine 1.14.* — 1.19.*+).
