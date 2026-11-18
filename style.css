@@ -4250,3 +4250,105 @@ html[data-theme="dark"] .puppet-shortcut-banner {
 }
 
 .desktop-download-btn { text-decoration: none; }
+
+/* ========================================================================== 
+   USABILITY PASS — calm editor chrome, clearer focus and phone-first controls
+   ========================================================================== */
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: 10px;
+  left: 10px;
+  padding: 10px 14px;
+  background: var(--text-main);
+  color: var(--bg-card);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform .16s ease;
+}
+
+.skip-link:focus { transform: translateY(0); }
+
+.mobile-project-toggle { display: none; }
+
+html { scroll-padding-top: 128px; }
+
+/* Make the controls read like a focused working tool, not a decorative HUD. */
+.app-header {
+  background: var(--bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.brand-logo-icon,
+.project-toolbar,
+.theme-toggle-btn,
+.lang-btn,
+.desktop-download-btn,
+.mode-tab-btn.active { box-shadow: none; }
+
+.header-mode-nav { box-shadow: none; }
+
+.mode-tab-btn {
+  min-height: 34px;
+  transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+}
+
+.mode-tab-btn.active {
+  border-color: transparent;
+  border-bottom: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+.status-dot { box-shadow: none; animation: none; }
+
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.section-head[role="button"] { cursor: pointer; }
+.section-head[role="button"]:focus-visible { border-radius: var(--radius-sm); }
+.section-group, .section { scroll-margin-top: 138px; }
+
+@media (max-width: 768px) {
+  html { scroll-padding-top: 72px; }
+
+  .mobile-project-toggle {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+  }
+
+  .mobile-project-toggle[aria-expanded="true"] svg { transform: rotate(45deg); }
+
+  .header-right { width: 100%; justify-content: flex-end; }
+  .desktop-download-btn { display: none; }
+  .project-toolbar { display: none !important; }
+  .project-toolbar.is-mobile-open { display: flex !important; }
+  .project-toolbar-actions { border-left: 0; }
+  .sub-nav-container { overflow-x: auto; scrollbar-width: thin; }
+  .sub-nav-link { flex: 0 0 auto; min-height: 44px; display: inline-flex; align-items: center; }
+  .section-group, .section { scroll-margin-top: 84px; }
+}
+
+@media (max-width: 480px) {
+  .project-toolbar-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .project-toolbar-actions .btn-danger { grid-column: 1 / -1; }
+  .header-right { gap: 6px; }
+}

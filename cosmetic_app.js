@@ -2341,9 +2341,22 @@ function val(id) {
   return v;
 }
 
+function getSafeModName(str, fallback) {
+  if (typeof window.getSafeModName === 'function') {
+    return window.getSafeModName(str, fallback);
+  }
+  const safe = String(str || '').trim()
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+    .replace(/[. ]+$/g, '');
+  return (safe || fallback || 'CustomMod').slice(0, 120);
+}
+
 function slugify(str) {
-  return str.toLowerCase()
-    .replace(/[^a-z0-9а-яё_\- ]/gi, '')
+  if (typeof toLatinModSlug === 'function') {
+    return toLatinModSlug(str, 'cosmetic_mod').toLowerCase();
+  }
+  return String(str || '').toLowerCase()
+    .replace(/[^a-z0-9_\- ]/g, '')
     .replace(/\s+/g, '_')
     .replace(/_+/g, '_')
     .slice(0, 45) || 'cosmetic_mod';
@@ -2355,7 +2368,7 @@ function escapePds(str) {
 
 // ─── COLLECT STATE OBJECT ─────────────────────
 function collectProjectData() {
-  const modName = val('mod-name') || 'MyCosmeticMod';
+  const modName = val('mod-name') || (document.getElementById('modName') ? document.getElementById('modName').value.trim() : '') || 'MyCosmeticMod';
   return {
     version: '2.1',
     app: 'HoI4CosmeticTagCreator',
@@ -2577,7 +2590,7 @@ function onFieldChange() {
   if (mn1 && curModName && mn1.value !== curModName) {
     mn1.value = curModName;
     const treeEl = document.getElementById('treeModDirName');
-    if (treeEl) treeEl.textContent = curModName.trim() || 'MyAwesomeMod';
+    if (treeEl) treeEl.textContent = getSafeModName(curModName, 'MyAwesomeMod');
   }
   updateCosmeticDockSummary();
   updateProjectToolbar();
@@ -2630,7 +2643,7 @@ function saveProjectToFile() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${slugify(d.modName)}_project.json`;
+  a.download = `${getSafeModName(d.modName, 'project')}_project.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2811,6 +2824,9 @@ function generateMod(customModSlug, skipAlert = false) {
   }
 
   const data = collectProjectData();
+  if (customModSlug && (!data.modName || data.modName === 'MyCosmeticMod')) {
+    data.modName = customModSlug;
+  }
   if (!data.cosmeticTag) data.cosmeticTag = 'FORMABLE_STATE';
   if (!data.decisionName) data.decisionName = 'Создать ' + data.cosmeticTag;
   if (currentScope === 'specific' && (!data.ownerTags || data.ownerTags.length === 0)) {
@@ -2821,7 +2837,10 @@ function generateMod(customModSlug, skipAlert = false) {
     data.ideologies.democratic.name = data.cosmeticTag;
     data.ideologies.democratic.adj = data.cosmeticTag;
   }
-  const modSlug = customModSlug ? String(customModSlug).trim().replace(/[^a-zA-Z0-9_\-]/g, '_') : slugify(data.modName);
+  const rawFolderName = customModSlug || data.modName;
+  const modFolder = getSafeModName(rawFolderName, 'CustomMod');
+  const scriptSlug = slugify(data.modName || modFolder);
+  const modSlug = scriptSlug;
   const cosTag = data.cosmeticTag;
   const ownerTags = parseOwnerTags(data.ownerTag);
   let decId = '';
@@ -3128,13 +3147,13 @@ tags={
 }
 name="${escapePds(data.modName)}"
 supported_version="${escapePds(data.hoi4version)}"
-path="mod/${modSlug}"
+path="mod/${modFolder}"
 ${commonDependencies}`;
 
   // 9. Store files for ZIP
   const customLoc = (data.customLocFileName || '').trim();
-  const locRuFile = customLoc ? (customLoc.endsWith('.yml') || customLoc.endsWith('.yaml') ? customLoc : `${customLoc}.yml`) : `${modSlug}_l_russian.yml`;
-  const locEnFile = customLoc ? (customLoc.includes('_l_russian') ? customLoc.replace('_l_russian', '_l_english') : `${locRuFile.replace(/\.ya?ml$/, '')}_l_english.yml`) : `${modSlug}_l_english.yml`;
+  const locRuFile = customLoc ? (customLoc.endsWith('.yml') || customLoc.endsWith('.yaml') ? customLoc : `${customLoc}.yml`) : `${scriptSlug}_l_russian.yml`;
+  const locEnFile = customLoc ? (customLoc.includes('_l_russian') ? customLoc.replace('_l_russian', '_l_english') : `${locRuFile.replace(/\.ya?ml$/, '')}_l_english.yml`) : `${scriptSlug}_l_english.yml`;
 
   // Update tabs labels
   const fpLocRuEl = document.getElementById('fp-loc-ru');
@@ -3144,26 +3163,26 @@ ${commonDependencies}`;
 
   generatedFiles = {
     text: {
-      [`${modSlug}/common/decisions/categories/00_${modSlug}_categories.txt`]: catContent,
-      [`${modSlug}/common/decisions/${modSlug}_decisions.txt`]: decContent,
-      [`${modSlug}/common/countries/cosmetic.txt`]: cosmeticContent,
-      [`${modSlug}/localisation/${locRuFile}`]: locRuContent,
-      [`${modSlug}/localisation/${locEnFile}`]: locEnContent,
-      [`${modSlug}/localisation/russian/${locRuFile}`]: locRuContent,
-      [`${modSlug}/localisation/english/${locEnFile}`]: locEnContent,
-      [`${modSlug}/descriptor.mod`]: internalDescContent,
-      [`${modSlug}.mod`]: externalModContent,
-      [`${modSlug}/README.md`]: `# ${data.modName}\n\nGenerated with HoI4 Cosmetic Tag Creator for HoI4 ${data.hoi4version}.\n\nInstallation:\n1. Copy the '${modSlug}' folder AND the '${modSlug}.mod' file into:\n   Documents/Paradox Interactive/Hearts of Iron IV/mod/\n2. Enable the mod in the Paradox Launcher 'Playsets' tab.\n`
+      [`${modFolder}/common/decisions/categories/00_${scriptSlug}_categories.txt`]: catContent,
+      [`${modFolder}/common/decisions/${scriptSlug}_decisions.txt`]: decContent,
+      [`${modFolder}/common/countries/cosmetic.txt`]: cosmeticContent,
+      [`${modFolder}/localisation/${locRuFile}`]: locRuContent,
+      [`${modFolder}/localisation/${locEnFile}`]: locEnContent,
+      [`${modFolder}/localisation/russian/${locRuFile}`]: locRuContent,
+      [`${modFolder}/localisation/english/${locEnFile}`]: locEnContent,
+      [`${modFolder}/descriptor.mod`]: internalDescContent,
+      [`${modFolder}.mod`]: externalModContent,
+      [`${modFolder}/README.md`]: `# ${data.modName}\n\nGenerated with HoI4 Cosmetic Tag Creator for HoI4 ${data.hoi4version}.\n\nInstallation:\n1. Copy the '${modFolder}' folder AND the '${modFolder}.mod' file into:\n   Documents/Paradox Interactive/Hearts of Iron IV/mod/\n2. Enable the mod in the Paradox Launcher 'Playsets' tab.\n`
     },
     tgaFlags: {}
   };
 
   if (gfxFileContent) {
-    generatedFiles.text[`${modSlug}/interface/${modSlug}_decisions.gfx`] = gfxFileContent;
+    generatedFiles.text[`${modFolder}/interface/${scriptSlug}_decisions.gfx`] = gfxFileContent;
   }
 
   if (decisionImageTga && customIconFileName) {
-    generatedFiles.tgaFlags[`${modSlug}/gfx/interface/decisions/${customIconFileName}`] = decisionImageTga;
+    generatedFiles.tgaFlags[`${modFolder}/gfx/interface/decisions/${customIconFileName}`] = decisionImageTga;
   }
 
   // Convert uploaded flags of the 4 ideologies into TGA binaries
@@ -3188,18 +3207,18 @@ ${commonDependencies}`;
           firstTga10 = tga10;
         }
 
-        generatedFiles.tgaFlags[`${modSlug}/gfx/flags/${cosTag}_${i}.tga`] = tga82;
-        generatedFiles.tgaFlags[`${modSlug}/gfx/flags/medium/${cosTag}_${i}.tga`] = tga41;
-        generatedFiles.tgaFlags[`${modSlug}/gfx/flags/small/${cosTag}_${i}.tga`] = tga10;
+        generatedFiles.tgaFlags[`${modFolder}/gfx/flags/${cosTag}_${i}.tga`] = tga82;
+        generatedFiles.tgaFlags[`${modFolder}/gfx/flags/medium/${cosTag}_${i}.tga`] = tga41;
+        generatedFiles.tgaFlags[`${modFolder}/gfx/flags/small/${cosTag}_${i}.tga`] = tga10;
       }
     }
   });
 
   // Base fallback flags
   if (firstTga82) {
-    generatedFiles.tgaFlags[`${modSlug}/gfx/flags/${cosTag}.tga`] = firstTga82;
-    generatedFiles.tgaFlags[`${modSlug}/gfx/flags/medium/${cosTag}.tga`] = firstTga41;
-    generatedFiles.tgaFlags[`${modSlug}/gfx/flags/small/${cosTag}.tga`] = firstTga10;
+    generatedFiles.tgaFlags[`${modFolder}/gfx/flags/${cosTag}.tga`] = firstTga82;
+    generatedFiles.tgaFlags[`${modFolder}/gfx/flags/medium/${cosTag}.tga`] = firstTga41;
+    generatedFiles.tgaFlags[`${modFolder}/gfx/flags/small/${cosTag}.tga`] = firstTga10;
   }
 
   // UI Updates
@@ -3217,12 +3236,12 @@ ${commonDependencies}`;
   if (elDesc) elDesc.textContent = internalDescContent;
 
   const fpCat = document.getElementById('fp-categories');
-  if (fpCat) fpCat.textContent = `common/decisions/categories/00_${modSlug}_categories.txt`;
+  if (fpCat) fpCat.textContent = `common/decisions/categories/00_${scriptSlug}_categories.txt`;
   const fpDec = document.getElementById('fp-decisions');
-  if (fpDec) fpDec.textContent = `common/decisions/${modSlug}_decisions.txt`;
+  if (fpDec) fpDec.textContent = `common/decisions/${scriptSlug}_decisions.txt`;
 
   buildSummary(baseName);
-  buildFileTree(modSlug, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile);
+  buildFileTree(modFolder, cosTag, Boolean(gfxFileContent), customIconFileName, locRuFile, locEnFile, scriptSlug);
 
   const dlBtn = document.getElementById('btn-download');
   if (dlBtn) dlBtn.style.display = 'inline-flex';
@@ -3313,12 +3332,13 @@ function buildSummary(baseName) {
   `;
 }
 
-function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null) {
+function buildFileTree(modFolder, cosTag, hasGfx = false, customIconFileName = null, locRuFile = null, locEnFile = null, scriptSlug = null) {
   const container = document.getElementById('tree-content');
   if (!container) return;
 
-  const actualLocRu = locRuFile || `${modSlug}_l_russian.yml`;
-  const actualLocEn = locEnFile || `${modSlug}_l_english.yml`;
+  const sSlug = scriptSlug || slugify(modFolder);
+  const actualLocRu = locRuFile || `${sSlug}_l_russian.yml`;
+  const actualLocEn = locEnFile || `${sSlug}_l_english.yml`;
 
   let flagEntries = '';
   IDEOLOGIES.forEach(i => {
@@ -3333,7 +3353,7 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
   }
 
   const gfxEntry = hasGfx
-    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${modSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайта иконки)</span>\n`
+    ? `├── <span class="tree-dir">interface/</span>\n│   └── <span class="tree-f">${sSlug}_decisions.gfx</span> <span class="tree-sub">(регистрация спрайта иконки)</span>\n`
     : '';
 
   const decIconEntry = (decisionImageTga && customIconFileName)
@@ -3342,12 +3362,12 @@ function buildFileTree(modSlug, cosTag, hasGfx = false, customIconFileName = nul
 
   container.innerHTML = `
 <div class="file-tree-view">
-<span class="tree-dir">${modSlug}/</span>
+<span class="tree-dir">${modFolder}/</span>
 ├── <span class="tree-dir">common/</span>
 │   ├── <span class="tree-dir">decisions/</span>
 │   │   ├── <span class="tree-dir">categories/</span>
-│   │   │   └── <span class="tree-f">00_${modSlug}_categories.txt</span> <span class="tree-sub">(определение категории)</span>
-│   │   └── <span class="tree-f">${modSlug}_decisions.txt</span> <span class="tree-sub">(само решение)</span>
+│   │   │   └── <span class="tree-f">00_${sSlug}_categories.txt</span> <span class="tree-sub">(определение категории)</span>
+│   │   └── <span class="tree-f">${sSlug}_decisions.txt</span> <span class="tree-sub">(само решение)</span>
 │   ├── <span class="tree-dir">countries/</span>
 │   │   └── <span class="tree-f">cosmetic.txt</span> <span class="tree-sub">(цвета косметического тега)</span>
 ├── <span class="tree-dir">localisation/</span>
@@ -3365,7 +3385,7 @@ ${flagEntries || '│       └── (флаги не загружались)\n
 ├── <span class="tree-f">descriptor.mod</span> <span class="tree-sub">(внутри папки мода, без path=)</span>
 └── <span class="tree-f">README.md</span>
 
-<span class="tree-f">${modSlug}.mod</span> <span class="tree-sub">(файл дескриптора с path="mod/${modSlug}", кладется в папку mod)</span>
+<span class="tree-f">${modFolder}.mod</span> <span class="tree-sub">(файл дескриптора с path="mod/${modFolder}", кладется в папку mod)</span>
 </div>
 `;
 }
@@ -3387,12 +3407,12 @@ async function downloadMod() {
     zip.file(path, tgaBuf);
   }
 
-  const modSlug = slugify(val('mod-name'));
+  const modFolder = getSafeModName(val('mod-name'), 'CosmeticMod');
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${modSlug}_hoi4_1.19.zip`;
+  a.download = `${modFolder}.zip`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

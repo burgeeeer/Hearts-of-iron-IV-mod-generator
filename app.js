@@ -10,6 +10,50 @@ function saveAs(blob, filename) {
 }
 window.saveAs = saveAs;
 
+/* Transliteration for Cyrillic mod titles: ensures Clausewitz engine compatibility
+   (HoI4 relative path="mod/..." must stay Latin) while keeping human-readable names
+   instead of turning Russian letters into underscores (_______________). */
+function transliterateCyrillic(str) {
+    if (!str) return '';
+    var map = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+        'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts',
+        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'Zh',
+        'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O',
+        'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts',
+        'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Shch', 'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya',
+        'і': 'i', 'І': 'I', 'ї': 'yi', 'Ї': 'Yi', 'є': 'ye', 'Є': 'Ye', 'ґ': 'g', 'Ґ': 'G'
+    };
+    return String(str).split('').map(function(ch) {
+        return map[ch] !== undefined ? map[ch] : ch;
+    }).join('');
+}
+
+function toLatinModSlug(str, fallback) {
+    var raw = String(str || '').trim();
+    if (!raw) return fallback || 'CustomMod';
+    var translit = transliterateCyrillic(raw);
+    var slug = translit
+        .replace(/[^a-zA-Z0-9_\-]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '');
+    return slug || fallback || 'CustomMod';
+}
+window.transliterateCyrillic = transliterateCyrillic;
+window.toLatinModSlug = toLatinModSlug;
+
+function getSafeModName(name, fallback) {
+    var safe = String(name || '').trim()
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+        .replace(/[. ]+$/g, '');
+    return (safe || fallback || 'CustomMod').slice(0, 120);
+}
+var getDownloadFileName = getSafeModName;
+window.getSafeModName = getSafeModName;
+window.getDownloadFileName = getSafeModName;
+
 var ideologies = ['fascism', 'democratic', 'communism', 'neutrality'];
 var currentLang = 'english';
 var countries = [];
@@ -61,8 +105,8 @@ var i18n = {
         countriesGroupDesc: "Configure names for 4 ideologies and auto-convert flags to TGA format",
         btnExportJson: "Export .json",
         btnGenMod: "Generate Mod",
-        modName: "Mod Name (English):",
-        modNameDesc: "Used for the mod folder, descriptor, and project files.",
+        modName: "Mod Name:",
+        modNameDesc: "Displayed in the HoI4 launcher. Folder slug and descriptor are generated automatically.",
         countryLabel: "Country",
         addCountry: "Add country",
         tag: "Tag:",
@@ -231,8 +275,8 @@ var i18n = {
         meta_cities: "Городов",
         meta_tree_caption: "Структура архива мода:",
         meta_tree_note: "(марионетки и регионы)",
-        modName: "Название мода (на англ):",
-        modNameDesc: "Используется для папки мода, дескриптора и файлов проекта.",
+        modName: "Название мода:",
+        modNameDesc: "Отображается в лаунчере HoI4. Для внутренней папки мода и дескриптора автоматически создаётся совместимое имя.",
         countryLabel: "Страна",
         addCountry: "Добавить страну",
         tag: "Тег:",
@@ -670,7 +714,42 @@ window.onload = function() {
     if (window.OnlineCounter && typeof window.OnlineCounter.init === 'function') {
         window.OnlineCounter.init();
     }
+    setupEditorUsability();
 };
+
+/* Keyboard support and compact project controls for the static editor shell. */
+function setupEditorUsability() {
+    var toggle = document.getElementById('mobileProjectToggle');
+    var toolbar = document.getElementById('projectToolbar');
+    if (toggle && toolbar && !toggle.dataset.ready) {
+        toggle.dataset.ready = 'true';
+        toggle.addEventListener('click', function() {
+            var isOpen = toolbar.classList.toggle('is-mobile-open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+        });
+    }
+
+    var heads = document.querySelectorAll('.section-head[onclick]');
+    heads.forEach(function(head, index) {
+        if (head.dataset.keyboardReady) return;
+        head.dataset.keyboardReady = 'true';
+        head.setAttribute('role', 'button');
+        head.setAttribute('tabindex', '0');
+        head.setAttribute('aria-expanded', String(!head.closest('.collapsible') || !head.closest('.collapsible').classList.contains('collapsed')));
+        head.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                head.click();
+            }
+        });
+        head.addEventListener('click', function() {
+            window.setTimeout(function() {
+                var section = head.closest('.collapsible');
+                if (section) head.setAttribute('aria-expanded', String(!section.classList.contains('collapsed')));
+            }, 0);
+        });
+    });
+}
 
 
 function sanitizeLocFileName(raw, defaultName) {
@@ -1715,7 +1794,7 @@ function onModNameChange() {
     var el = document.getElementById('projectActiveName');
     if (el) el.textContent = val.trim() || (i18n[currentLang] ? i18n[currentLang].projUnnamed : 'MyAwesomeMod');
     var treeEl = document.getElementById('treeModDirName');
-    if (treeEl) treeEl.textContent = val.trim() || 'MyAwesomeMod';
+    if (treeEl) treeEl.textContent = getSafeModName(val, 'MyAwesomeMod');
     saveData();
 }
 
@@ -2192,14 +2271,15 @@ function applyCoverToMod() {
 
 function downloadCoverImage() {
     var cv = document.getElementById('coverCanvas');
-    var modName = ((document.getElementById('modName') || {}).value.trim() || 'mod') + '_cover.png';
+    var rawName = ((document.getElementById('modName') || {}).value.trim() || 'mod');
+    var coverFileName = getDownloadFileName(rawName, 'mod') + '_cover.png';
     if (cv && cv.style.display !== 'none') {
         cv.toBlob(function(b) {
-            saveAs(b, modName);
+            saveAs(b, coverFileName);
         });
     } else if (modCoverData) {
         var b = dataURLToBlob(modCoverData);
-        saveAs(b, modName);
+        saveAs(b, coverFileName);
     }
 }
 
@@ -2345,7 +2425,7 @@ function saveProjectToFile() {
         cosmetic: cosmData
     };
     var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json;charset=utf-8' });
-    saveAs(blob, modName + '_project.json');
+    saveAs(blob, getDownloadFileName(modName, 'CustomMod') + '_project.json');
     showToast(i18n[currentLang] ? i18n[currentLang].projectSavedSuccess : 'Project saved to file!');
 }
 
@@ -2876,7 +2956,7 @@ function exportProjectFromLibrary(id) {
     var found = list.find(function(p) { return p.id === id; });
     if (found && found.data) {
         var blob = new Blob([JSON.stringify(found.data, null, 2)], { type: 'application/json;charset=utf-8' });
-        saveAs(blob, (found.name || 'project') + '_project.json');
+        saveAs(blob, getDownloadFileName(found.name || 'project', 'project') + '_project.json');
     }
 }
 
@@ -3298,9 +3378,13 @@ function addLoc(arrRu, arrEn, key, val, valEn) {
 async function generateMod(downloadZip) {
     if (downloadZip === undefined) downloadZip = true;
     pullCountriesFromDOM();
-    var modName = ((document.getElementById('modName') ? document.getElementById('modName').value.trim() : '') ||
-                   (document.getElementById('mod-name') ? document.getElementById('mod-name').value.trim() : '') ||
-                   'CustomMod').replace(/[^a-zA-Z0-9_\-]/g, '_');
+    var modDisplayName = ((document.getElementById('modName') ? document.getElementById('modName').value.trim() : '') ||
+                          (document.getElementById('mod-name') ? document.getElementById('mod-name').value.trim() : '') ||
+                          'CustomMod');
+    var safeModName = getSafeModName(modDisplayName, 'CustomMod');
+    var modName = safeModName;
+    var downloadName = safeModName;
+    var descriptorName = modDisplayName.replace(/"/g, '\\"');
 
     // 0. Check if formable decisions / cosmetic tag data exists and generate it
     var cosmeticFiles = null;
@@ -3651,7 +3735,7 @@ async function generateMod(downloadZip) {
     var rootDescriptor =
         'version="1.0"\n' +
         'tags={\n' + modTags.map(function(t) { return '\t' + t; }).join('\n') + '\n}\n' +
-        'name="' + modName + '"\n' +
+        'name="' + descriptorName + '"\n' +
         'supported_version="1.19.*"\n' +
         'path="mod/' + modName + '"\n' +
         pictureLine +
@@ -3662,7 +3746,7 @@ async function generateMod(downloadZip) {
     var internalDescriptor =
         'version="1.0"\n' +
         'tags={\n' + modTags.map(function(t) { return '\t' + t; }).join('\n') + '\n}\n' +
-        'name="' + modName + '"\n' +
+        'name="' + descriptorName + '"\n' +
         'supported_version="1.19.*"\n' +
         pictureLine +
         depLines;
@@ -3676,7 +3760,7 @@ async function generateMod(downloadZip) {
         app: "HoI4ModGenerator",
         savedAt: new Date().toISOString(),
         lang: currentLang,
-        modName: modName,
+        modName: modDisplayName,
         countryLocFileName: countryLocFileName,
         countryLocFileNameEn: countryLocFileNameEn,
         locUseReplaceFolder: locUseReplaceFolder,
@@ -3699,8 +3783,9 @@ async function generateMod(downloadZip) {
         var sumEl = document.getElementById('summary-content');
         if (sumEl) {
             var sumHtml = '<div style="padding:14px; line-height:1.6; font-size:12.5px;">';
-            sumHtml += '<div style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Сводка единого мода: ' + modName + '</div>';
-            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Название мода: <strong style="color:var(--text-main);">' + modName + '</strong> (поддерживаемая версия HoI4: 1.19.*)</div>';
+            sumHtml += '<div style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Сводка единого мода: ' + modDisplayName + '</div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Название мода (лаунчер): <strong style="color:var(--text-main);">' + modDisplayName + '</strong></div>';
+            sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Папка и дескриптор мода: <strong style="color:var(--text-main);">mod/' + modName + ' (' + modName + '.mod)</strong> (HoI4: 1.14.* — 1.19.*)</div>';
             sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Кастомных стран и флагов (32-bit TGA): <strong style="color:var(--text-main);">' + (countries.length || 0) + ' шт.</strong></div>';
             sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Правил марионеток: <strong style="color:var(--text-main);">' + ((puppetRules.length || 0) + (window.puppetBulkTemplates ? window.puppetBulkTemplates.reduce(function(a,b){return a+(b.selectedTags?b.selectedTags.length:0);},0) : 0)) + ' шт.</strong></div>';
             sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Переименований регионов и городов: <strong style="color:var(--text-main);">' + (stateNameRules.length || 0) + ' рег., ' + (cityNameRules.length || 0) + ' гор.</strong></div>';
@@ -3710,7 +3795,7 @@ async function generateMod(downloadZip) {
                 sumHtml += '<div style="color:var(--text-muted); margin-bottom:6px;">• Формируемые решения: <em>не заполнялись (создан мод на страны и марионетки)</em></div>';
             }
             if (downloadZip !== false) {
-                sumHtml += '<div style="margin-top:14px; padding:10px 14px; background:rgba(34,197,94,0.1); border:1px solid var(--success); border-radius:var(--radius-sm); color:var(--success); font-weight:600;">✓ Единый архив мода успешно сформирован и скачан: ' + modName + '.zip</div>';
+                sumHtml += '<div style="margin-top:14px; padding:10px 14px; background:rgba(34,197,94,0.1); border:1px solid var(--success); border-radius:var(--radius-sm); color:var(--success); font-weight:600;">✓ Единый архив мода успешно сформирован и скачан: ' + downloadName + '.zip</div>';
             } else {
                 sumHtml += '<div style="margin-top:14px; padding:10px 14px; background:rgba(34,197,94,0.1); border:1px solid var(--success); border-radius:var(--radius-sm); color:var(--success); font-weight:600;">✓ Файлы мода успешно сгенерированы! Проверьте вкладки ниже (decisions/, localisation/, countries/cosmetic.txt, descriptor.mod, Структура архива).</div>';
                 sumHtml += '<div style="margin-top:10px;"><button type="button" class="btn-primary" onclick="generateMod(true)" style="padding:7px 16px; font-size:12.5px; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Скачать готовый архив (.zip)</button></div>';
@@ -3820,7 +3905,7 @@ async function generateMod(downloadZip) {
         if (treeEl && zip && zip.files) {
             var fileList = Object.keys(zip.files).sort();
             var treeHtml = '<div class="file-tree-view" style="font-family:var(--font-mono); font-size:12px; line-height:1.7; padding:12px;">';
-            treeHtml += '<div style="color:var(--text-main); font-weight:700; margin-bottom:6px;">' + modName + '.zip/</div>';
+            treeHtml += '<div style="color:var(--text-main); font-weight:700; margin-bottom:6px;">' + downloadName + '.zip/</div>';
             for (var fi = 0; fi < fileList.length; fi++) {
                 var fpath = fileList[fi];
                 if (zip.files[fpath].dir) continue;
@@ -3833,7 +3918,7 @@ async function generateMod(downloadZip) {
 
     var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
     if (downloadZip !== false) {
-        saveAs(blob, modName + '.zip');
+        saveAs(blob, downloadName + '.zip');
         showToast(i18n[currentLang] ? (i18n[currentLang].modGeneratedToast || 'Мод успешно сгенерирован!') : 'Мод успешно сгенерирован!');
     } else {
         showToast(currentLang === 'english' ? 'Mod files generated! Check tabs below.' : 'Файлы мода сгенерированы! Проверьте вкладки ниже.');
