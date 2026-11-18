@@ -363,6 +363,48 @@ const CHEAT_TRIGGERS = [
         }
       },
       {
+        "code": "all_state = { limit = { is_core_of = GER is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все немецкие территории в Европе (как при создании ЕС)",
+          "en": "Controls all German core territories in Europe"
+        }
+      },
+      {
+        "code": "all_state = { limit = { is_core_of = FRA is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все французские территории в Европе",
+          "en": "Controls all French core territories in Europe"
+        }
+      },
+      {
+        "code": "all_state = { limit = { is_core_of = ITA is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все итальянские территории в Европе",
+          "en": "Controls all Italian core territories in Europe"
+        }
+      },
+      {
+        "code": "all_state = { limit = { is_core_of = HOL is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все голландские территории в Европе (Бенилюкс)",
+          "en": "Controls all Dutch territories in Europe"
+        }
+      },
+      {
+        "code": "all_state = { limit = { is_core_of = BEL is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все бельгийские территории в Европе (Бенилюкс)",
+          "en": "Controls all Belgian territories in Europe"
+        }
+      },
+      {
+        "code": "all_state = { limit = { is_on_continent = europe } is_controlled_by = ROOT }",
+        "desc": {
+          "ru": "Контролирует все европейские территории (весь континент Европа)",
+          "en": "Controls all territories on the continent of Europe"
+        }
+      },
+      {
         "code": "has_full_control_of_state = 123",
         "desc": {
           "ru": "Полный контроль над регионом 123 (без оккупантов)",
@@ -1000,6 +1042,12 @@ const CHEAT_EFFECTS = [
     category: { ru: 'Территории, столица и национализация', en: 'Territories, Capital & Coring' },
     items: [
       { code: '123 = { add_core_of = ROOT }', desc: { ru: 'Сделать регион 123 национальной территорией (core)', en: 'Make state 123 a core territory of ROOT' } },
+      { code: 'every_state = { limit = { is_core_of = GER is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все немецкие территории в Европе становятся национальными (add_core_of = ROOT)', en: 'All German territories in Europe become cores of ROOT' } },
+      { code: 'every_state = { limit = { is_core_of = FRA is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все французские территории в Европе становятся национальными', en: 'All French territories in Europe become cores of ROOT' } },
+      { code: 'every_state = { limit = { is_core_of = ITA is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все итальянские территории в Европе становятся национальными', en: 'All Italian territories in Europe become cores of ROOT' } },
+      { code: 'every_state = { limit = { is_core_of = HOL is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все голландские территории в Европе становятся национальными', en: 'All Dutch territories in Europe become cores of ROOT' } },
+      { code: 'every_state = { limit = { is_core_of = BEL is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все бельгийские территории в Европе становятся национальными', en: 'All Belgian territories in Europe become cores of ROOT' } },
+      { code: 'every_state = { limit = { is_on_continent = europe } add_core_of = ROOT }', desc: { ru: 'Все территории Европы становятся национальными (add_core_of = ROOT)', en: 'All states in Europe become cores of ROOT' } },
       { code: 'set_capital = { state = 123 }', desc: { ru: 'Перенести столицу державы в регион 123', en: 'Relocate the nation capital to state 123' } },
       { code: '123 = { add_claim_by = ROOT }', desc: { ru: 'Добавить претензию (claim) на регион 123', en: 'Add a claim on state 123' } },
       { code: 'transfer_state = 123', desc: { ru: 'Мгновенно передать контроль и владение регионом 123', en: 'Instantly transfer control and ownership of state 123' } }
@@ -1253,6 +1301,93 @@ function sanitizeTrigger(rawTr) {
   return tr;
 }
 
+function onCategoryPictureSelect(val) {
+  const customInp = document.getElementById('category-picture-custom');
+  if (customInp) {
+    customInp.style.display = (val === 'custom') ? 'block' : 'none';
+  }
+}
+window.cosm_onCategoryPictureSelect = onCategoryPictureSelect;
+
+function updateTriggersCountBadge() {
+  const count = document.querySelectorAll('#triggers-list .trigger-row').length;
+  const badge = document.getElementById('triggers-count-badge');
+  if (badge) {
+    badge.textContent = count ? String(count) : '0';
+  }
+  const bannerText = document.getElementById('triggers-collapsed-text');
+  if (bannerText) {
+    bannerText.textContent = `Список условий свернут (${count} шт.)`;
+  }
+}
+
+function toggleTriggersCollapse() {
+  const list = document.getElementById('triggers-list');
+  const banner = document.getElementById('triggers-collapsed-banner');
+  const btn = document.getElementById('btn-toggle-triggers-collapse');
+  if (!list || !btn) return;
+
+  const isHidden = (list.style.display === 'none');
+  if (isHidden) {
+    list.style.display = 'flex';
+    if (banner) banner.style.display = 'none';
+    btn.textContent = currentLang === 'ru' ? 'Свернуть список' : 'Collapse List';
+  } else {
+    list.style.display = 'none';
+    if (banner) banner.style.display = 'block';
+    btn.textContent = currentLang === 'ru' ? 'Развернуть список' : 'Expand List';
+  }
+  updateTriggersCountBadge();
+}
+
+function clearAllTriggers() {
+  const list = document.getElementById('triggers-list');
+  if (!list) return;
+  const count = list.querySelectorAll('.trigger-row').length;
+  if (!count) return;
+  if (confirm(currentLang === 'ru' ? `Удалить все условия (${count} шт.)?` : `Remove all ${count} triggers?`)) {
+    list.innerHTML = '';
+    updateTriggersCountBadge();
+    onFieldChange();
+    showToast(currentLang === 'ru' ? 'Все условия удалены' : 'All triggers cleared');
+  }
+}
+
+function copyTriggersToCores() {
+  const trs = getTriggers();
+  const stateIds = [];
+  trs.forEach(tr => {
+    const m = tr.match(/^(?:controls_state|owns_state)\s*=\s*(\d+)/i);
+    if (m) {
+      const sid = parseInt(m[1], 10);
+      if (!isNaN(sid) && stateIds.indexOf(sid) === -1) {
+        stateIds.push(sid);
+      }
+    }
+  });
+
+  if (stateIds.length === 0) {
+    showToast(currentLang === 'ru' ? 'В условиях нет регионов (controls_state). Выберите их на карте или добавьте вручную.' : 'No state triggers (controls_state) found.');
+    return;
+  }
+
+  const coreInp = document.getElementById('core-states');
+  const existing = parseStateIds(coreInp ? coreInp.value : '');
+  stateIds.forEach(sid => {
+    if (existing.indexOf(sid) === -1) {
+      existing.push(sid);
+    }
+  });
+  existing.sort((a, b) => a - b);
+  const newVal = existing.join(', ');
+  if (coreInp) {
+    coreInp.value = newVal;
+  }
+  handleCoreStatesInput(newVal);
+  onFieldChange();
+  showToast(currentLang === 'ru' ? `Добавлено ${stateIds.length} регионов в национальные территории (add_core_of)!` : `Added ${stateIds.length} states to national cores!`);
+}
+
 function addTrigger(value = '') {
   const list = document.getElementById('triggers-list');
   if (!list) return;
@@ -1261,9 +1396,12 @@ function addTrigger(value = '') {
   row.className = 'trigger-row';
   row.innerHTML = `
     <input type="text" class="inp" placeholder="controls_state = 123" value="${value.replace(/"/g, '&quot;')}" oninput="onFieldChange()" />
-    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить"></button>
+    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); updateTriggersCountBadge(); onFieldChange();" title="Удалить">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
   `;
   list.appendChild(row);
+  updateTriggersCountBadge();
   onFieldChange();
 }
 
@@ -1353,7 +1491,9 @@ function addCustomEffect(value = '') {
   row.className = 'trigger-row';
   row.innerHTML = `
     <input type="text" class="inp" placeholder="add_research_slot = 1" value="${value.replace(/"/g, '&quot;')}" oninput="onFieldChange()" />
-    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить"></button>
+    <button type="button" class="trigger-del-btn" onclick="this.parentElement.remove(); onFieldChange();" title="Удалить">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
   `;
   list.appendChild(row);
   onFieldChange();
@@ -2390,6 +2530,12 @@ function collectProjectData() {
     categoryMode: currentCategoryMode,
     customCatId: val('custom-cat-id'),
     customCatName: val('custom-cat-name'),
+    categoryPicture: (function() {
+      const sel = val('category-picture-select');
+      if (sel === 'custom') return val('category-picture-custom').trim();
+      return sel || '';
+    })(),
+    categoryDesc: val('category-desc'),
 
     cost: parseInt(val('decision-cost'), 10) || 50,
     days: parseInt(val('decision-days'), 10) || 0,
@@ -2397,6 +2543,8 @@ function collectProjectData() {
     decisionName: val('decision-name'),
     decisionDesc: val('decision-desc'),
     triggers: getTriggers(),
+    compactStatesTooltip: document.getElementById('compact-states-tooltip') ? document.getElementById('compact-states-tooltip').checked : true,
+    autoCoreAllTriggers: document.getElementById('auto-core-all-triggers') ? document.getElementById('auto-core-all-triggers').checked : true,
 
     // Rewards & Buffs
     coreStates: val('core-states'),
@@ -2467,6 +2615,25 @@ function populateFormFromData(d) {
   setVal('custom-cat-id', d.customCatId);
   setVal('custom-cat-name', d.customCatName);
 
+  const catSel = document.getElementById('category-picture-select');
+  const catCust = document.getElementById('category-picture-custom');
+  if (catSel) {
+    if (d.categoryPicture && catSel.querySelector(`option[value="${d.categoryPicture}"]`)) {
+      catSel.value = d.categoryPicture;
+      if (catCust) catCust.style.display = 'none';
+    } else if (d.categoryPicture) {
+      catSel.value = 'custom';
+      if (catCust) {
+        catCust.style.display = 'block';
+        catCust.value = d.categoryPicture;
+      }
+    } else {
+      catSel.value = '';
+      if (catCust) catCust.style.display = 'none';
+    }
+  }
+  setVal('category-desc', d.categoryDesc || '');
+
   setVal('decision-cost', d.cost !== undefined ? d.cost : 50);
   setVal('decision-days', d.days !== undefined ? d.days : 0);
   setVal('decision-remove-days', d.removeDays !== undefined ? d.removeDays : 0);
@@ -2474,6 +2641,11 @@ function populateFormFromData(d) {
   setVal('decision-desc', d.decisionDesc);
 
   // Triggers
+  const compactEl = document.getElementById('compact-states-tooltip');
+  if (compactEl) compactEl.checked = d.compactStatesTooltip !== false;
+  const autoCoreEl = document.getElementById('auto-core-all-triggers');
+  if (autoCoreEl) autoCoreEl.checked = d.autoCoreAllTriggers !== false;
+
   const trigList = document.getElementById('triggers-list');
   if (trigList) {
     trigList.innerHTML = '';
@@ -2481,6 +2653,7 @@ function populateFormFromData(d) {
       d.triggers.forEach(tr => addTrigger(tr));
     }
   }
+  updateTriggersCountBadge();
 
   // Rewards & Buffs
   setVal('core-states', d.coreStates || '');
@@ -2897,9 +3070,10 @@ function generateMod(customModSlug, skipAlert = false) {
     decVisibleBlock = `\t\tOR = {\n${orLines}\n\t\t}\n${notCosmetics}`;
   }
 
-  // 3. Category Definition File (00_${modSlug}_categories.txt - pure definition, NO banner picture)
+  // 3. Category Definition File (00_${modSlug}_categories.txt)
+  const catPictureLine = data.categoryPicture ? `\n\tpicture = ${data.categoryPicture}` : '';
   const catContent = `${categoryId} = {
-\ticon = generic_formable_nations
+\ticon = generic_formable_nations${catPictureLine}
 \tpriority = 90
 }
 `;
@@ -2943,15 +3117,61 @@ function generateMod(customModSlug, skipAlert = false) {
   const daysLine = data.days > 0 ? `\n\t\tdays_mission_timeout = ${data.days}` : '';
   const removeLine = data.removeDays > 0 ? `\n\t\tdays_remove = ${data.removeDays}` : '';
 
-  let availableBlock = `\t\tis_subject = no`;
-  if (data.triggers.length > 0) {
+  // Separate state control/ownership triggers from other conditions
+  const stateTriggerIds = [];
+  const otherTriggers = [];
+  if (Array.isArray(data.triggers) && data.triggers.length > 0) {
     data.triggers.forEach(tr => {
       const sanitized = sanitizeTrigger(tr);
-      if (sanitized) {
-        availableBlock += `\n\t\t${sanitized}`;
+      if (!sanitized) return;
+      const m = sanitized.match(/^(?:controls_state|owns_state)\s*=\s*(\d+)/i);
+      if (m) {
+        const sid = parseInt(m[1], 10);
+        if (!isNaN(sid) && stateTriggerIds.indexOf(sid) === -1) {
+          stateTriggerIds.push(sid);
+        }
+      } else {
+        otherTriggers.push(sanitized);
       }
     });
   }
+
+  // Highlight uncontrolled target states on the map (Blinks on hover in HoI4 UI)
+  let highlightStatesBlock = '';
+  if (stateTriggerIds.length > 0) {
+    const stateTargets = stateTriggerIds.map(id => `\t\t\t\tstate = ${id}`).join('\n');
+    highlightStatesBlock = `\n\t\thighlight_states = {
+\t\t\thighlight_states_trigger = {
+\t\t\t\tOR = {
+${stateTargets}
+\t\t\t\t}
+\t\t\t\tNOT = { is_controlled_by = ROOT }
+\t\t\t}
+\t\t\thighlight_color_before_active = 2
+\t\t}`;
+  }
+
+  // Assemble availableBlock: wrap in custom_trigger_tooltip if compact mode enabled
+  const isCompactStates = (data.compactStatesTooltip !== false) && (stateTriggerIds.length >= 4);
+  let availableLines = [`\t\tis_subject = no`];
+  otherTriggers.forEach(ot => {
+    availableLines.push(`\t\t${ot}`);
+  });
+
+  if (stateTriggerIds.length > 0) {
+    if (isCompactStates) {
+      const stateChecks = stateTriggerIds.map(id => `\t\t\tcontrols_state = ${id}`).join('\n');
+      availableLines.push(`\t\tcustom_trigger_tooltip = {
+\t\t\ttooltip = ${decId}_required_states_tt
+${stateChecks}
+\t\t}`);
+    } else {
+      stateTriggerIds.forEach(id => {
+        availableLines.push(`\t\tcontrols_state = ${id}`);
+      });
+    }
+  }
+  const availableBlock = availableLines.join('\n');
 
   // 5b. Assemble complete_effect lines (Canonical HoI4 base cosmetic tag application)
   let completeEffectLines = [
@@ -2964,7 +3184,15 @@ function generateMod(customModSlug, skipAlert = false) {
     completeEffectLines.push(`\t\t\tset_capital = { state = ${capState} }`);
   }
 
-  const coreStates = parseStateIds(data.coreStates);
+  // Cores: Combine explicit coreStates with autoCoreAllTriggers
+  let coreStates = parseStateIds(data.coreStates);
+  if (data.autoCoreAllTriggers && stateTriggerIds.length > 0) {
+    stateTriggerIds.forEach(sid => {
+      if (coreStates.indexOf(sid) === -1) {
+        coreStates.push(sid);
+      }
+    });
+  }
   if (coreStates.length > 0) {
     coreStates.forEach(stId => {
       completeEffectLines.push(`\t\t\t${stId} = { add_core_of = ROOT }`);
@@ -3006,7 +3234,7 @@ function generateMod(customModSlug, skipAlert = false) {
 \t${decId} = {
 \t\ticon = ${decisionIcon}${costLine}${daysLine}${removeLine}
 \t\tfire_only_once = yes
-
+${highlightStatesBlock}
 \t\tallowed = {
 ${decAllowedBlock}
 \t\t}
@@ -3089,11 +3317,13 @@ ${cosTag}_neutrality = {
   });
 
   // Category localization
+  const categoryDescRu = data.categoryDesc || `Специальные решения для создания и реорганизации государства.`;
   locRuLines.push(` ${categoryId}: "${escapePds(categoryTitleRu)}"`);
-  locRuLines.push(` ${categoryId}_desc: "Специальные решения для создания и реорганизации государства."`);
+  locRuLines.push(` ${categoryId}_desc: "${escapePds(categoryDescRu)}"`);
 
+  const categoryDescEn = data.categoryDesc || `Special decisions regarding nation formation and reorganization.`;
   locEnLines.push(` ${categoryId}: "${escapePds(categoryTitleEn)}"`);
-  locEnLines.push(` ${categoryId}_desc: "Special decisions regarding nation formation and reorganization."`);
+  locEnLines.push(` ${categoryId}_desc: "${escapePds(categoryDescEn)}"`);
 
   // Decision localization
   const decTitle = data.decisionName || `Создать ${baseName}`;
@@ -3102,10 +3332,16 @@ ${cosTag}_neutrality = {
   locRuLines.push(` ${decId}: "${escapePds(decTitle)}"`);
   locRuLines.push(` ${decId}_desc: "${escapePds(decDesc)}"`);
   locRuLines.push(` ${decId}_tooltip: "§GСтрана принимает флаг, название и символику §Y${escapePds(baseName)}§!.§!"`);
+  if (stateTriggerIds.length > 0) {
+    locRuLines.push(` ${decId}_required_states_tt: "Контролирует все требуемые регионы (§Y${stateTriggerIds.length} рег.§!). Неподконтрольные подсвечиваются на карте при наведении."`);
+  }
 
   locEnLines.push(` ${decId}: "${escapePds(decTitle)}"`);
   locEnLines.push(` ${decId}_desc: "${escapePds(decDesc)}"`);
   locEnLines.push(` ${decId}_tooltip: "§GThe nation adopts the cosmetic tag, flag and name of §Y${escapePds(baseName)}§!.§!"`);
+  if (stateTriggerIds.length > 0) {
+    locEnLines.push(` ${decId}_required_states_tt: "Controls all required territories (§Y${stateTriggerIds.length} states§!). Uncontrolled regions are highlighted on the map."`);
+  }
 
   const locRuContent = locRuLines.join('\n') + '\n';
   const locEnContent = locEnLines.join('\n') + '\n';
@@ -3608,6 +3844,10 @@ window.cosm_buildAndDownloadMod = buildAndDownloadMod;
 
 window.cosm_addTrigger = addTrigger;
 window.cosm_getTriggers = getTriggers;
+window.cosm_toggleTriggersCollapse = toggleTriggersCollapse;
+window.cosm_clearAllTriggers = clearAllTriggers;
+window.cosm_copyTriggersToCores = copyTriggersToCores;
+window.cosm_updateTriggersCount = updateTriggersCountBadge;
 window.cosm_openTriggersModal = openTriggersModal;
 window.cosm_closeTriggersModal = closeTriggersModal;
 window.cosm_renderTriggersCheat = renderTriggersCheat;

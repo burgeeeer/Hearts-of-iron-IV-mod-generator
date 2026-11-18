@@ -94,9 +94,106 @@ function initPuppetBulkTemplates() {
     _g.puppetBulkTemplates = puppetBulkTemplates;
 }
 
-function formatPuppetTagLoc(pattern, tag) {
+/**
+ * Declines Russian country names into grammatical cases (e.g. "над кем/чем?" -> "Ираном", "Германией")
+ */
+function declineCountryRu(name, caseType) {
+    if (!name || typeof name !== 'string') return name;
+    var s = name.trim();
+
+    if (s.indexOf(' ') !== -1) {
+        return s.split(' ').map(function(part) { return declineCountryRu(part, caseType); }).join(' ');
+    }
+
+    // Acronyms (США, СССР, ЮАР, etc.)
+    if (/^[А-ЯЁA-Z]{2,}$/.test(s)) return s;
+
+    // Foreign indeclinables: ends in -о, -е, -у, -ю, -э or foreign -и (Чили, Перу, Того, Монако, Конго, Фиджи, Гаити)
+    if (/[оеуюэ]$/i.test(s)) return s;
+    if (/и$/i.test(s) && !/(?:ланды|пины|ивы|йцы|ия)$/i.test(s)) return s;
+
+    if (caseType === 'instrumental' || caseType === 'ins') { // над кем? чем? (Ираном, Германией, Польшей)
+        if (/ая$/i.test(s)) return s.slice(0, -2) + 'ой';
+        if (/яя$/i.test(s)) return s.slice(0, -2) + 'ей';
+        if (/(?:ый|ий)$/i.test(s)) return s.slice(0, -2) + 'им';
+        if (/ой$/i.test(s) && s.length > 3) return s.slice(0, -2) + 'ым';
+        if (/ы$/i.test(s)) return s.slice(0, -1) + 'ами';
+        if (/и$/i.test(s) && !/ия$/i.test(s)) return s.slice(0, -1) + 'ами';
+        if (/ия$/i.test(s)) return s.slice(0, -2) + 'ией';
+        if (/([жшчщц])а$/i.test(s)) return s.slice(0, -1) + 'ей';
+        if (/а$/i.test(s)) return s.slice(0, -1) + 'ой';
+        if (/я$/i.test(s)) return s.slice(0, -1) + 'ей';
+        if (/й$/i.test(s)) return s.slice(0, -1) + 'ем';
+        if (/ь$/i.test(s)) return s.slice(0, -1) + 'ем';
+        if (/[жшчщц]$/i.test(s)) return s + 'ем';
+        return s + 'ом';
+    }
+
+    if (caseType === 'genitive' || caseType === 'gen') { // кого? чего? (Ирана, Германии, Польши)
+        if (/ая$/i.test(s)) return s.slice(0, -2) + 'ой';
+        if (/яя$/i.test(s)) return s.slice(0, -2) + 'ей';
+        if (/(?:ый|ий|ой)$/i.test(s)) return s.slice(0, -2) + 'ого';
+        if (/ы$/i.test(s)) return s.slice(0, -1) + 'ов';
+        if (/и$/i.test(s) && !/ия$/i.test(s)) return s.slice(0, -1) + 'ов';
+        if (/ия$/i.test(s)) return s.slice(0, -2) + 'ии';
+        if (/[гкхжшчщ]а$/i.test(s)) return s.slice(0, -1) + 'и';
+        if (/а$/i.test(s)) return s.slice(0, -1) + 'ы';
+        if (/я$/i.test(s)) return s.slice(0, -1) + 'и';
+        if (/й$/i.test(s)) return s.slice(0, -1) + 'я';
+        if (/ь$/i.test(s)) return s.slice(0, -1) + 'я';
+        return s + 'а';
+    }
+
+    if (caseType === 'prepositional' || caseType === 'prep') { // о ком/чем? где? (в Иране, в Германии, в Польше)
+        if (/ая$/i.test(s)) return s.slice(0, -2) + 'ой';
+        if (/яя$/i.test(s)) return s.slice(0, -2) + 'ей';
+        if (/(?:ый|ий|ой)$/i.test(s)) return s.slice(0, -2) + 'ом';
+        if (/ы$/i.test(s)) return s.slice(0, -1) + 'ах';
+        if (/и$/i.test(s) && !/ия$/i.test(s)) return s.slice(0, -1) + 'ах';
+        if (/ия$/i.test(s)) return s.slice(0, -2) + 'ии';
+        if (/[ая]$/i.test(s)) return s.slice(0, -1) + 'е';
+        if (/й$/i.test(s)) return s.slice(0, -1) + 'е';
+        if (/ь$/i.test(s)) return s.slice(0, -1) + 'е';
+        return s + 'е';
+    }
+
+    return s;
+}
+
+function detectRussianCase(pattern) {
+    var p = String(pattern || '');
+    if (/(?:\{country:(?:тв|ins|instrumental)\}|\{tag:(?:тв|ins|instrumental)\})/i.test(p)) return 'ins';
+    if (/(?:\{country:(?:род|gen|genitive)\}|\{tag:(?:род|gen|genitive)\})/i.test(p)) return 'gen';
+    if (/(?:\{country:(?:пр|prep|prepositional)\}|\{tag:(?:пр|prep|prepositional)\})/i.test(p)) return 'prep';
+
+    // Prepositions directly preceding tag
+    if (/(?:^|\s)(?:над|под|перед|за)\s+(?:\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$)/i.test(p)) return 'ins';
+    if (/(?:^|\s)(?:в|во|на)\s+(?:\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$)/i.test(p)) return 'prep';
+    if (/(?:^|\s)(?:из|от|для|до)\s+(?:\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$)/i.test(p)) return 'gen';
+
+    // Noun phrases with genitive: "мандат $TAG$", "рейхскомиссариат $TAG$", "генерал-губернаторство $TAG$", "комиссариат $TAG$", "протекторат $TAG$", "зона $TAG$"
+    if (/(?:мандат|рейхскомиссариат|генерал-губернаторство|протекторат|комиссариат|правительство|зона)\s+(?:\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$)/i.test(p)) return 'gen';
+
+    return null;
+}
+
+function formatPuppetTagLoc(pattern, tag, lang) {
     var p = String(pattern || '').trim();
     if (!p) p = '$TAG$';
+
+    var isRu = (lang === 'ru') || /[а-яё]/i.test(p);
+    if (isRu) {
+        var caseType = detectRussianCase(p);
+        if (caseType) {
+            var rawRu = getCountryNameByTag(tag, 'ru');
+            var declinedRu = declineCountryRu(rawRu, caseType);
+            return p
+                .replace(/\{country:(?:тв|ins|instrumental)\}|\{tag:(?:тв|ins|instrumental)\}/gi, declinedRu)
+                .replace(/\{country:(?:род|gen|genitive)\}|\{tag:(?:род|gen|genitive)\}/gi, declinedRu)
+                .replace(/\{country:(?:пр|prep|prepositional)\}|\{tag:(?:пр|prep|prepositional)\}/gi, declinedRu)
+                .replace(/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/gi, declinedRu);
+        }
+    }
 
     if (/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/i.test(p)) {
         return p.replace(/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/gi, '$' + tag + '$');
@@ -117,8 +214,22 @@ function getCountryNameByTag(tag, lang) {
 function formatPuppetPreviewExample(pattern, tag, lang) {
     var p = String(pattern || '').trim();
     if (!p) p = '$TAG$';
-    var countryName = getCountryNameByTag(tag, lang);
 
+    var isRu = (lang === 'ru') || /[а-яё]/i.test(p);
+    if (isRu) {
+        var caseType = detectRussianCase(p);
+        if (caseType) {
+            var rawRu = getCountryNameByTag(tag, 'ru');
+            var declinedRu = declineCountryRu(rawRu, caseType);
+            return p
+                .replace(/\{country:(?:тв|ins|instrumental)\}|\{tag:(?:тв|ins|instrumental)\}/gi, declinedRu)
+                .replace(/\{country:(?:род|gen|genitive)\}|\{tag:(?:род|gen|genitive)\}/gi, declinedRu)
+                .replace(/\{country:(?:пр|prep|prepositional)\}|\{tag:(?:пр|prep|prepositional)\}/gi, declinedRu)
+                .replace(/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/gi, declinedRu);
+        }
+    }
+
+    var countryName = getCountryNameByTag(tag, lang);
     if (/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/i.test(p)) {
         return p.replace(/\$TAG\$|\{tag\}|\{country\}|\$COUNTRY\$/gi, countryName);
     }
@@ -756,8 +867,8 @@ function applyPuppetBulkLoc(cosmeticLocRu, cosmeticLocEn) {
         for (var t = 0; t < tags.length; t++) {
             var tg = tags[t];
             if (tg === ov) continue;
-            var locStrRu = formatPuppetTagLoc(patRu, tg);
-            var locStrEn = formatPuppetTagLoc(patEn, tg);
+            var locStrRu = formatPuppetTagLoc(patRu, tg, 'ru');
+            var locStrEn = formatPuppetTagLoc(patEn, tg, 'en');
 
             for (var v = 0; v < ovVariants.length; v++) {
                 var oTag = ovVariants[v];
@@ -826,8 +937,8 @@ function getPuppetBulkExportEntries() {
         for (var t = 0; t < tags.length; t++) {
             var tg = tags[t];
             if (tg === ov) continue;
-            var locStrRu = formatPuppetTagLoc(patRu, tg);
-            var locStrEn = formatPuppetTagLoc(patEn, tg);
+            var locStrRu = formatPuppetTagLoc(patRu, tg, 'ru');
+            var locStrEn = formatPuppetTagLoc(patEn, tg, 'en');
             res.push({
                 overlord: ov,
                 tag: tg,
@@ -848,14 +959,21 @@ _g.getPuppetBulkExportEntries = getPuppetBulkExportEntries;
 _g.getEffectiveTags = getEffectiveTags;
 _g.mkDefaultPuppetBulkTemplate = mkDefaultPuppetBulkTemplate;
 _g.autoDeriveEnglishPattern = autoDeriveEnglishPattern;
+_g.formatPuppetTagLoc = formatPuppetTagLoc;
+_g.formatPuppetPreviewExample = formatPuppetPreviewExample;
+_g.declineCountryRu = declineCountryRu;
+_g.detectRussianCase = detectRussianCase;
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         getCountriesDb: getCountriesDb,
         getEffectiveTags: getEffectiveTags,
         formatPuppetTagLoc: formatPuppetTagLoc,
+        formatPuppetPreviewExample: formatPuppetPreviewExample,
         applyPuppetBulkLoc: applyPuppetBulkLoc,
         getPuppetBulkExportEntries: getPuppetBulkExportEntries,
-        autoDeriveEnglishPattern: autoDeriveEnglishPattern
+        autoDeriveEnglishPattern: autoDeriveEnglishPattern,
+        declineCountryRu: declineCountryRu,
+        detectRussianCase: detectRussianCase
     };
 }

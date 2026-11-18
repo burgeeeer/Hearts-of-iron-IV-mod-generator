@@ -615,6 +615,33 @@
             <input type="text" id="custom-cat-name" class="inp" placeholder="Великие союзы" oninput="cosm_onFieldChange()" />
           </div>
         </div>
+
+        <div class="form-grid-2" style="margin-top:14px">
+          <div class="field">
+            <label style="display:flex; align-items:center; gap:6px">
+              <span>Иллюстрация категории (Баннер над решением, как у Бенилюкса / ЕС)</span>
+            </label>
+            <select id="category-picture-select" class="inp" onchange="cosm_onCategoryPictureSelect(this.value); cosm_onFieldChange()">
+              <option value="">Без картинки (обычный список решений)</option>
+              <option value="GFX_decision_cat_picture_hol_annul_the_treaty_of_london">Нидерланды / Бенилюкс (Аннулировать Лондонский договор)</option>
+              <option value="GFX_decision_cat_picture_form_european_union">Европейский Союз (Звёзды / карта ЕС)</option>
+              <option value="GFX_decision_cat_picture_form_roman_empire">Римская Империя (Орёл / легионы)</option>
+              <option value="GFX_decision_cat_picture_form_greater_german_reich">Великий Германский Рейх</option>
+              <option value="GFX_decision_cat_picture_form_byzantine_empire">Византийская Империя</option>
+              <option value="GFX_decision_cat_picture_form_ottoman_empire">Османская Империя</option>
+              <option value="GFX_decision_cat_picture_border_war">Пограничная война / конфликт</option>
+              <option value="GFX_decision_cat_picture_generic">Общая военная карта (Generic Map)</option>
+              <option value="custom">Указать свой спрайт GFX_...</option>
+            </select>
+            <input type="text" id="category-picture-custom" class="inp" placeholder="Например: GFX_decision_cat_picture_my_banner" style="display:none; margin-top:6px" oninput="cosm_onFieldChange()" />
+            <div class="hint">Добавляет стильную иллюстрацию в шапку категории решений, как на вашем скриншоте.</div>
+          </div>
+          <div class="field">
+            <label>Исторический текст описания категории (справа от картинки)</label>
+            <textarea id="category-desc" class="inp" rows="2" placeholder="Например: Лондонский договор 1839 года закрепил унизительное разделение... Теперь мы вернем былое единство." oninput="cosm_onFieldChange()"></textarea>
+            <div class="hint">Внимание: в HoI4 баннер отображается в игре только если у категории задан текст описания.</div>
+          </div>
+        </div>
       </div>
 
       <!-- Decision Parameters & Triggers -->
@@ -649,7 +676,30 @@
         </div>
 
         <div style="margin-top:18px">
-          <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:6px" data-t="s2_trig_head">Требования к выполнению (Триггеры)</label>
+          <div class="triggers-header-bar">
+            <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.84rem; font-weight:600; margin:0">
+              <span data-t="s2_trig_head">Требования к выполнению (Триггеры)</span>
+              <span id="triggers-count-badge" class="badge" style="background:rgba(56,189,248,0.18); color:#38bdf8; padding:2px 8px; border-radius:10px; font-size:11px">0</span>
+            </label>
+            <div style="display:flex; gap:8px">
+              <button type="button" id="btn-toggle-triggers-collapse" class="btn-secondary btn-sm" onclick="cosm_toggleTriggersCollapse()">
+                Свернуть список
+              </button>
+              <button type="button" class="btn-secondary btn-sm" onclick="cosm_clearAllTriggers()" style="color:#ef4444">
+                Очистить все
+              </button>
+            </div>
+          </div>
+
+          <label class="check-label" style="display:flex; align-items:center; gap:8px; margin:8px 0 12px 0; font-size:12px; cursor:pointer">
+            <input type="checkbox" id="compact-states-tooltip" checked onchange="cosm_onFieldChange()" />
+            <span><strong>Сворачивать длинные списки регионов в игре:</strong> заменяет простыню из 100+ строк на 1 краткую подсказку и <strong>подсвечивает на карте только недостающие регионы</strong></span>
+          </label>
+
+          <div id="triggers-collapsed-banner" class="triggers-collapsed-banner" onclick="cosm_toggleTriggersCollapse()">
+            📁 <strong id="triggers-collapsed-text">Список условий свернут (0 шт.)</strong> — <span style="color:#38bdf8; text-decoration:underline">нажмите, чтобы развернуть для редактирования</span>
+          </div>
+
           <div id="triggers-list" class="triggers-list"></div>
           <div class="triggers-actions">
             <button type="button" class="secondary-btn" onclick="cosm_addTrigger()" data-t="btn_add_trigger">
@@ -674,15 +724,24 @@
 
         <div class="form-grid-2">
           <div class="field">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px">
               <label data-t="f_core_states" style="margin:0">Национальные регионы (Core States IDs)</label>
-              <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')" data-t="btn_map_core">
-                Выбрать на карте регионов
-              </button>
+              <div style="display:flex; gap:6px; flex-wrap:wrap">
+                <button type="button" class="btn-primary btn-sm" id="btn-copy-triggers-to-cores" onclick="cosm_copyTriggersToCores()" title="Скопировать все ID регионов из блока условий в национальные территории">
+                  ⚡ Сделать регионы из условий национальными
+                </button>
+                <button type="button" class="btn-secondary btn-sm btn-map-launch" onclick="cosm_openStatesMap('core')" data-t="btn_map_core">
+                  Выбрать на карте
+                </button>
+              </div>
             </div>
             <input type="text" id="core-states" class="inp" placeholder="10, 11, 85, 110, 142"
                    oninput="cosm_handleCoreStatesInput(this.value); cosm_onFieldChange()" />
             <div id="core-states-badges" class="tag-badges-wrap"></div>
+            <label class="check-label" style="display:flex; align-items:center; gap:8px; margin-top:6px; font-size:12px; cursor:pointer">
+              <input type="checkbox" id="auto-core-all-triggers" checked onchange="cosm_onFieldChange()" />
+              <span><strong>Автоматически национализировать все регионы контроля</strong> (add_core_of = ROOT) при принятии решения</span>
+            </label>
             <div class="hint" data-t="f_core_states_h">Укажите ID регионов через запятую или пробел (например: 10, 11, 85, 110, 142). Все они станут нац. территориями (add_core_of = ROOT).</div>
           </div>
           <div class="field">
